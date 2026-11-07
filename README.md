@@ -16,7 +16,7 @@ The site is a *static* site: a small program (`build/build.js`) reads the conten
 src/content/settings.json      fees, payment links, bank details, email, social accounts
 src/content/events/*.json      one file per event
 src/content/people/*.json      one file per community-directory profile (photos in src/assets/people/)
-src/content/committees/*.json  one file per committee year (2026-27.json, 2025-26.json …)
+src/content/committees/*.json  one file per committee year (2025-26.json, 2024-25.json …); "current": true marks the sitting committee
 src/content/roles.json         the list of committee roles (rarely changes)
 src/template.html              the page design and all fixed wording (English + Arabic side by side)
 src/css/site.css               the look (dark liquid-glass design, brand colours and type)
