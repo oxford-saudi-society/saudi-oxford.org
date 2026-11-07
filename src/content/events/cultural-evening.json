@@ -1,0 +1,19 @@
+{
+  "slug": "cultural-evening",
+  "title": {
+    "en": "Cultural evening",
+    "ar": "أمسية ثقافية"
+  },
+  "week": "",
+  "date": "",
+  "time": "",
+  "venue": "",
+  "description": {
+    "en": "Open to the wider Oxford community: food, music and conversation.",
+    "ar": "أمسية مفتوحة لمجتمع أكسفورد الأوسع: طعام وموسيقى وحديث."
+  },
+  "tag": "open",
+  "bookingUrl": "",
+  "published": true,
+  "order": 2
+}

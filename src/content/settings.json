@@ -1,0 +1,35 @@
+{
+  "siteName": {
+    "en": "Oxford Saudi Society",
+    "ar": "الجمعية السعودية في أكسفورد"
+  },
+  "domain": "https://saudi-oxford.org",
+  "email": "",
+  "treasurerEmail": "",
+  "founded": "",
+  "fees": {
+    "student": 10,
+    "associate": 15,
+    "confirmed": false
+  },
+  "payLinks": {
+    "student": "",
+    "associate": ""
+  },
+  "bank": {
+    "accountName": "Oxford Saudi Society",
+    "sortCode": "",
+    "accountNumber": ""
+  },
+  "social": {
+    "x": "https://x.com/SaudisOxford",
+    "facebook": "https://www.facebook.com/p/Saudi-Student-Club-in-Oxford-100079995280324/",
+    "linkedin": "https://www.linkedin.com/in/saudi-students-club-in-oxford-336458233/",
+    "instagram": ""
+  },
+  "privacy": {
+    "retention": "",
+    "hosting": "Netlify (hosting) and GitHub (content storage)"
+  },
+  "showSupporters": false
+}

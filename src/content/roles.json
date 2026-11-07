@@ -1,0 +1,56 @@
+[
+  {
+    "id": "president",
+    "en": "President",
+    "ar": "الرئيس",
+    "cat": "exec"
+  },
+  {
+    "id": "vice-president",
+    "en": "Vice President",
+    "ar": "نائب الرئيس",
+    "cat": "exec"
+  },
+  {
+    "id": "secretary",
+    "en": "Secretary",
+    "ar": "أمين السر",
+    "cat": "exec"
+  },
+  {
+    "id": "treasurer",
+    "en": "Treasurer",
+    "ar": "أمين الصندوق",
+    "cat": "exec"
+  },
+  {
+    "id": "events",
+    "en": "Events Officer",
+    "ar": "مسؤول الفعاليات",
+    "cat": "events"
+  },
+  {
+    "id": "social",
+    "en": "Social Secretary",
+    "ar": "المسؤول الاجتماعي",
+    "cat": "events"
+  },
+  {
+    "id": "media",
+    "en": "Media Officer",
+    "ar": "مسؤول الإعلام",
+    "cat": "media"
+  },
+  {
+    "id": "outreach",
+    "en": "Outreach Officer",
+    "ar": "مسؤول العلاقات",
+    "cat": "media"
+  },
+  {
+    "id": "member",
+    "en": "Committee member",
+    "ar": "عضو اللجنة",
+    "cat": "other"
+  }
+]

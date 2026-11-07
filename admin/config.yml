@@ -1,0 +1,145 @@
+# Decap CMS — the committee's editing desk at https://saudi-oxford.org/admin/
+# Sign-in uses GitHub through Netlify's OAuth provider (see README → "Committee desk").
+backend:
+  name: github
+  repo: OWNER/saudi-oxford.org   # ← replace OWNER with the GitHub account that holds the repository
+  branch: main
+  base_url: https://api.netlify.com
+  commit_messages:
+    create: "Add {{collection}} “{{slug}}”"
+    update: "Update {{collection}} “{{slug}}”"
+    delete: "Delete {{collection}} “{{slug}}”"
+    uploadMedia: "Upload “{{path}}”"
+    deleteMedia: "Delete “{{path}}”"
+
+site_url: https://saudi-oxford.org
+display_url: https://saudi-oxford.org
+logo_url: https://saudi-oxford.org/assets/seal-880.webp
+media_folder: "src/assets/people"
+public_folder: "/assets/people"
+slug:
+  encoding: "ascii"
+  clean_accents: true
+
+collections:
+  - name: "settings"
+    label: "Settings"
+    description: "Fees, payment links, bank details, email and social accounts. Published on save."
+    files:
+      - name: "site"
+        label: "Society settings"
+        file: "src/content/settings.json"
+        fields:
+          - { label: "Society email (shown on the site)", name: "email", widget: "string", required: false, hint: "e.g. hello@saudi-oxford.org" }
+          - { label: "Treasurer email", name: "treasurerEmail", widget: "string", required: false }
+          - { label: "Founded (year)", name: "founded", widget: "string", required: false }
+          - label: "Membership fees"
+            name: "fees"
+            widget: "object"
+            fields:
+              - { label: "Student fee (£)", name: "student", widget: "number", value_type: "int", min: 0 }
+              - { label: "Associate fee (£)", name: "associate", widget: "number", value_type: "int", min: 0 }
+              - { label: "Fees confirmed (removes the [brackets])", name: "confirmed", widget: "boolean", default: false }
+          - label: "Stripe payment links"
+            name: "payLinks"
+            widget: "object"
+            fields:
+              - { label: "Student (buy.stripe.com/…)", name: "student", widget: "string", required: false }
+              - { label: "Associate (buy.stripe.com/…)", name: "associate", widget: "string", required: false }
+          - label: "Bank account (for transfers)"
+            name: "bank"
+            widget: "object"
+            fields:
+              - { label: "Account name", name: "accountName", widget: "string" }
+              - { label: "Sort code", name: "sortCode", widget: "string", required: false }
+              - { label: "Account number", name: "accountNumber", widget: "string", required: false }
+          - label: "Social accounts"
+            name: "social"
+            widget: "object"
+            fields:
+              - { label: "X (full link)", name: "x", widget: "string", required: false }
+              - { label: "Facebook (full link)", name: "facebook", widget: "string", required: false }
+              - { label: "LinkedIn (full link)", name: "linkedin", widget: "string", required: false }
+              - { label: "Instagram handle", name: "instagram", widget: "string", required: false }
+          - label: "Privacy notice"
+            name: "privacy"
+            widget: "object"
+            fields:
+              - { label: "Retention period (e.g. 'two years')", name: "retention", widget: "string", required: false }
+              - { label: "Hosting provider named in the notice", name: "hosting", widget: "string", required: false }
+          - { label: "Show the Supporters section", name: "showSupporters", widget: "boolean", default: false }
+          - { label: "Site name (English)", name: "siteName", widget: "object", fields: [ { label: "English", name: "en", widget: "string" }, { label: "Arabic", name: "ar", widget: "string" } ] }
+          - { label: "Domain", name: "domain", widget: "hidden", default: "https://saudi-oxford.org" }
+
+  - name: "events"
+    label: "Events"
+    label_singular: "Event"
+    folder: "src/content/events"
+    create: true
+    format: "json"
+    extension: "json"
+    identifier_field: "slug"
+    slug: "{{slug}}"
+    summary: "{{order}} · {{title.en}} · {{date}}"
+    sortable_fields: ["order", "date"]
+    fields:
+      - { label: "Short name for the file (letters and hyphens)", name: "slug", widget: "string", pattern: ["^[a-z0-9-]+$", "lowercase letters, digits and hyphens only"] }
+      - { label: "Title", name: "title", widget: "object", fields: [ { label: "English", name: "en", widget: "string" }, { label: "Arabic", name: "ar", widget: "string" } ] }
+      - { label: "Week (e.g. Week 3)", name: "week", widget: "string", required: false }
+      - { label: "Date (e.g. Thu 23 Jan 2027)", name: "date", widget: "string", required: false }
+      - { label: "Time (e.g. 7:00 pm)", name: "time", widget: "string", required: false }
+      - { label: "Venue", name: "venue", widget: "string", required: false }
+      - { label: "Description", name: "description", widget: "object", fields: [ { label: "English", name: "en", widget: "text" }, { label: "Arabic", name: "ar", widget: "text" } ] }
+      - { label: "Tag", name: "tag", widget: "select", options: [ { label: "Free", value: "free" }, { label: "All welcome", value: "open" }, { label: "Booking needed", value: "booking" }, { label: "Members only", value: "members" } ], default: "free" }
+      - { label: "Booking link", name: "bookingUrl", widget: "string", required: false }
+      - { label: "Order on the page (1 = first)", name: "order", widget: "number", value_type: "int", default: 10 }
+      - { label: "Published", name: "published", widget: "boolean", default: true }
+
+  - name: "people"
+    label: "Community directory"
+    label_singular: "Profile"
+    folder: "src/content/people"
+    create: true
+    format: "json"
+    extension: "json"
+    identifier_field: "name"
+    summary: "{{name}} · {{group}}"
+    fields:
+      - { label: "Full name", name: "name", widget: "string" }
+      - { label: "Name in Arabic", name: "nameAr", widget: "string", required: false }
+      - { label: "Group", name: "group", widget: "select", options: [ { label: "Current University of Oxford student", value: "student" }, { label: "Oxford alumni", value: "alumni" }, { label: "Working in Oxford", value: "associate" }, { label: "Oxford Brookes", value: "brookes" } ] }
+      - { label: "College, department or employer", name: "college", widget: "string", required: false }
+      - { label: "Headline", name: "headline", widget: "object", fields: [ { label: "English", name: "en", widget: "string" }, { label: "Arabic", name: "ar", widget: "string", required: false } ] }
+      - { label: "Years at Oxford (e.g. 2019–2023)", name: "years", widget: "string", required: false }
+      - { label: "About (up to 400 characters)", name: "bio", widget: "object", fields: [ { label: "English", name: "en", widget: "text", required: false }, { label: "Arabic", name: "ar", widget: "text", required: false } ] }
+      - { label: "Interests / keywords", name: "interests", widget: "list", required: false, allow_add: true, field: { label: "Keyword", name: "keyword", widget: "string" } }
+      - { label: "LinkedIn link", name: "linkedin", widget: "string", required: false }
+      - { label: "Contact emails (up to 2)", name: "emails", widget: "list", required: false, max: 2, field: { label: "Email", name: "email", widget: "string" } }
+      - { label: "WhatsApp numbers (up to 2, with country code)", name: "phones", widget: "list", required: false, max: 2, field: { label: "Number", name: "phone", widget: "string" } }
+      - { label: "Photo (square)", name: "photo", widget: "image", required: false, allow_multiple: false }
+      - { label: "Consent to public listing received (email or in writing)", name: "consentPublic", widget: "boolean", default: false, hint: "Do not publish without it." }
+      - { label: "Published", name: "published", widget: "boolean", default: true }
+
+  - name: "committees"
+    label: "Committees"
+    label_singular: "Committee year"
+    folder: "src/content/committees"
+    create: true
+    format: "json"
+    extension: "json"
+    identifier_field: "term"
+    slug: "{{term}}"
+    summary: "{{term}}"
+    fields:
+      - { label: "Academic year (e.g. 2027–28)", name: "term", widget: "string" }
+      - { label: "This is the current committee", name: "current", widget: "boolean", default: false }
+      - label: "Members"
+        name: "members"
+        widget: "list"
+        required: false
+        summary: "{{fields.name}} — {{fields.role}}"
+        fields:
+          - { label: "Role", name: "role", widget: "select", options: [ { label: "President", value: "president" }, { label: "Vice President", value: "vice-president" }, { label: "Secretary", value: "secretary" }, { label: "Treasurer", value: "treasurer" }, { label: "Events Officer", value: "events" }, { label: "Social Secretary", value: "social" }, { label: "Media Officer", value: "media" }, { label: "Outreach Officer", value: "outreach" }, { label: "Committee member", value: "member" } ] }
+          - { label: "Name", name: "name", widget: "string", required: false }
+          - { label: "Name in Arabic", name: "nameAr", widget: "string", required: false }
+          - { label: "College", name: "college", widget: "string", required: false }

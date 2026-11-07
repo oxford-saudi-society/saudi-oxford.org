@@ -1,0 +1,19 @@
+{
+  "slug": "academic-panel",
+  "title": {
+    "en": "Academic panel",
+    "ar": "ندوة أكاديمية"
+  },
+  "week": "",
+  "date": "",
+  "time": "",
+  "venue": "",
+  "description": {
+    "en": "Speakers from inside and outside the University on a subject chosen by members.",
+    "ar": "متحدثون من داخل الجامعة وخارجها حول موضوع يختاره الأعضاء."
+  },
+  "tag": "booking",
+  "bookingUrl": "",
+  "published": true,
+  "order": 3
+}
