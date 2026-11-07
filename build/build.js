@@ -107,11 +107,12 @@ function committeeGrid(c, lang) {
 const currentTerm = () => committees.find((c) => c.current) || committees[0] || null;
 function committeesHtml(lang) {
   const cur = currentTerm(); const s = S[lang]; let h = '';
-  if (cur) h += `<div class="term current"><div class="cur-head"><h3 class="disp">${esc(cur.term)}</h3><span class="badge">${esc(s.curTerm)}</span></div>${committeeGrid(cur, lang)}</div>`;
+  const noteOf = (c) => c.note ? `<p class="term-note">${esc(L(c.note, lang))}</p>` : '';
+  if (cur) h += `<div class="term current"><div class="cur-head"><h3 class="disp">${esc(cur.term)}</h3><span class="badge">${esc(s.curTerm)}</span></div>${noteOf(cur)}${committeeGrid(cur, lang)}</div>`;
   committees.filter((c) => c !== cur).forEach((c) => {
     const n = (c.members || []).length;
     h += `<div class="term"><details><summary><span class="yrs">${esc(c.term)}</span><span class="n">${esc(n ? s.nMembers(n) : s.tracing)}</span></summary>`;
-    h += n ? committeeGrid(c, lang) : `<p class="trace">${s.trace(emailHtml(lang))}</p>`;
+    h += noteOf(c) + (n ? committeeGrid(c, lang) : `<p class="trace">${s.trace(emailHtml(lang))}</p>`);
     h += '</details></div>';
   });
   return h;

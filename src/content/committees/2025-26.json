@@ -1,5 +1,52 @@
 {
   "term": "2025–26",
   "current": false,
-  "members": []
+  "note": {
+    "en": "45th administrative committee of the Saudi Club in Oxford",
+    "ar": "اللجنة الإدارية الخامسة والأربعون للنادي السعودي في أكسفورد"
+  },
+  "members": [
+    {
+      "role": "president",
+      "name": "Abdulrahman Al-Qahtani",
+      "nameAr": "عبدالرحمن القحطاني",
+      "college": ""
+    },
+    {
+      "role": "vice-president",
+      "name": "Ahmed Al-Sulami",
+      "nameAr": "أحمد السلمي",
+      "college": ""
+    },
+    {
+      "role": "member",
+      "name": "Waleed Siddiq",
+      "nameAr": "وليد صديق",
+      "college": ""
+    },
+    {
+      "role": "member",
+      "name": "Fatimah Al-Mousa",
+      "nameAr": "فاطمة الموسى",
+      "college": ""
+    },
+    {
+      "role": "member",
+      "name": "Mohammed Al-Harthi",
+      "nameAr": "محمد الحارثي",
+      "college": ""
+    },
+    {
+      "role": "member",
+      "name": "Yousef Bukhari",
+      "nameAr": "يوسف بخاري",
+      "college": ""
+    },
+    {
+      "role": "member",
+      "name": "Hassan Bucklain",
+      "nameAr": "حسن بقلين",
+      "college": ""
+    }
+  ]
 }
