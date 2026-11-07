@@ -31,5 +31,10 @@
     "retention": "",
     "hosting": "Netlify (hosting) and GitHub (content storage)"
   },
-  "showSupporters": false
+  "showSupporters": false,
+  "ideas": {
+    "cannyBoardToken": "",
+    "url": "",
+    "embedUrl": ""
+  }
 }

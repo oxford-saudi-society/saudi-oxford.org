@@ -55,6 +55,26 @@
   function t(key, vars) { var s = (T[lang] && T[lang][key] !== undefined) ? T[lang][key] : T.en[key]; if (vars) Object.keys(vars).forEach(function (k) { s = s.split('{' + k + '}').join(vars[k]); }); return s; }
   function phOr(v, placeholder) { return v ? esc(v) : '<span class="ph">' + esc(placeholder) + '</span>'; }
 
+  /* ── ideas board (Canny, or any embeddable board) ─────────────── */
+  (function ideasBoard() {
+    var board = $('ideas-board'); if (!board) return;
+    var cfg = SITE.ideas || {}, openLink = $('ideas-open'), pending = $('ideas-pending'), mail = $('ideas-pending-mail');
+    if (cfg.url && openLink) { openLink.href = cfg.url; openLink.hidden = false; }
+    if (mail) mail.innerHTML = (lang === 'ar' ? 'حتى ذلك الحين أرسل أفكارك إلى ' : 'Until then, send ideas to ') +
+      (SITE.email ? '<a href="mailto:' + esc(SITE.email) + '">' + esc(SITE.email) + '</a>' : '<span class="ph">[hello@address]</span>') +
+      (lang === 'ar' ? ' — وستُنقل إلى اللوحة عند فتحها.' : ' — they will be moved onto the board when it opens.');
+    if (cfg.cannyBoardToken) {
+      pending.hidden = true;
+      /* Canny's loader, as published in their install guide */
+      (function (w, d, i, s) { function l() { if (!d.getElementById(i)) { var f = d.getElementsByTagName(s)[0], e = d.createElement(s); e.type = 'text/javascript'; e.async = true; e.src = 'https://canny.io/sdk.js'; f.parentNode.insertBefore(e, f); } } if (typeof w.Canny !== 'function') { var c = function () { c.q.push(arguments); }; c.q = []; w.Canny = c; if (d.readyState === 'complete') l(); else if (w.attachEvent) w.attachEvent('onload', l); else w.addEventListener('load', l, false); } })(window, document, 'canny-jssdk', 'script');
+      window.Canny('render', { boardToken: cfg.cannyBoardToken, basePath: location.pathname.replace(/\/$/, ''), ssoToken: null, theme: 'light' });
+    } else if (cfg.embedUrl) {
+      pending.hidden = true;
+      var fr = document.createElement('iframe'); fr.src = cfg.embedUrl; fr.title = lang === 'ar' ? 'لوحة الأفكار' : 'Ideas board'; fr.loading = 'lazy'; fr.setAttribute('allow', 'clipboard-write');
+      board.appendChild(fr);
+    }
+  })();
+
   /* ── header: compact capsule once the page scrolls ───────────── */
   (function compactHeader() {
     var hd = document.querySelector('header.site'); if (!hd) return;

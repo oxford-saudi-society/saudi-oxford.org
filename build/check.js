@@ -43,10 +43,10 @@ for (const page of pages) {
   $('link[rel="stylesheet"][href^="/"], script[src^="/"]').each((i, el) => { const s = $(el).attr('href') || $(el).attr('src'); c(exists(s), `missing asset ${s}`); });
   const text = $('main').text();
   c(!/undefined|\[object|NaN\b/.test(text), 'suspicious text (undefined/[object/NaN)');
-  const main = ['', 'about', 'events', 'community', 'join', 'faq'];
+  const main = ['', 'about', 'events', 'community', 'ideas', 'join', 'faq'];
   const route = rel.replace(/^ar[\\/]?/, '').replace(/[\\/]$/, '');
   if (main.includes(route)) c($('nav.main a[data-r].on').length === 1, `nav highlight count ${$('nav.main a[data-r].on').length}`);
-  const tabs = ['', 'about', 'events', 'community', 'join'];
+  const tabs = ['', 'events', 'community', 'ideas', 'join'];
   c($('nav.tabbar a[data-r]').length === 5, 'tab bar should have five tabs');
   c($('nav.tabbar a[data-r].on').length === (tabs.includes(route) ? 1 : 0), `tab highlight count ${$('nav.tabbar a[data-r].on').length}`);
   c($('#burger').length === 0 && $('nav.main .n').length === 0, 'old menu markup left behind');

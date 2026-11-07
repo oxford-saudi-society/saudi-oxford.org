@@ -394,6 +394,30 @@ footer .ph{border-bottom-color:var(--gold-lt)}
   .card,.ev,details,.pcard,.tier,.rq{background:rgba(10,32,60,.85)}
 }
 
+/* ── ideas page ──────────────────────────────────────────────────── */
+.how .card .ic{width:42px;height:42px;border-radius:50%;background:var(--ivory);color:var(--navy);display:grid;place-items:center;font-family:var(--display);font-weight:700;font-size:20px;margin-bottom:18px;box-shadow:0 8px 20px -8px rgba(0,0,0,.5),inset 0 1px 0 #fff}
+.board-strip > .wrap{display:block;padding:40px var(--pad) 32px}
+.board-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px 28px;margin-bottom:22px}
+.board-head .strip-k{margin:0}
+.strip p.board-sub{margin-top:6px;font-size:15px;max-width:60ch}
+.board{position:relative;min-height:220px;border-radius:var(--r-md);background:#fff;box-shadow:inset 0 0 0 1px rgba(0,33,71,.1),0 18px 40px -24px rgba(0,33,71,.35);overflow:hidden}
+.board [data-canny]{min-height:0}
+.board iframe{display:block;width:100%;min-height:760px;border:0}
+.board-pending{padding:48px 32px;text-align:center}
+.board-pending .disp{font-size:26px;color:var(--navy);max-width:28ch;margin:0 auto}
+.strip p#ideas-pending-mail{margin:14px auto 0;max-width:48ch;font-size:15.5px}
+.board-pending .ph{color:var(--navy);border-bottom-color:#8a6a1c}
+.strip p.board-rules{margin-top:18px;font-size:13.5px;color:rgba(0,33,71,.62);max-width:none}
+/* home: ideas callout */
+.callout{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:20px 40px}
+.callout h2{font-size:clamp(26px,3.2vw,36px);margin-top:12px}
+.callout p:not(.eyebrow){margin-top:12px;color:var(--ink-2);font-size:16.5px;max-width:52ch}
+.callout .cta-row{margin:0;flex:0 0 auto}
+@media (max-width:860px){
+  .board-pending{padding:36px 20px}
+  .board-pending .disp{font-size:22px}
+}
+
 /* ── join: step pills ───────────────────────────────────────────── */
 ol.steps{display:flex;flex-wrap:wrap;gap:10px;list-style:none;margin-top:6px}
 ol.steps li{display:flex;align-items:center;gap:10px;padding:9px 18px 9px 10px;border-radius:var(--pill);font-size:13.5px;color:var(--ink-3);box-shadow:var(--lift-sm),var(--spec)}

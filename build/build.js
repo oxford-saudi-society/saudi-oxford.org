@@ -31,6 +31,7 @@ const ROUTES = [
   { id: 'about', path: 'about', title: { en: 'About', ar: 'عن الجمعية' }, desc: { en: 'Who we are, what we stand for and the committee behind the Oxford Saudi Society.', ar: 'من نحن وما نؤمن به واللجنة التي تقف خلف الجمعية السعودية في أكسفورد.' } },
   { id: 'events', path: 'events', title: { en: 'Events', ar: 'الفعاليات' }, desc: { en: 'What is on this term at the Oxford Saudi Society — cultural evenings, talks, socials and the annual dinner.', ar: 'ما الذي يجري هذا الفصل في الجمعية السعودية في أكسفورد — أمسيات ثقافية وندوات ولقاءات والعشاء السنوي.' } },
   { id: 'community', path: 'community', title: { en: 'Community', ar: 'مجتمعنا' }, desc: { en: 'Students, alumni and friends of the Oxford Saudi Society — a public directory of people who have chosen to be listed.', ar: 'طلبة وخريجون وأصدقاء الجمعية السعودية في أكسفورد — دليل عام لمن اختار الظهور فيه.' } },
+  { id: 'ideas', path: 'ideas', title: { en: 'Ideas', ar: 'أفكار' }, desc: { en: 'Suggest, vote on and discuss ideas for the Oxford Saudi Society — the committee reviews the board every term.', ar: 'اقترح أفكاراً للجمعية السعودية في أكسفورد وصوّت عليها وناقشها — تراجع اللجنة اللوحة كل فصل دراسي.' } },
   { id: 'join', path: 'join', title: { en: 'Join', ar: 'انضم إلينا' }, desc: { en: 'Become a member of the Oxford Saudi Society. Free for Saudi students; a small annual fee for everyone else.', ar: 'كن عضواً في الجمعية السعودية في أكسفورد. مجاناً للطلبة السعوديين ورسم سنوي بسيط لغيرهم.' } },
   { id: 'faq', path: 'faq', title: { en: 'FAQ', ar: 'الأسئلة الشائعة' }, desc: { en: 'Answers to the questions we are asked most about membership, events and the Society.', ar: 'إجابات عن أكثر الأسئلة التي تصلنا حول العضوية والفعاليات والجمعية.' } },
   { id: 'privacy', path: 'privacy', title: { en: 'Privacy notice', ar: 'إشعار الخصوصية' }, desc: { en: 'How the Oxford Saudi Society handles your information.', ar: 'كيف تتعامل الجمعية السعودية في أكسفورد مع بياناتك.' } },
@@ -181,7 +182,7 @@ function renderLang(lang) {
     if (ig) { const handle = ig.replace(/^https?:\/\/(www\.)?instagram\.com\//, '').replace(/\/$/, '').replace(/^@/, ''); $(el).attr('href', 'https://instagram.com/' + handle).text('Instagram @' + handle); }
   });
   // settings for the script
-  const site = { lang, email: settings.email || '', treasurerEmail: settings.treasurerEmail || '', fees: settings.fees || {}, payLinks: settings.payLinks || {}, bank: settings.bank || {}, formEndpoint: '/' };
+  const site = { lang, email: settings.email || '', treasurerEmail: settings.treasurerEmail || '', fees: settings.fees || {}, payLinks: settings.payLinks || {}, bank: settings.bank || {}, ideas: settings.ideas || {}, formEndpoint: '/' };
   $('#site-settings').text(JSON.stringify(site).replace(/</g, '\\u003c'));
   return $.html();
 }
@@ -257,7 +258,7 @@ for (const lang of ['en', 'ar']) {
 }
 fs.writeFileSync(path.join(DIST, 'sitemap.xml'), '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + urls.map((u) => `  <url><loc>${u}</loc></url>`).join('\n') + '\n</urlset>\n');
 fs.writeFileSync(path.join(DIST, 'robots.txt'), `User-agent: *\nAllow: /\nDisallow: /admin/\nSitemap: ${BASE}/sitemap.xml\n`);
-fs.writeFileSync(path.join(DIST, '_redirects'), '/committee  /admin/  302\n/ar  /ar/  301\n');
+fs.writeFileSync(path.join(DIST, '_redirects'), '/committee  /admin/  302\n/ar  /ar/  301\n/ideas/*  /ideas/index.html  200\n/ar/ideas/*  /ar/ideas/index.html  200\n');
 fs.writeFileSync(path.join(DIST, '_headers'), [
   '/*', '  X-Frame-Options: DENY', '  X-Content-Type-Options: nosniff', '  Referrer-Policy: strict-origin-when-cross-origin',
   '  Permissions-Policy: camera=(), microphone=(), geolocation=()',

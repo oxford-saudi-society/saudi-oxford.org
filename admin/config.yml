@@ -67,6 +67,13 @@ collections:
             fields:
               - { label: "Retention period (e.g. 'two years')", name: "retention", widget: "string", required: false }
               - { label: "Hosting provider named in the notice", name: "hosting", widget: "string", required: false }
+          - label: "Ideas board (Canny)"
+            name: "ideas"
+            widget: "object"
+            fields:
+              - { label: "Canny board token (Canny → Settings → Widget)", name: "cannyBoardToken", widget: "string", required: false, hint: "Embeds the board on the Ideas page" }
+              - { label: "Hosted board link (e.g. https://oxford-saudi.canny.io/ideas)", name: "url", widget: "string", required: false, hint: "Shown as 'Open in a new tab'" }
+              - { label: "Other provider embed link (optional)", name: "embedUrl", widget: "string", required: false, hint: "Any embeddable board page; used only if no Canny token" }
           - { label: "Show the Supporters section", name: "showSupporters", widget: "boolean", default: false }
           - { label: "Site name (English)", name: "siteName", widget: "object", fields: [ { label: "English", name: "en", widget: "string" }, { label: "Arabic", name: "ar", widget: "string" } ] }
           - { label: "Domain", name: "domain", widget: "hidden", default: "https://saudi-oxford.org" }

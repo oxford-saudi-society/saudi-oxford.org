@@ -55,6 +55,16 @@ To give a new committee member access: add them as a collaborator on the GitHub 
 4. **Stripe** — account in the society's name; two Payment Links (student, associate); paste them into *Settings* in the desk.
 5. **GoDaddy** — the domain registration. Keep auto-renew on and the card current; move the domain to the society account so it survives committee changes.
 
+## The ideas board (Canny)
+
+`/ideas/` embeds a Canny board: members post ideas, vote and comment; the committee sets a status on each (under review, planned, in progress, done) and replies. Until the board is connected the page shows a "opens soon" card.
+
+1. Create the Canny account at canny.io in the society's name (committee Gmail), subdomain e.g. `oxford-saudi`. Create one board called **Ideas**, public.
+2. Canny → *Settings → Widget* (or *Install*) shows the **board token**. Paste it in the desk under *Settings → Ideas board*, together with the hosted link (`https://oxford-saudi.canny.io/ideas`). Publishing the settings rebuilds the site and the board appears.
+3. Add the committee as Canny admins (*Settings → Team*) so they can set statuses and reply.
+
+Costs, plainly: Canny's **Free plan stops at 25 tracked users** — anyone who posts, votes or comments counts, so a society of 100+ members will outgrow it in a term; the next plan is around £60–80 a month (check canny.io/pricing). Two ways to handle that: (a) start on Free and watch the count, or (b) use a board from a provider whose free plan has no user cap and paste its embeddable link into *Other provider embed link* — the page works the same way. The Canny token wins if both are set.
+
 ## The join form
 
 The form on `/join/` is a Netlify Form named `join`. Submissions appear under *Forms* in Netlify (export CSV) and are emailed to the address set in step 2. Each application carries a reference like `OSS-8MGVA0O`; the applicant quotes it when paying by bank transfer, and the treasurer matches payments against it. Saudi students pay nothing; the committee emails them for proof of nationality, checks it, and deletes the image.
@@ -80,4 +90,4 @@ Open `dist/index.html` through a local web server (for example `python3 -m http.
 
 ## Things to finish before launch
 
-Placeholders show on the site with a dotted gold underline until filled in the desk: fees (tick *confirmed*), society email, Stripe links, bank details, founded year, committee names, this term's events, Instagram handle, privacy retention period. Review the privacy notice and terms once with someone who reads such things for a living.
+Placeholders show on the site with a dotted gold underline until filled in the desk: fees (tick *confirmed*), society email, Stripe links, bank details, committee names, this term's events, Instagram handle, privacy retention period, and the ideas board token (see above). Review the privacy notice and terms once with someone who reads such things for a living.
