@@ -46,6 +46,10 @@ for (const page of pages) {
   const main = ['', 'about', 'events', 'community', 'join', 'faq'];
   const route = rel.replace(/^ar[\\/]?/, '').replace(/[\\/]$/, '');
   if (main.includes(route)) c($('nav.main a[data-r].on').length === 1, `nav highlight count ${$('nav.main a[data-r].on').length}`);
+  const tabs = ['', 'about', 'events', 'community', 'join'];
+  c($('nav.tabbar a[data-r]').length === 5, 'tab bar should have five tabs');
+  c($('nav.tabbar a[data-r].on').length === (tabs.includes(route) ? 1 : 0), `tab highlight count ${$('nav.tabbar a[data-r].on').length}`);
+  c($('#burger').length === 0 && $('nav.main .n').length === 0, 'old menu markup left behind');
   if (route === 'join') {
     c($('form#join-form[data-netlify="true"]').length === 1, 'join form not marked for Netlify');
     c($('form#join-form input[name="form-name"][value="join"]').length === 1, 'join form missing form-name field');

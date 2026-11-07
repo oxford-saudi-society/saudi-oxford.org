@@ -55,9 +55,14 @@
   function t(key, vars) { var s = (T[lang] && T[lang][key] !== undefined) ? T[lang][key] : T.en[key]; if (vars) Object.keys(vars).forEach(function (k) { s = s.split('{' + k + '}').join(vars[k]); }); return s; }
   function phOr(v, placeholder) { return v ? esc(v) : '<span class="ph">' + esc(placeholder) + '</span>'; }
 
-  /* ── menu ──────────────────────────────────────────────────────── */
-  var nav = $('nav'), burger = $('burger');
-  if (burger) burger.addEventListener('click', function () { var open = nav.classList.toggle('open'); burger.setAttribute('aria-expanded', open ? 'true' : 'false'); });
+  /* ── header: compact capsule once the page scrolls ───────────── */
+  (function compactHeader() {
+    var hd = document.querySelector('header.site'); if (!hd) return;
+    var tick = false;
+    function apply() { hd.classList.toggle('scrolled', (window.scrollY || document.documentElement.scrollTop || 0) > 24); tick = false; }
+    window.addEventListener('scroll', function () { if (!tick) { tick = true; requestAnimationFrame(apply); } }, { passive: true });
+    apply();
+  })();
 
   /* ── community directory: filter + search over server-rendered cards ── */
   var grid = $('dir-grid');

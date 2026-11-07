@@ -61,6 +61,7 @@ const S = {
         weekPh: '[الأسبوع]', datePh: '[التاريخ]', venuePh: '[المكان]', nextPh: '[اسم الفعالية]', nextSubPh: '[التاريخ والوقت] · [المكان]', emailPh: '[hello@address]' },
 };
 const roleOf = (id) => roles.find((r) => r.id === id) || null;
+const SILHOUETTE = '<svg viewBox="0 0 24 24" aria-hidden="true" class="sil"><circle cx="12" cy="8.5" r="4"/><path d="M4 20.5a8 8 0 0 1 16 0"/></svg>';
 const initials = (name) => String(name || '').trim().split(/\s+/).slice(0, 2).map((w) => w.charAt(0)).join('').toUpperCase();
 const safeHttp = (u) => { try { const x = new URL(String(u || '').trim()); return (x.protocol === 'https:' || x.protocol === 'http:') ? x.href : ''; } catch (e) { return ''; } };
 const linkedinUrl = (u) => { u = String(u || '').trim(); if (!u) return ''; if (!/^https?:\/\//i.test(u)) u = 'https://' + u; const s = safeHttp(u); if (!s) return ''; try { if (!/(^|\.)linkedin\.com$/i.test(new URL(s).hostname)) return ''; } catch (e) { return ''; } return s; };
@@ -97,7 +98,8 @@ function personCard(p, lang) {
 function memberCard(m, lang) {
   const name = m.name || '', shown = name ? (lang === 'ar' && m.nameAr ? m.nameAr : name) : '';
   const r = roleOf(m.role); const role = r ? r[lang] || r.en : (m.role || '');
-  return `<div class="person"><div class="av">${esc(name ? initials(name) : '·')}</div><p class="nm">${shown ? esc(shown) : ph(S[lang].namePh)}</p><p class="rl">${esc(role)}${m.college ? ' · ' + esc(m.college) : ''}</p></div>`;
+  const av = m.photo ? `<img src="${esc(m.photo)}" alt="" loading="lazy">` : (name ? esc(initials(name)) : SILHOUETTE);
+  return `<div class="person"><div class="av">${av}</div><p class="nm">${shown ? esc(shown) : ph(S[lang].namePh)}</p><p class="rl">${esc(role)}${m.college ? ' · ' + esc(m.college) : ''}</p></div>`;
 }
 function committeeGrid(c, lang) {
   const groups = {}; const order = ['exec', 'events', 'media', 'other'];
@@ -146,6 +148,14 @@ const template = fs.readFileSync(path.join(SRC, 'template.html'), 'utf8');
 function renderLang(lang) {
   const $ = cheerio.load(template);
   const s = S[lang];
+  // language first, so settings placeholders inside Arabic strings are filled too
+  if (lang === 'ar') {
+    $('[data-ar]').each((i, el) => { $(el).html($(el).attr('data-ar')); $(el).removeAttr('data-ar'); });
+    $('[data-ar-ph]').each((i, el) => { $(el).attr('placeholder', $(el).attr('data-ar-ph')); $(el).removeAttr('data-ar-ph'); });
+    $('html').attr({ lang: 'ar', dir: 'rtl' });
+  } else {
+    $('[data-ar]').removeAttr('data-ar'); $('[data-ar-ph]').removeAttr('data-ar-ph');
+  }
   // data-driven regions
   $('#events-list').html(eventsHtml(lang));
   const ne = nextEvent(lang); $('#next-title').html(ne.title); $('#next-sub').html(ne.sub);
@@ -173,14 +183,6 @@ function renderLang(lang) {
   // settings for the script
   const site = { lang, email: settings.email || '', treasurerEmail: settings.treasurerEmail || '', fees: settings.fees || {}, payLinks: settings.payLinks || {}, bank: settings.bank || {}, formEndpoint: '/' };
   $('#site-settings').text(JSON.stringify(site).replace(/</g, '\\u003c'));
-  // language
-  if (lang === 'ar') {
-    $('[data-ar]').each((i, el) => { $(el).html($(el).attr('data-ar')); $(el).removeAttr('data-ar'); });
-    $('[data-ar-ph]').each((i, el) => { $(el).attr('placeholder', $(el).attr('data-ar-ph')); $(el).removeAttr('data-ar-ph'); });
-    $('html').attr({ lang: 'ar', dir: 'rtl' });
-  } else {
-    $('[data-ar]').removeAttr('data-ar'); $('[data-ar-ph]').removeAttr('data-ar-ph');
-  }
   return $.html();
 }
 
@@ -199,7 +201,11 @@ function renderPage(langHtml, route, lang) {
     if (h === 'main') return;
     if (idToRoute[h] && idToRoute[h] !== route.id) $(el).attr('href', urlFor(idToRoute[h], lang) + '#' + h);
   });
-  $('nav.main a[data-r]').each((i, el) => { $(el).toggleClass('on', $(el).attr('data-r') === route.id); });
+  $('nav.main a[data-r], nav.tabbar a[data-r]').each((i, el) => {
+    const on = $(el).attr('data-r') === route.id;
+    $(el).toggleClass('on', on);
+    if (on) $(el).attr('aria-current', 'page'); else $(el).removeAttr('aria-current');
+  });
   // language switch
   $('#en').attr('href', urlFor(route.id, 'en')).toggleClass('on', lang === 'en');
   $('#ar').attr('href', urlFor(route.id, 'ar')).toggleClass('on', lang === 'ar');

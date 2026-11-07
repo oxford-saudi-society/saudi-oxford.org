@@ -25,21 +25,18 @@
         <span class="bs" data-ar="جامعة أكسفورد">University of Oxford</span>
       </span>
     </a>
-    <button class="burger" id="burger" aria-label="Menu" aria-expanded="false">
-      <span></span><span></span><span></span>
-    </button>
-    <nav class="main" id="nav">
-      <a href="#home"   data-r="home"><span class="n">1</span><span data-ar="الرئيسية">Home</span></a>
-      <a href="#about"  data-r="about"><span class="n">2</span><span data-ar="عن الجمعية">About</span></a>
-      <a href="#events" data-r="events"><span class="n">3</span><span data-ar="الفعاليات">Events</span></a>
-      <a href="#community" data-r="community"><span class="n">4</span><span data-ar="مجتمعنا">Community</span></a>
-      <a href="#join"   data-r="join"><span class="n">5</span><span data-ar="انضم إلينا">Join</span></a>
-      <a href="#faq"    data-r="faq"><span class="n">6</span><span data-ar="الأسئلة الشائعة">FAQ</span></a>
-      <div class="lang">
-        <a id="en" class="on" lang="en" href="/">EN</a>
-        <a id="ar" lang="ar" href="/ar/">ع</a>
-      </div>
+    <nav class="main" id="nav" aria-label="Primary">
+      <a href="#home"      data-r="home"><span data-ar="الرئيسية">Home</span></a>
+      <a href="#about"     data-r="about"><span data-ar="عن الجمعية">About</span></a>
+      <a href="#events"    data-r="events"><span data-ar="الفعاليات">Events</span></a>
+      <a href="#community" data-r="community"><span data-ar="مجتمعنا">Community</span></a>
+      <a href="#join"      data-r="join"><span data-ar="انضم إلينا">Join</span></a>
+      <a href="#faq"       data-r="faq"><span data-ar="الأسئلة الشائعة">FAQ</span></a>
     </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <a id="en" class="on" lang="en" href="/">EN</a>
+      <a id="ar" lang="ar" href="/ar/">ع</a>
+    </div>
   </div>
 </header>
 
@@ -58,10 +55,9 @@
           <a class="btn btn-p" href="#about"  data-ar="عن الجمعية">About the society</a>
           <a class="btn btn-s" href="#events" data-ar="تصفح الفعاليات">See what's on</a>
           <a class="btn btn-s" href="#join"   data-ar="انضم إلينا">Join us</a>
-          <a class="btn btn-s" href="#faq"    data-ar="الأسئلة الشائعة">Read the FAQ</a>
         </div>
       </div>
-      <div class="hero-seal"><div class="disc"><img src="/assets/seal-880.webp" alt=""></div></div>
+      <div class="hero-seal"><div class="ring"><div class="disc"><img src="/assets/seal-880.webp" alt=""></div></div></div>
     </div>
   </div>
 
@@ -117,7 +113,7 @@
 
 <!-- ══════════════ ABOUT ══════════════ -->
 <div class="view" id="v-about">
-  <section class="band tint">
+  <section class="band tint head">
     <div class="wrap">
       <div class="sec-head">
         <p class="eyebrow" data-ar="عن الجمعية">About us</p>
@@ -133,7 +129,7 @@
         <p class="eyebrow" data-ar="مجتمعنا">Our community</p>
         <h2 style="font-size:32px;margin:12px 0 18px" data-ar="مجتمع سعودي في أكسفورد">A Saudi community in Oxford</h2>
         <p class="lede" style="font-size:17px" data-ar="الجمعية السعودية في أكسفورد تجمع الطلبة الجامعيين وطلبة الدراسات العليا والباحثين والخريجين والأصدقاء. العضوية مفتوحة لجميع منتسبي الجامعة — ولست بحاجة لأن تكون سعودياً لتنضم.">Oxford Saudi Society brings together undergraduates, graduates, researchers, alumni and friends. Membership is open to all members of the University — you do not need to be Saudi to join.</p>
-        <p style="margin-top:16px;color:var(--ink-80)" data-ar="تأسس النادي عام <span class='ph' data-setting='founded'>[السنة]</span>، وتدير برنامجاً فصلياً من الفعاليات الثقافية والاجتماعية والأكاديمية، وتعمل مع الكليات والجمعيات الأخرى في أنحاء الجامعة.">Founded in <span class="ph" data-setting="founded">[year]</span>, the Society runs a termly programme of cultural, social and academic events, and works with colleges and other societies across the University.</p>
+        <p style="margin-top:16px;color:var(--ink-2)" data-ar="تأسس النادي عام <span class='ph' data-setting='founded'>[السنة]</span>، وتدير برنامجاً فصلياً من الفعاليات الثقافية والاجتماعية والأكاديمية، وتعمل مع الكليات والجمعيات الأخرى في أنحاء الجامعة.">Founded in <span class="ph" data-setting="founded">[year]</span>, the Society runs a termly programme of cultural, social and academic events, and works with colleges and other societies across the University.</p>
       </div>
       <div>
         <p class="eyebrow" data-ar="ما نحرص عليه">What we hold to</p>
@@ -158,7 +154,6 @@
 
       <div id="about-committee"></div>
     </div>
-    </div>
   </section>
 
   <section class="band" id="supporters" hidden>
@@ -180,7 +175,7 @@
 
 <!-- ══════════════ EVENTS ══════════════ -->
 <div class="view" id="v-events">
-  <section class="band tint">
+  <section class="band tint head">
     <div class="wrap">
       <div class="sec-head">
         <p class="eyebrow" data-ar="الفعاليات">Events</p>
@@ -201,7 +196,7 @@
 
 <!-- ══════════════ JOIN ══════════════ -->
 <div class="view" id="v-join">
-  <section class="band tint">
+  <section class="band tint head">
     <div class="wrap">
       <div class="sec-head" style="margin-bottom:26px">
         <p class="eyebrow" data-ar="انضم إلينا">Join us</p>
@@ -374,7 +369,7 @@
 
 <!-- ══════════════ COMMUNITY ══════════════ -->
 <div class="view" id="v-community">
-  <section class="band tint">
+  <section class="band tint head">
     <div class="wrap">
       <div class="sec-head" style="margin-bottom:28px">
         <p class="eyebrow" data-ar="مجتمعنا">Community</p>
@@ -410,7 +405,7 @@
 
 <!-- ══════════════ COMMITTEE HISTORY ══════════════ -->
 <div class="view" id="v-past-committees">
-  <section class="band tint">
+  <section class="band tint head">
     <div class="wrap">
       <div class="sec-head">
         <p class="eyebrow" data-ar="اللجان">Committees</p>
@@ -429,7 +424,7 @@
 
 <!-- ══════════════ FAQ ══════════════ -->
 <div class="view" id="v-faq">
-  <section class="band tint">
+  <section class="band tint head">
     <div class="wrap">
       <div class="sec-head">
         <p class="eyebrow" data-ar="الأسئلة الشائعة">FAQ</p>
@@ -439,7 +434,8 @@
     </div>
   </section>
   <section class="band">
-    <div class="wrap" style="max-width:860px">
+    <div class="wrap">
+      <div class="faq-list">
       <details open>
         <summary data-ar="هل يجب أن أكون سعودياً لأنضم؟">Do I have to be Saudi to join?</summary>
         <p data-ar="لا. العضوية مفتوحة لجميع منتسبي الجامعة، وفعالياتنا الثقافية مفتوحة لمجتمع أكسفورد الأوسع. العضوية مجانية للطلبة السعوديين، ويدفع الأعضاء الآخرون رسماً سنوياً بسيطاً يموّل البرنامج.">No. Membership is open to all members of the University, and our cultural events are open to the wider Oxford community. Membership is free for Saudi students; other members pay a small annual fee that funds the programme.</p>
@@ -472,6 +468,7 @@
         <summary data-ar="كيف أترشّح للجنة؟">How do I stand for committee?</summary>
         <p data-ar="تُنتخب اللجنة في الاجتماع العمومي السنوي، ويمكن لأي عضو الترشّح. تُعلن التفاصيل قبل الاجتماع بفصل دراسي كامل.">The committee is elected at the AGM and any member can stand. Details are announced a term in advance.</p>
       </details>
+      </div>
     </div>
   </section>
 </div>
@@ -479,7 +476,8 @@
 <!-- ══════════════ PRIVACY ══════════════ -->
 <div class="view" id="v-privacy">
   <section class="band">
-    <div class="wrap prose">
+    <div class="wrap">
+      <div class="prose">
       <p class="eyebrow" data-ar="إشعار الخصوصية">Privacy notice</p>
       <h2 style="font-size:34px;margin:12px 0 6px" data-ar="كيف نتعامل مع بياناتك">How we handle your information</h2>
       <hr class="gold-rule">
@@ -497,6 +495,7 @@
       <p data-ar="تُحذف بيانات العضوية بعد <span class='ph' data-setting='retention'>[المدة]</span> من انتهاء عضويتك. تُحذف قوائم الحجوزات بعد انتهاء الفعالية.">Membership records are deleted <span class="ph" data-setting="retention">[period]</span> after your membership ends. Event booking lists are deleted after the event.</p>
       <h3 data-ar="حقوقك">Your rights</h3>
       <p data-ar="يمكنك طلب نسخة من بياناتك أو تصحيحها أو حذفها في أي وقت. راسلنا على <a class='ph' data-setting='email-link' href='#'>[البريد الإلكتروني]</a>.">You can ask for a copy of your data, a correction, or deletion at any time. Email <a class="ph" data-setting="email-link" href="#">[address]</a>.</p>
+      </div>
     </div>
   </section>
 </div>
@@ -504,7 +503,8 @@
 <!-- ══════════════ TERMS ══════════════ -->
 <div class="view" id="v-terms">
   <section class="band">
-    <div class="wrap prose">
+    <div class="wrap">
+      <div class="prose">
       <p class="eyebrow" data-ar="شروط الاستخدام">Terms of use</p>
       <h2 style="font-size:34px;margin:12px 0 6px" data-ar="استخدام هذا الموقع">Using this site</h2>
       <hr class="gold-rule">
@@ -516,11 +516,22 @@
       <p data-ar="شعار الجمعية وهويتها البصرية ملك للجمعية. شعارات الشركاء تعود لأصحابها وتُستخدم بإذن.">The Society's emblem and visual identity belong to the Society. Partner logos belong to their owners and are used with permission.</p>
       <h3 data-ar="التواصل">Contact</h3>
       <p data-ar="للاستفسارات حول هذه الشروط راسل <a class='ph' data-setting='email-link' href='#'>[البريد الإلكتروني]</a>.">For questions about these terms, email <a class="ph" data-setting="email-link" href="#">[address]</a>.</p>
+      </div>
     </div>
   </section>
 </div>
 
 </main>
+
+<nav class="tabbar" aria-label="Sections">
+  <ul>
+    <li><a href="#home" data-r="home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg><span data-ar="الرئيسية">Home</span></a></li>
+    <li><a href="#about" data-r="about"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg><span data-ar="عن الجمعية">About</span></a></li>
+    <li><a href="#events" data-r="events"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg><span data-ar="الفعاليات">Events</span></a></li>
+    <li><a href="#community" data-r="community"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><circle cx="17" cy="9" r="2.5"/><path d="M15.5 14.5A5 5 0 0 1 21.5 20"/></svg><span data-ar="مجتمعنا">Community</span></a></li>
+    <li><a href="#join" data-r="join"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg><span data-ar="انضم إلينا">Join</span></a></li>
+  </ul>
+</nav>
 
 <footer class="site">
   <div class="wrap">
@@ -545,7 +556,7 @@
       <div>
         <h4 data-ar="تواصل معنا">Connect</h4>
         <ul>
-          <li><a href="https://x.com/SaudisOxford" target="_blank" rel="noopener">X <span dir="ltr">@SaudisOxford</span></a></li>
+          <li><a href="https://x.com/SaudisOxford" target="_blank" rel="noopener"><bdi dir="ltr">X @SaudisOxford</bdi></a></li>
           <li><a href="https://www.facebook.com/p/Saudi-Student-Club-in-Oxford-100079995280324/" target="_blank" rel="noopener" data-ar="فيسبوك">Facebook</a></li>
           <li><a href="https://www.linkedin.com/in/saudi-students-club-in-oxford-336458233/" target="_blank" rel="noopener" data-ar="لينكدإن">LinkedIn</a></li>
           <li><a href="https://instagram.com/" target="_blank" rel="noopener" data-setting="instagram">Instagram <span class="ph">[@handle]</span></a></li>
@@ -554,7 +565,7 @@
       </div>
     </div>
     <div class="bottom">
-      <span>© 2026 Oxford Saudi Society</span>
+      <span><bdi dir="ltr">© 2026 Oxford Saudi Society</bdi></span>
       <nav>
         <a href="#privacy" data-ar="إشعار الخصوصية">Privacy notice</a>
         <a href="#terms"   data-ar="شروط الاستخدام">Terms of use</a>
