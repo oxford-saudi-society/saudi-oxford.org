@@ -107,10 +107,17 @@ function committeeGrid(c, lang) {
 const currentTerm = () => committees.find((c) => c.current) || committees[0] || null;
 function committeesHtml(lang) {
   const cur = currentTerm(); const s = S[lang]; let h = '';
-  const noteOf = (c) => c.note ? `<p class="term-note">${esc(L(c.note, lang))}</p>` : '';
+  const founded = parseInt(settings.founded, 10) || 0;
+  const startYear = (c) => { const m = /^(\d{4})/.exec(String(c.term || '')); return m ? +m[1] : 0; };
+  const termNo = (c) => { const y = startYear(c); return (y && founded && y >= founded) ? y - founded + 1 : 0; };
+  const arDigits = (n) => String(n).replace(/\d/g, (d) => '٠١٢٣٤٥٦٧٨٩'[+d]);
+  const ordinalEn = (n) => { const sfx = ['th', 'st', 'nd', 'rd'], v = n % 100; return n + (sfx[(v - 20) % 10] || sfx[v] || sfx[0]); };
+  const noteOf = (c) => { const k = termNo(c); if (!k) return ''; return `<p class="term-note">${esc(lang === 'ar' ? 'اللجنة الإدارية رقم ' + arDigits(k) : ordinalEn(k) + ' committee')}</p>`; };
   if (cur) h += `<div class="term current"><div class="cur-head"><h3 class="disp">${esc(cur.term)}</h3><span class="badge">${esc(s.curTerm)}</span></div>${noteOf(cur)}${committeeGrid(cur, lang)}</div>`;
+  let decade = null;
   committees.filter((c) => c !== cur).forEach((c) => {
-    const n = (c.members || []).length;
+    const n = (c.members || []).length, dec = Math.floor(startYear(c) / 10) * 10;
+    if (dec !== decade) { decade = dec; h += `<p class="lbl decade">${esc(lang === 'ar' ? arDigits(dec) + 'ات' : dec + 's')}</p>`; }
     h += `<div class="term"><details><summary><span class="yrs">${esc(c.term)}</span><span class="n">${esc(n ? s.nMembers(n) : s.tracing)}</span></summary>`;
     h += noteOf(c) + (n ? committeeGrid(c, lang) : `<p class="trace">${s.trace(emailHtml(lang))}</p>`);
     h += '</details></div>';

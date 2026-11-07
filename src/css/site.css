@@ -585,6 +585,8 @@ html[dir="rtl"] .term .trace{margin:12px 38px 4px 0}
 .cur-head h3{font-size:30px}
 .cur-head .badge{margin:0}
 .term-note{font-size:14px;color:var(--ink-60);margin:4px 0 8px}
+.lbl.decade{font-size:11px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--gold-lt);border-bottom:1px solid var(--rule);padding-bottom:8px;margin:28px 0 12px}
+html[dir="rtl"] .lbl.decade{letter-spacing:0;font-size:13px}
 .term details .term-note{margin:12px 0 0 38px}
 html[dir="rtl"] .term details .term-note{margin:12px 38px 0 0}
 

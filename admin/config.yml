@@ -133,7 +133,6 @@ collections:
     fields:
       - { label: "Academic year (e.g. 2027–28)", name: "term", widget: "string" }
       - { label: "This is the current committee", name: "current", widget: "boolean", default: false }
-      - { label: "Note (e.g. 45th administrative committee of the Saudi Club in Oxford)", name: "note", widget: "object", required: false, fields: [ { label: "English", name: "en", widget: "string", required: false }, { label: "Arabic", name: "ar", widget: "string", required: false } ] }
       - label: "Members"
         name: "members"
         widget: "list"
