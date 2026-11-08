@@ -2,7 +2,7 @@
 # Sign-in uses GitHub through Netlify's OAuth provider (see README → "Committee desk").
 backend:
   name: github
-  repo: OWNER/saudi-oxford.org   # ← replace OWNER with the GitHub account that holds the repository
+  repo: OWNER/oxford-saudi-society/saudi-oxford.org   # ← replace OWNER with the GitHub account that holds the repository
   branch: main
   base_url: https://api.netlify.com
   commit_messages:
