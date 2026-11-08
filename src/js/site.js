@@ -65,8 +65,8 @@
       (lang === 'ar' ? ' — وستُنقل إلى اللوحة عند فتحها.' : ' — they will be moved onto the board when it opens.');
     if (cfg.cannyBoardToken) {
       pending.hidden = true;
-      /* Canny's loader, as published in their install guide */
-      (function (w, d, i, s) { function l() { if (!d.getElementById(i)) { var f = d.getElementsByTagName(s)[0], e = d.createElement(s); e.type = 'text/javascript'; e.async = true; e.src = 'https://canny.io/sdk.js'; f.parentNode.insertBefore(e, f); } } if (typeof w.Canny !== 'function') { var c = function () { c.q.push(arguments); }; c.q = []; w.Canny = c; if (d.readyState === 'complete') l(); else if (w.attachEvent) w.attachEvent('onload', l); else w.addEventListener('load', l, false); } })(window, document, 'canny-jssdk', 'script');
+      /* Canny's loader, as published at developers.canny.io/install/widget/web */
+      (function (w, d, i, s) { function l() { if (!d.getElementById(i)) { var f = d.getElementsByTagName(s)[0], e = d.createElement(s); e.type = 'text/javascript'; e.async = true; e.src = 'https://sdk.canny.io/sdk.js'; f.parentNode.insertBefore(e, f); } } if (typeof w.Canny !== 'function') { var c = function () { c.q.push(arguments); }; c.q = []; w.Canny = c; if (d.readyState === 'complete') l(); else w.addEventListener('load', l, false); } })(window, document, 'canny-jssdk', 'script');
       window.Canny('render', { boardToken: cfg.cannyBoardToken, basePath: location.pathname.replace(/\/$/, ''), ssoToken: null, theme: 'light' });
     } else if (cfg.embedUrl) {
       pending.hidden = true;
