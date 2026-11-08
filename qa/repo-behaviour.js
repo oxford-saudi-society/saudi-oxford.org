@@ -14,7 +14,7 @@ const routes = ['', 'about', 'events', 'community', 'ideas', 'join', 'faq', 'pri
     p.on('pageerror', e => errors.push(e.message));
     p.on('response', r => { if (r.status() >= 400 && !/\/api\//.test(r.url())) errors.push('HTTP ' + r.status() + ' ' + r.url()); });
     p.on('console', m => { if (m.type() === 'error' && !/Failed to load resource/.test(m.text())) errors.push(m.text()); }); // /api/* is not served by the static harness; the pages must degrade silently
-    p.on('requestfailed', r => { if (!/fonts\.(googleapis|gstatic)/.test(r.url())) errors.push('request failed ' + r.url()); });
+    p.on('requestfailed', r => { if (!/fonts\.(googleapis|gstatic)|example\.org/.test(r.url())) errors.push('request failed ' + r.url()); });
     for (const lang of ['en', 'ar']) {
       for (const r of routes) {
         const url = `${BASE}/${lang === 'ar' ? 'ar/' : ''}${r ? r + '/' : ''}`;

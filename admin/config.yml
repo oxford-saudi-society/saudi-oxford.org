@@ -31,7 +31,9 @@ collections:
         file: "src/content/settings.json"
         fields:
           - { label: "Society email (shown on the site)", name: "email", widget: "string", required: false, hint: "e.g. hello@saudi-oxford.org" }
-          - { label: "Treasurer email", name: "treasurerEmail", widget: "string", required: false }
+          - { label: "Treasurer email (hardship fund, bank-transfer queries)", name: "treasurerEmail", widget: "string", required: false, hint: "e.g. treasurer@saudi-oxford.org" }
+          - { label: "Membership email (applications, proof of nationality)", name: "membershipEmail", widget: "string", required: false, hint: "e.g. membership@saudi-oxford.org" }
+          - { label: "President email", name: "presidentEmail", widget: "string", required: false, hint: "e.g. president@saudi-oxford.org" }
           - { label: "Founded (year)", name: "founded", widget: "string", required: false }
           - label: "Membership fees"
             name: "fees"

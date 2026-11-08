@@ -4,8 +4,8 @@
     "ar": "الجمعية السعودية في أكسفورد"
   },
   "domain": "https://saudi-oxford.org",
-  "email": "",
-  "treasurerEmail": "",
+  "email": "hello@saudi-oxford.org",
+  "treasurerEmail": "treasurer@saudi-oxford.org",
   "founded": "1981",
   "fees": {
     "student": 10,
@@ -44,5 +44,7 @@
   "subtitle": {
     "en": "University of Oxford",
     "ar": "جامعة أكسفورد"
-  }
+  },
+  "membershipEmail": "membership@saudi-oxford.org",
+  "presidentEmail": "president@saudi-oxford.org"
 }

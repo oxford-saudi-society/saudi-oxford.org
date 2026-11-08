@@ -1,7 +1,7 @@
 (function () {
   'use strict';
   var lang = (document.documentElement.lang || 'en').slice(0, 2) === 'ar' ? 'ar' : 'en';
-  var SITE = { lang: lang, email: '', fees: {}, payLinks: {}, bank: {}, formEndpoint: '/' };
+  var SITE = { lang: lang, email: '', treasurerEmail: '', membershipEmail: '', fees: {}, payLinks: {}, bank: {}, formEndpoint: '/' };
   try { var el0 = document.getElementById('site-settings'); if (el0) Object.assign(SITE, JSON.parse(el0.textContent)); } catch (e) {}
   function $(id) { return document.getElementById(id); }
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
@@ -189,7 +189,8 @@
   function renderDone() {
     var app = last.app, saved = last.saved, tier = tierOf(app.tier) || TIERS[0], paid = tier.price > 0, kind = step3Kind(tier);
     var first = esc(app.name.split(/\s+/)[0] || app.name), text = plainText(app);
-    var mail = 'mailto:' + encodeURIComponent(SITE.email || '') + '?subject=' + encodeURIComponent('Membership application ' + app.ref + ' — ' + app.name) + '&body=' + encodeURIComponent(text);
+    var memberMail = SITE.membershipEmail || SITE.email || '', treasurerMail = SITE.treasurerEmail || SITE.email || '';
+    var mail = 'mailto:' + encodeURIComponent(memberMail) + '?subject=' + encodeURIComponent('Membership application ' + app.ref + ' — ' + app.name) + '&body=' + encodeURIComponent(text);
     var h = '<p class="eyebrow">' + esc(t(saved ? 'eyebrowSaved' : 'eyebrowSend')) + '</p>';
     h += '<h2 style="font-size:clamp(28px,3.6vw,40px);margin-top:12px">' + esc(t('thanks', { name: first })) + '</h2>';
     h += '<div><div class="ref"><span class="rk">' + esc(t('refLabel')) + '</span><span class="rv">' + esc(app.ref) + '</span></div></div>';
@@ -198,7 +199,7 @@
     else {
       h += '<p class="lede" style="max-width:60ch">' + esc(t('sendBody')) + '</p>';
       h += '<div class="mailrow"><a class="btn btn-p" href="' + mail + '">' + esc(t('openMail')) + '</a><button type="button" class="btn btn-s" id="copy-app">' + esc(t('copyApp')) + '</button>';
-      h += '<span class="addr">' + esc(t('orWrite')) + ' ' + phOr(SITE.email, '[hello@address]') + '</span></div>';
+      h += '<span class="addr">' + esc(t('orWrite')) + ' ' + phOr(memberMail, '[membership@address]') + '</span></div>';
       h += '<p class="muted" id="copy-note" style="font-size:13.5px;margin-top:10px"></p><textarea class="copybox" id="copy-box" readonly spellcheck="false" hidden>' + esc(text) + '</textarea>';
     }
     if (paid) {
@@ -211,11 +212,11 @@
       h += '<div class="card"><h3>' + esc(t('bankTitle')) + '</h3><dl class="kv"><dt>' + esc(t('acctName')) + '</dt><dd><span class="' + (SITE.bank.sortCode ? '' : 'ph') + '">' + esc(SITE.bank.accountName || 'Oxford Saudi Society') + '</span></dd>';
       h += '<dt>' + esc(t('sortCode')) + '</dt><dd>' + phOr(SITE.bank.sortCode, '[00-00-00]') + '</dd><dt>' + esc(t('acctNo')) + '</dt><dd>' + phOr(SITE.bank.accountNumber, '[00000000]') + '</dd>';
       h += '<dt>' + esc(t('refK')) + '</dt><dd><b>' + esc(app.ref) + '</b></dd></dl><p style="margin-top:14px;font-size:13.5px">' + esc(t('bankNote')) + '</p></div></div>';
-      h += '<p class="muted" style="font-size:13px;margin-top:18px">' + esc(t('hardship')) + '</p>';
+      h += '<p class="muted" style="font-size:13px;margin-top:18px">' + esc(t('hardship')) + (treasurerMail ? ' <a href="mailto:' + esc(treasurerMail) + '">' + esc(treasurerMail) + '</a>' : '') + '</p>';
     } else if (kind === 'verify') {
       h += '<p class="eyebrow" style="margin-top:44px">' + esc(t('verifyEyebrow')) + '</p><h3 class="disp" style="font-size:28px;margin:10px 0 8px">' + esc(t('verifyTitle')) + '</h3>';
       h += '<p style="color:var(--ink-80);max-width:60ch">' + t(saved ? 'verifyBodySaved' : 'verifyBodySend', { email: esc(app.email) }) + '</p>';
-      if (saved) h += '<p class="muted" style="font-size:13.5px;margin-top:12px">' + t('verifyNow', { email: phOr(SITE.email, '[hello@address]') }) + '</p>';
+      if (saved) h += '<p class="muted" style="font-size:13.5px;margin-top:12px">' + t('verifyNow', { email: phOr(memberMail, '[membership@address]') }) + '</p>';
     }
     h += '<p class="again"><a href="#join-form-band" id="again">' + esc(t('again')) + '</a></p>';
     done.innerHTML = h; done.hidden = false; form.hidden = true; setSteps(kind === 'none' ? 'all' : 'pay');

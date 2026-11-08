@@ -167,6 +167,8 @@ function renderLang(lang) {
     if (settings.fees && settings.fees.confirmed && v != null) $(el).removeClass('ph').text('£' + v); else $(el).text('[£' + (v == null ? '' : v) + ']');
   });
   $('[data-setting="email-link"]').each((i, el) => { if (settings.email) $(el).removeClass('ph').attr('href', 'mailto:' + settings.email).text(settings.email); });
+  $('[data-setting="treasurer-link"]').each((i, el) => { const v = settings.treasurerEmail || settings.email; if (v) $(el).removeClass('ph').attr('href', 'mailto:' + v).text(v); });
+  $('[data-setting="membership-link"]').each((i, el) => { const v = settings.membershipEmail || settings.email; if (v) $(el).removeClass('ph').attr('href', 'mailto:' + v).text(v); });
   $('[data-setting="founded"]').each((i, el) => { if (settings.founded) $(el).removeClass('ph').text(settings.founded); });
   $('[data-setting="subtitle"]').each((i, el) => { const v = settings.subtitle && settings.subtitle[lang]; if (v) $(el).text(v); });
   $('[data-setting="retention"]').each((i, el) => { if (settings.privacy && settings.privacy.retention) $(el).removeClass('ph').text(settings.privacy.retention); });
@@ -176,7 +178,7 @@ function renderLang(lang) {
     if (ig) { const handle = ig.replace(/^https?:\/\/(www\.)?instagram\.com\//, '').replace(/\/$/, '').replace(/^@/, ''); $(el).attr('href', 'https://instagram.com/' + handle).text('Instagram @' + handle); }
   });
   // settings for the script
-  const site = { lang, email: settings.email || '', treasurerEmail: settings.treasurerEmail || '', fees: settings.fees || {}, payLinks: settings.payLinks || {}, bank: settings.bank || {}, ideas: settings.ideas || {}, formEndpoint: '/', privacyVersion: (settings.privacy && settings.privacy.version) || '2026-11', apiBase: settings.apiBase || '/api' };
+  const site = { lang, email: settings.email || '', treasurerEmail: settings.treasurerEmail || '', membershipEmail: settings.membershipEmail || settings.email || '', fees: settings.fees || {}, payLinks: settings.payLinks || {}, bank: settings.bank || {}, ideas: settings.ideas || {}, formEndpoint: '/', privacyVersion: (settings.privacy && settings.privacy.version) || '2026-11', apiBase: settings.apiBase || '/api' };
   $('#site-settings').text(JSON.stringify(site).replace(/</g, '\\u003c'));
   // Cloudflare Web Analytics (cookie-free) — only when a token is set in settings
   if (settings.analytics && settings.analytics.cloudflareToken) {
