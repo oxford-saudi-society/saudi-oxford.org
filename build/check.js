@@ -63,6 +63,22 @@ for (const page of pages) {
     c($('.evc-img img[alt]').length === 11 && $('.evc-img img').toArray().every((el) => $(el).attr('width') === $(el).attr('height')), 'event cards need square images with alt text');
     c($('#ev-q').length === 1 && $('.ev-chips .chip').length === 4 && $('#ev-clear').length === 1, 'events filters incomplete');
   }
+  if (route === 'faq') {
+    const faqData = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'src/content/faq.json'), 'utf8'));
+    const want = faqData.sections.reduce((n, sec) => n + sec.items.length, 0);
+    c($('.faq-sec').length === faqData.sections.length, `faq sections ${$('.faq-sec').length} ≠ ${faqData.sections.length}`);
+    c($('.faq-item').length === want, `faq questions ${$('.faq-item').length} ≠ ${want}`);
+    c($('.faq-item').toArray().every((el) => $(el).find('summary .faq-qt').text().trim() && $(el).find('.faq-a p').first().text().trim()), 'every faq item needs a question and an answer');
+    const ids = $('.faq-item').toArray().map((el) => $(el).attr('id'));
+    c(new Set(ids).size === ids.length && ids.every(Boolean), 'faq ids must be unique');
+    c($('.faq-refs a').toArray().every((el) => /^https:\/\//.test($(el).attr('href')) && $(el).attr('rel') === 'noopener'), 'faq references must be https links opening safely');
+    c($('.faq-nav .chip').length === faqData.sections.length && $('.faq-nav .chip').toArray().every((el) => $($(el).attr('href')).length === 1), 'faq topic chips must point at existing sections');
+    c($('#faq-q').length === 1 && $('#faq-toggle').length === 1 && $('#faq-empty').length === 1, 'faq tools incomplete');
+    const answers = $('.faq-a p:not(.faq-refs)').text();
+    // whole sentences in the wrong language are a mix-up; quoted product names and Safir menu labels are not
+    if (isAr) c(!/(?:[A-Za-z][a-z]+\s+){8,}/.test(answers), 'arabic faq must not contain english answers');
+    else c(!/(?:[\u0600-\u06FF]+\s+){8,}/.test(answers), 'english faq must not contain arabic answers');
+  }
   c($('#burger').length === 0 && $('nav.main .n').length === 0, 'old menu markup left behind');
   if (route === 'join') {
     c($('form#join-form[data-netlify="true"]').length === 1, 'join form not marked for Netlify');

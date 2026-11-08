@@ -1,0 +1,1094 @@
+{
+  "updated": "2026-11-08",
+  "intro": {
+    "en": "Practical guidance for studying and living in Oxford, kept by the committee for Saudi students, researchers and their families.",
+    "ar": "دليل عملي للدراسة والحياة في أكسفورد، تحدّثه اللجنة للطلبة والباحثين السعوديين وأسرهم."
+  },
+  "sections": [
+    {
+      "id": "society",
+      "title": {
+        "en": "The Society & membership",
+        "ar": "الجمعية والعضوية"
+      },
+      "items": [
+        {
+          "q": {
+            "en": "Do I have to be Saudi to join?",
+            "ar": "هل يجب أن أكون سعودياً لأنضم؟"
+          },
+          "a": {
+            "en": "No. Membership is open to all members of the University, and our cultural events are open to the wider Oxford community. Membership is free for Saudi students; other members pay a small annual fee that funds the programme.",
+            "ar": "لا. العضوية مفتوحة لجميع منتسبي الجامعة، وفعالياتنا الثقافية مفتوحة لمجتمع أكسفورد الأوسع. العضوية مجانية للطلبة السعوديين، ويدفع الأعضاء الآخرون رسماً سنوياً بسيطاً يموّل البرنامج."
+          },
+          "refs": [],
+          "id": "join-non-saudi"
+        },
+        {
+          "q": {
+            "en": "How do I prove I'm Saudi?",
+            "ar": "كيف أثبت أنني سعودي؟"
+          },
+          "a": {
+            "en": "After you apply we'll email you for a photo of your Saudi passport or national ID, or your Cultural Bureau scholarship confirmation. We check it and then delete it — no copy is kept.",
+            "ar": "بعد تقديم طلبك سنراسلك لطلب صورة من جواز سفرك السعودي أو هويتك الوطنية، أو تأكيد الابتعاث من الملحقية الثقافية. نتحقق منها ثم نحذفها — لا نحتفظ بنسخة."
+          },
+          "refs": [],
+          "id": "prove-saudi"
+        },
+        {
+          "q": {
+            "en": "How do I pay the membership fee?",
+            "ar": "كيف أدفع رسوم العضوية؟"
+          },
+          "a": {
+            "en": "Once you've applied you get a reference number, and you can pay by card through a secure payment page or by bank transfer quoting the reference. Membership starts as soon as the payment is matched. A hardship fund exists for anyone who needs it — email the treasurer in confidence.",
+            "ar": "بعد تقديم الطلب ستحصل على رقم مرجعي، ويمكنك الدفع بالبطاقة عبر صفحة دفع آمنة أو بالتحويل البنكي مع ذكر الرقم المرجعي. تبدأ العضوية بمجرد مطابقة الدفعة. يوجد صندوق للمساعدة لمن يحتاج — راسل أمين الصندوق بسرّية."
+          },
+          "refs": [],
+          "id": "pay-fee"
+        },
+        {
+          "q": {
+            "en": "Can I come along before joining?",
+            "ar": "هل يمكنني الحضور قبل أن أصبح عضواً؟"
+          },
+          "a": {
+            "en": "Yes. All open events are free to non-members. Join whenever you have decided.",
+            "ar": "نعم. جميع الفعاليات المفتوحة مجانية لغير الأعضاء. انضم متى ما قرّرت."
+          },
+          "refs": [],
+          "id": "attend-before-joining"
+        },
+        {
+          "q": {
+            "en": "Are alumni and staff welcome?",
+            "ar": "هل الخريجون والموظفون مرحّب بهم؟"
+          },
+          "a": {
+            "en": "Alumni and staff are welcome at social events and the annual dinner. Full membership may be restricted by the Society's constitution.",
+            "ar": "الخريجون والموظفون مرحّب بهم في الفعاليات الاجتماعية والعشاء السنوي. قد تنطبق قيود على العضوية الكاملة بحسب دستور الجمعية."
+          },
+          "refs": [],
+          "id": "alumni-staff"
+        },
+        {
+          "q": {
+            "en": "How do I hear about events?",
+            "ar": "كيف أعرف بالفعاليات؟"
+          },
+          "a": {
+            "en": "The programme is published at the start of each term, emailed to members and posted on our social channels.",
+            "ar": "يُنشر البرنامج في بداية كل فصل دراسي، ويُرسل بالبريد الإلكتروني للأعضاء ويُعلن على حساباتنا في وسائل التواصل."
+          },
+          "refs": [],
+          "id": "hear-about-events"
+        },
+        {
+          "q": {
+            "en": "Are the venues accessible?",
+            "ar": "هل الأماكن مهيّأة للوصول؟"
+          },
+          "a": {
+            "en": "Access details are listed with each event. If you need an adjustment, email the secretary in advance and it will be arranged.",
+            "ar": "تُذكر تفاصيل الوصول مع كل فعالية. إذا كنت بحاجة إلى ترتيبات خاصة، راسل أمين السر مسبقاً وسنتولّى الأمر."
+          },
+          "refs": [],
+          "id": "venue-access"
+        },
+        {
+          "q": {
+            "en": "How do I suggest an event or an idea?",
+            "ar": "كيف أقترح فعالية أو فكرة؟"
+          },
+          "a": {
+            "en": "On the [ideas board](#ideas): post your idea, vote on other people's and discuss them. The committee reviews the board every term and replies to every idea.",
+            "ar": "عبر [لوحة الأفكار](#ideas): اطرح فكرتك، وصوّت على أفكار الآخرين، وناقشها. تراجع اللجنة اللوحة كل فصل دراسي وتردّ على كل فكرة."
+          },
+          "refs": [],
+          "id": "suggest-idea"
+        },
+        {
+          "q": {
+            "en": "How do I stand for committee?",
+            "ar": "كيف أترشّح للجنة؟"
+          },
+          "a": {
+            "en": "The committee is elected at the AGM and any member can stand. Details are announced a term in advance.",
+            "ar": "تُنتخب اللجنة في الاجتماع العمومي السنوي، ويمكن لأي عضو الترشّح. تُعلن التفاصيل قبل الاجتماع بفصل دراسي كامل."
+          },
+          "refs": [],
+          "id": "stand-for-committee"
+        }
+      ]
+    },
+    {
+      "id": "scholarships",
+      "title": {
+        "en": "Scholarships, Safir & the Cultural Bureau",
+        "ar": "الابتعاث وسفير والملحقية"
+      },
+      "items": [
+        {
+          "q": {
+            "ar": "ما أول الإجراءات المطلوبة في سفير بعد الوصول وبدء الدراسة؟",
+            "en": "What should I do in Safir after arriving and starting my studies?"
+          },
+          "a": {
+            "ar": "ابدأ بتقديم طلب «مباشرة الدراسة» في سفير ٢ مع مستندات الدخول والتسجيل المطلوبة في الطلب. بعد قبوله، أكمل الخطة الدراسية، وحدّث بيانات الحساب البنكي عند الحاجة، ثم قدّم طلب الضمان المالي التعليمي. احتفظ بالموافقات وأرقام الطلبات للمتابعة.",
+            "en": "Begin with the “مباشرة الدراسة” (start-of-study) request in Safir 2 and attach the entry and enrolment evidence shown in the request. After its approval, complete your study plan and, where relevant, update your bank details before requesting a tuition financial guarantee. Keep each approval and request number for later correspondence."
+          },
+          "refs": [
+            {
+              "label": "SACB: starting your studies",
+              "url": "https://sites.moe.gov.sa/cm/uk/departments/department-85/"
+            }
+          ],
+          "id": "safir-start"
+        },
+        {
+          "q": {
+            "ar": "كيف أُعد الخطة الدراسية لجامعة أكسفورد في سفير؟",
+            "en": "How should I prepare an Oxford study plan for Safir?"
+          },
+          "a": {
+            "ar": "اعتمد تواريخ البرنامج ونظامه كما وردا في إفادة القسم وسجل تسجيلك في أكسفورد. إذا طلب سفير تقسيم العام إلى فصول، فاستعن بفصول Michaelmas وHilary وTrinity وأدخل مواعيد برنامجك الفعلية؛ وقد يختلف تنظيم الدكتوراه البحثية عن المقررات الدراسية. أرفق مستند القبول أو التسجيل واحتفظ بالخطة المعتمدة.",
+            "en": "Use the dates and course structure documented by your Oxford department and enrolment record. If the Safir form asks for terms, refer to Michaelmas, Hilary and Trinity and enter the correct dates for your programme; research degrees may have a different reporting structure from taught courses. Upload the offer or registration evidence and retain the approved plan for subsequent guarantee requests."
+          },
+          "refs": [
+            {
+              "label": "SACB: starting your studies",
+              "url": "https://sites.moe.gov.sa/cm/uk/departments/department-85/"
+            },
+            {
+              "label": "Oxford: term dates",
+              "url": "https://www.ox.ac.uk/about/the-university/facts-and-figures/dates-of-term"
+            }
+          ],
+          "id": "safir-study-plan"
+        },
+        {
+          "q": {
+            "ar": "كيف أطلب الضمان المالي التعليمي لرسوم أكسفورد؟",
+            "en": "How do I request a tuition financial guarantee for Oxford?"
+          },
+          "a": {
+            "ar": "بعد اعتماد المباشرة والخطة الدراسية في سفير، استخدم خدمة طلب الضمان المالي التعليمي. جهّز خطاب القبول أو التسجيل الحالي، وتواريخ البرنامج، وبيان الرسوم، وما يُطلب من مستندات التقدم الدراسي. أرسل الضمان الصادر إلى الجهة المحددة في فاتورة أكسفورد واحتفظ بنسخة ورقم الطلب.",
+            "en": "After your start-of-study and study-plan records are approved in Safir, use the educational financial-guarantee request. Prepare the current offer or enrolment letter, course dates, fee information and any recent progress document requested. Send the issued guarantee to the Oxford office named on the invoice and keep a copy with the request number."
+          },
+          "refs": [
+            {
+              "label": "SACB: financial guarantees",
+              "url": "https://sites.moe.gov.sa/cm/uk/departments/department-67/"
+            },
+            {
+              "label": "SACB: starting your studies",
+              "url": "https://sites.moe.gov.sa/cm/uk/departments/department-85/"
+            }
+          ],
+          "id": "financial-guarantee"
+        },
+        {
+          "q": {
+            "ar": "هل يُكتب الضمان المالي باسم الكلية أم جامعة أكسفورد؟",
+            "en": "Should the financial guarantee name my Oxford college or the University?"
+          },
+          "a": {
+            "ar": "اسم المستفيد الصحيح هو الجهة التي تُصدر فاتورة الرسوم وتستقبل السداد. قبل رفع الطلب، اطلب من مكتب الرسوم في الكلية أو الجامعة الاسم الرسمي وعنوان الفوترة وانسخهما كما وردا. لا تفترض أن جهة الفوترة واحدة لجميع كليات أكسفورد.",
+            "en": "The correct recipient is the organisation issuing and collecting the relevant fee invoice. Before submitting your request, ask the college or University fees office for its exact invoicing name and address and reproduce those details on the guarantee request. Do not assume all Oxford colleges use the same payee."
+          },
+          "refs": [
+            {
+              "label": "SACB: financial guarantees",
+              "url": "https://sites.moe.gov.sa/cm/uk/departments/department-67/"
+            }
+          ],
+          "id": "guarantee-college-or-university"
+        },
+        {
+          "q": {
+            "ar": "ما المستندات المطلوبة لطلب رسوم المختبرات (Bench Fees) للدكتوراه؟",
+            "en": "What documents should I prepare for a doctoral bench-fee request?"
+          },
+          "a": {
+            "ar": "اطلب من القسم كشفًا تفصيليًا لرسوم المختبرات يوضح الفترة الدراسية وبنود التكلفة وقيمتها الإجمالية. أرفق هذا الكشف مع مستندات الضمان المالي التعليمي لطلبة الدكتوراه حتى تتمكن الملحقية من مراجعته وفق إجراءاتها المنشورة. البيان المفصل أوضح من خطاب يذكر مبلغًا إجماليًا فقط.",
+            "en": "Ask your department for an itemised bench-fee breakdown stating the academic period, the individual cost components and the total. Oxford doctoral applicants should include this breakdown with the academic financial-guarantee documentation so the Cultural Bureau can assess it under its published procedure. A general letter quoting one lump sum is less informative than a detailed schedule."
+          },
+          "refs": [
+            {
+              "label": "SACB: financial guarantees",
+              "url": "https://sites.moe.gov.sa/cm/uk/departments/department-67/"
+            }
+          ],
+          "id": "bench-fees"
+        },
+        {
+          "q": {
+            "ar": "كيف أتواصل مع الملحقية الثقافية بشأن طلب قائم؟",
+            "en": "How can I contact the Saudi Cultural Bureau about an existing request?"
+          },
+          "a": {
+            "ar": "ادخل إلى سفير ٢ ثم «الخدمات الشخصية ← استفسار». اختر تصنيف الموضوع، واذكر رقم الطلب ووصفًا موجزًا للمشكلة، وأرفق الوثائق الداعمة ثم أرسل الاستفسار. تفصل الملحقية بين الاستفسارات الدراسية والمالية، فاختر القسم الموافق لموضوعك.",
+            "en": "Open Safir 2, select “الخدمات الشخصية” (Personal Services), then “استفسار” (Enquiry). Choose the relevant subject, include your request number and a concise description of the problem, attach supporting documents and submit. The Bureau separates academic and financial enquiries into different categories, so select the one matching your case."
+          },
+          "refs": [
+            {
+              "label": "SACB: submit an enquiry",
+              "url": "https://sites.moe.gov.sa/cm/uk/departments/department-31/"
+            }
+          ],
+          "id": "contact-bureau"
+        },
+        {
+          "q": {
+            "ar": "ماذا أفعل إذا لم يقبل سفير رفع المستند أو ظهرت رسالة خطأ؟",
+            "en": "What should I do when Safir rejects a document upload or shows an error?"
+          },
+          "a": {
+            "ar": "تحقق من امتداد الملف وحجمه المسموح، واستخدم اسمًا قصيرًا وواضحًا، ثم ارفع المستند منفردًا. إذا تكرر الخطأ فجرّب متصفحًا آخر. احتفظ بصورة رسالة الخطأ ووقتها ورقم الطلب، ثم ارفع بلاغًا فنيًا عبر قناة دعم وزارة التعليم أو استفسارًا من سفير.",
+            "en": "Check the permitted file type and size, give the file a short, clear filename and upload it separately. Try another browser if the error continues. Save a screenshot, the time and the request number, then submit a technical-support report through the Ministry’s support channel or a Safir enquiry."
+          },
+          "refs": [
+            {
+              "label": "Ministry: technical support",
+              "url": "https://www.moe.gov.sa/en/services/unified-services-guide/reportissue"
+            },
+            {
+              "label": "SACB: submit an enquiry",
+              "url": "https://sites.moe.gov.sa/cm/uk/departments/department-31/"
+            }
+          ],
+          "id": "safir-upload-error"
+        },
+        {
+          "q": {
+            "ar": "كيف أتابع تأخر المخصص الشهري أو فروقات الصرف؟",
+            "en": "What can I do if a stipend payment or arrears have not arrived?"
+          },
+          "a": {
+            "ar": "راجع بيانات الحساب البنكي وحالة الصرف في سفير، واحتفظ بما يثبت الفترة المتأثرة. بعد ذلك ارفع «الخدمات الشخصية ← استفسار ← الشؤون المالية والإدارية» مع تحديد الفترة ورقم الطلب والمرفقات. هذا هو المسار المنشور لمتابعة المخصصات والفروقات، دون افتراض موعد صرف ثابت.",
+            "en": "Check the bank details and payment status recorded in Safir, and keep evidence of the affected period. Then submit “الخدمات الشخصية ← استفسار ← الشؤون المالية والإدارية” with the period, case number and supporting documents. This is the published route for payment-difference and allowance enquiries; no fixed payment date should be assumed."
+          },
+          "refs": [
+            {
+              "label": "SACB: submit an enquiry",
+              "url": "https://sites.moe.gov.sa/cm/uk/departments/department-31/"
+            },
+            {
+              "label": "SACB: starting your studies",
+              "url": "https://sites.moe.gov.sa/cm/uk/departments/department-85/"
+            }
+          ],
+          "id": "stipend-delay"
+        },
+        {
+          "q": {
+            "ar": "كيف أقدّم طلب تذكرة سفر عبر سفير؟",
+            "en": "How do I submit a scholarship travel-ticket request?"
+          },
+          "a": {
+            "ar": "وفق مسار التذكرة السنوية المنشور لدى الملحقية، قدّم أولًا «الخدمات الشخصية ← طلب تذكرة» مع مواعيد السفر وخطاب الإجازة المطلوب من الجامعة أو المشرف. بعد الموافقة، انتقل إلى «حجز تذكرة»، واختر السجل المعتمد واتبع تعليمات الحجز ورقمه الصادر من سفير. تشير التعليمات الحالية إلى إجراءات الحجز عبر «اعتماد»، لا إلى بريد قديم لشركة طيران.",
+            "en": "For the annual-ticket route described by the Cultural Bureau, first submit “الخدمات الشخصية ← طلب تذكرة” with the proposed dates and required university or supervisor leave confirmation. After that request is approved, submit “حجز تذكرة”, select the approved record and follow the booking instructions and reference number generated by Safir. The current published instructions refer to the Etimad booking process; do not rely on an old airline email address."
+          },
+          "refs": [
+            {
+              "label": "SACB: travel tickets",
+              "url": "https://sites.moe.gov.sa/cm/uk/departments/department-32/"
+            }
+          ],
+          "id": "travel-ticket"
+        },
+        {
+          "q": {
+            "ar": "كيف أعدّل موعد تذكرة الابتعاث بعد إصدارها؟",
+            "en": "How do I change a scholarship ticket after it has been issued?"
+          },
+          "a": {
+            "ar": "توضح الملحقية أنه لا يمكن تعديل مواعيد السفر أو خط السير داخل طلب التذكرة المغلق في سفير بعد الإصدار. للتعديل، اتبع تعليمات جهة الحجز المرتبطة بالتذكرة وراجع صفحة ضوابط التذاكر. أما الإلغاء فتبيّن الملحقية له مسار إلغاء الطلب ثم تقديم طلب جديد. احتفظ برقم الحجز الأصلي.",
+            "en": "The Bureau states that a closed Safir ticket request cannot be edited to change dates or itinerary after issue. For an adjustment, use the booking-provider instructions associated with the issued ticket and review the Bureau’s travel-ticket guidance. If the booking must be cancelled, the Bureau describes a cancellation-and-new-request process. Keep the original booking reference."
+          },
+          "refs": [
+            {
+              "label": "SACB: travel tickets",
+              "url": "https://sites.moe.gov.sa/cm/uk/departments/department-32/"
+            }
+          ],
+          "id": "change-ticket"
+        },
+        {
+          "q": {
+            "ar": "ما الذي أجهّزه قبل طلب دعم حضور مؤتمر علمي؟",
+            "en": "What should I prepare before requesting support to attend a research conference?"
+          },
+          "a": {
+            "ar": "جهّز اسم المؤتمر وتاريخه والجهة المنظمة وبرنامجه ورسوم التسجيل، مع خطاب من المشرف يوضح ارتباطه ببحثك. وإذا كانت لديك مشاركة، فأرفق رسالة قبول البحث وعنوان العرض الشفهي أو الملصق. تنشر الملحقية متطلبات طلب حضور المؤتمرات؛ وتأكد من صدور القرار قبل الالتزام بحجوزات غير قابلة للاسترداد.",
+            "en": "Prepare the conference name, dates, organiser, programme and registration fee, along with a supervisor’s letter explaining its relevance to your research. If presenting, include the acceptance email and title of the talk or poster. The Cultural Bureau publishes the document requirements for its conference request; obtain a decision before making non-refundable commitments."
+          },
+          "refs": [
+            {
+              "label": "SACB: conference participation",
+              "url": "https://sites.moe.gov.sa/cm/uk/departments/department-34/"
+            }
+          ],
+          "id": "conference-support"
+        },
+        {
+          "q": {
+            "ar": "ما خطابات أكسفورد المطلوبة عند طلب تمديد البعثة؟",
+            "en": "Which Oxford letters should I prepare for a scholarship-extension request?"
+          },
+          "a": {
+            "ar": "لطلب تمديد بعثة الدكتوراه، تذكر الملحقية خطابًا جامعيًا حديثًا يوضح التقدم الدراسي، وخطابًا من المشرف يوضح الإنجاز وتواريخ تسليم الرسالة والمناقشة ومنح الدرجة المتوقعة. احصل على هذه التواريخ من القسم قبل رفع طلب التمديد في سفير، مع الفصل بين مواعيد أكسفورد الأكاديمية ومواعيد الجهة الممولة. يبقى قرار الطلب لدى الجهة المختصة.",
+            "en": "For a doctoral extension, the Bureau lists a recent institutional progress letter and a supervisor’s letter explaining work completed and expected thesis-submission, viva and award dates. Obtain the dates from your department before submitting the Safir extension request, and keep Oxford research-degree milestones separate from sponsor dates. The approving authority determines the outcome."
+          },
+          "refs": [
+            {
+              "label": "SACB: scholarship extensions",
+              "url": "https://sites.moe.gov.sa/cm/uk/departments/department-65/"
+            },
+            {
+              "label": "Oxford: research degree stages",
+              "url": "https://www.ox.ac.uk/students/academic/graduate/research"
+            }
+          ],
+          "id": "extension-letters"
+        }
+      ]
+    },
+    {
+      "id": "arrival",
+      "title": {
+        "en": "Arrival, transport & shipping",
+        "ar": "الوصول والتنقّل والشحن"
+      },
+      "items": [
+        {
+          "q": {
+            "ar": "كيف أصل من مطار هيثرو إلى أكسفورد مباشرة؟",
+            "en": "How do I travel directly from Heathrow Airport to Oxford?"
+          },
+          "a": {
+            "ar": "استخدم حافلة «the airline» التابعة لشركة Oxford Bus Company والمتجهة إلى أكسفورد. تعمل الخدمة نهارًا وليلًا وتصل إلى Gloucester Green ومحطات أخرى. تخدم المحطة المركزية للمواقف مباني هيثرو ٢ و٣، بينما يُرجى فحص موقف مبنى ٥ واتجاه رحلتك لدى الشركة؛ فقد تغيّرت بعض المواقف في يوليو ٢٠٢٦. يمكن الحجز عبر موقع المشغّل مع مراعاة الازدحام.",
+            "en": "Take Oxford Bus Company’s “the airline” coach towards Oxford. Services run throughout the day and night to Oxford, including Gloucester Green, with stops at Heathrow. Terminals 2 and 3 use the Central Bus Station; check the operator’s current instructions for Terminal 5 and your travel direction because airport stop arrangements changed in July 2026. Buy or reserve through the operator and allow time for traffic."
+          },
+          "refs": [
+            {
+              "label": "The Airline: airport coach",
+              "url": "https://www.oxfordbus.co.uk/airline"
+            },
+            {
+              "label": "The Airline: 2026 stop changes",
+              "url": "https://www.oxfordbus.co.uk/airline-fare-and-timetable-changes"
+            }
+          ],
+          "id": "heathrow-to-oxford"
+        },
+        {
+          "q": {
+            "ar": "هل توجد حافلة مباشرة بين مطار غاتويك وأكسفورد؟",
+            "en": "Is there a direct coach between Gatwick Airport and Oxford?"
+          },
+          "a": {
+            "ar": "نعم، تشغّل Oxford Bus Company خدمة «the airline» بين أكسفورد وغاتويك إلى جانب هيثرو. راجع الجدول الحالي ومواقف مباني المطار وسعر التذكرة قبل السفر. وتوفر الحافلة مسارًا دون الحاجة إلى تغيير القطارات في وسط لندن.",
+            "en": "Yes. Oxford Bus Company operates “the airline” service between Oxford and Gatwick as well as Heathrow. Consult the current timetable, airport-terminal stops and journey price before travelling. Its coach can remove the need to change trains in central London."
+          },
+          "refs": [
+            {
+              "label": "The Airline: airport coach",
+              "url": "https://www.oxfordbus.co.uk/airline"
+            }
+          ],
+          "id": "gatwick-to-oxford"
+        },
+        {
+          "q": {
+            "ar": "ما أسهل وسيلة للتنقل بين أكسفورد ولندن؟",
+            "en": "What is the easiest way to travel between Oxford and London?"
+          },
+          "a": {
+            "ar": "تعمل حافلة Oxford Tube مباشرة بين أكسفورد ولندن على مدار الساعة؛ راجع جدول محطتك المباشر. ويمكن أيضًا استخدام القطارات إلى London Paddington أو Marylebone بحسب المشغّل. قارِن زمن الرحلة كاملًا من موقعك إلى وجهتك، ومحطة المغادرة، وسعر التذكرة لا زمن القطار أو الحافلة وحده.",
+            "en": "The Oxford Tube is a direct coach between Oxford and London and operates around the clock; check the live timetable for your stop. Trains are another option, with services to London Paddington or Marylebone depending on the operator. Compare door-to-door travel time, departure station and ticket price rather than comparing the headline journey times alone."
+          },
+          "refs": [
+            {
+              "label": "Oxford Tube: timetables",
+              "url": "https://www.oxfordtube.com/timetables"
+            },
+            {
+              "label": "Oxford: student transport discounts",
+              "url": "https://www.ox.ac.uk/students/life/travel"
+            }
+          ],
+          "id": "oxford-london"
+        },
+        {
+          "q": {
+            "ar": "كيف يستفيد طلاب أكسفورد من خصومات الحافلات والقطارات؟",
+            "en": "How can Oxford students reduce bus and train travel costs?"
+          },
+          "a": {
+            "ar": "تنشر الجامعة برنامج خصومات لاشتراكات الحافلات الفصلية أو السنوية المحددة، مع رابط الطلب في صفحة النقل الجامعية. وبالنسبة للقطارات، تحقّق من أهلية بطاقة Railcard؛ فقد تتاح بطاقة 16–25 أيضًا لبعض الطلاب المتفرغين الأكبر سنًا. احمل هويتك الجامعية عند استخدام تعرفة تشترط إثبات الصفة الطلابية.",
+            "en": "Oxford publishes a student discounted bus-pass scheme for selected season tickets; follow the University Travel page to see current passes and how to order. For trains, check railcard eligibility: a 16–25 Railcard can also be available to qualifying mature full-time students. Carry your student identification when a student fare requires it."
+          },
+          "refs": [
+            {
+              "label": "Oxford: student transport discounts",
+              "url": "https://www.ox.ac.uk/students/life/travel"
+            }
+          ],
+          "id": "travel-discounts"
+        },
+        {
+          "q": {
+            "ar": "كيف أشحن مستندات أو طرودًا من بريطانيا إلى السعودية؟",
+            "en": "How can I send documents or parcels from the UK to Saudi Arabia?"
+          },
+          "a": {
+            "ar": "للطرود الصغيرة، قارِن خدمة الشحن الدولي لدى Royal Mail بخدمات شركات الشحن المتتبّع مثل DHL. وللصناديق الكبيرة، اطلب عروض أسعار مكتوبة تبيّن الوزن المحتسب والاستلام والعنوان والتتبع والاستثناءات؛ فقد تؤثر أبعاد الصندوق في التكلفة بقدر وزنه الفعلي. اكتب العنوان الوطني السعودي ورقم جوال المستلم كاملين واحتفظ برقم التتبع.",
+            "en": "For small packages, compare Royal Mail’s international service with tracked couriers such as DHL. For larger boxes, request written quotations stating chargeable weight, collection, delivery address, tracking and any exclusions; dimensions may affect the price as much as actual weight. Use the recipient’s full Saudi national address and mobile number on the label, and retain the tracking reference."
+          },
+          "refs": [
+            {
+              "label": "Royal Mail: international parcels",
+              "url": "https://www.royalmail.com/sending/international"
+            }
+          ],
+          "id": "shipping-to-saudi"
+        },
+        {
+          "q": {
+            "ar": "أين أتحقق من الأمتعة المسموح بها في رحلتي؟",
+            "en": "Where can I confirm the baggage allowance for my flight?"
+          },
+          "a": {
+            "ar": "ادخل إلى «إدارة الحجز» في موقع شركة الطيران باستخدام رقم الحجز واسم المسافر، ثم راجع وزن وعدد الأمتعة المسموح بها لكل مقطع ونوع تذكرة. قد تختلف القواعد في الرحلات المشتركة أو المتصلة. اعتمد التفاصيل الخاصة بتذكرتك بدل الأرقام العامة المتداولة عن الشركة.",
+            "en": "Open the airline’s “Manage Booking” page using the booking reference and passenger surname, then check the baggage allowance for each flight segment and fare type. The allowance may differ for codeshare or connecting flights. Treat the information printed on your own ticket as more relevant than generic allowance figures circulated for a particular airline."
+          },
+          "refs": [
+            {
+              "label": "SAUDIA: baggage allowance",
+              "url": "https://www.saudia.com/pages/before-flying/baggage/baggage-allowances"
+            },
+            {
+              "label": "British Airways: baggage allowance",
+              "url": "https://www.britishairways.com/content/en/gb/information/baggage-essentials"
+            }
+          ],
+          "id": "baggage-allowance"
+        }
+      ]
+    },
+    {
+      "id": "housing",
+      "title": {
+        "en": "Accommodation & household services",
+        "ar": "السكن والخدمات المنزلية"
+      },
+      "items": [
+        {
+          "q": {
+            "ar": "أين أبدأ البحث عن سكن لطلاب الدراسات العليا في أكسفورد؟",
+            "en": "Where should I apply first for graduate accommodation in Oxford?"
+          },
+          "a": {
+            "ar": "ابدأ بمكتب السكن في كليتك، ثم بخدمة سكن الدراسات العليا التابعة للجامعة. وتعرض أكسفورد أيضًا خدمة دعم السكن بين الكليات وخيارات السكن الخاص. توجد استمارات منفصلة للطالب الفرد وللأزواج والأسر بحسب نوع الطلب. السكن غير مضمون، لذا من الأفضل بدء الاستفسار مبكرًا.",
+            "en": "Start with your college accommodation office, followed by University Graduate Accommodation. Oxford also identifies the Collegiate Accommodation Support Service and private rentals as alternatives. University graduate accommodation has separate application routes for single students and couples/families. Availability is not guaranteed, so begin enquiries early."
+          },
+          "refs": [
+            {
+              "label": "Oxford: housing options",
+              "url": "https://www.ox.ac.uk/admissions/graduate/after-you-apply/applying-for-accommodation"
+            },
+            {
+              "label": "Oxford: accommodation applications",
+              "url": "https://gradaccommodation.admin.ox.ac.uk/how-to-apply"
+            }
+          ],
+          "id": "graduate-accommodation"
+        },
+        {
+          "q": {
+            "ar": "ما الأحياء الأنسب للسكن بحسب موقع الدراسة في أكسفورد؟",
+            "en": "Which Oxford neighbourhoods are convenient for different study locations?"
+          },
+          "a": {
+            "ar": "اختر الحي وفق زمن الوصول الفعلي إلى قسمك، لا شهرة الحي وحدها. يسهّل Jericho ووسط المدينة الوصول إلى مرافق مركز أكسفورد والمنطقة العلمية، وتناسب Headington وأجزاء من Marston كثيرًا من وجهات المستشفيات وOld Road Campus، بينما تضم Cowley وشرق أكسفورد متاجر وخطوط حافلات عديدة. ويُعد Summertown خيارًا سكنيًا آخر للأسر. جرّب مسار التنقل في الساعة المعتادة لدراستك.",
+            "en": "Choose by the actual commute to your department rather than the neighbourhood name alone. Jericho and the city centre offer access to many central and science-area buildings; Headington and parts of Marston are often convenient for hospital and Old Road Campus destinations; Cowley and East Oxford offer many shops and bus routes; Summertown is another option for households seeking a residential area. Test the journey at the time you would normally travel."
+          },
+          "refs": [
+            {
+              "label": "Oxford: housing options",
+              "url": "https://www.ox.ac.uk/admissions/graduate/after-you-apply/applying-for-accommodation"
+            },
+            {
+              "label": "Oxford: student transport discounts",
+              "url": "https://www.ox.ac.uk/students/life/travel"
+            }
+          ],
+          "id": "neighbourhoods"
+        },
+        {
+          "q": {
+            "ar": "أين أبحث عن غرف خاصة أو سكن مؤقت في أكسفورد؟",
+            "en": "Where can I search for private rooms and short-term accommodation?"
+          },
+          "a": {
+            "ar": "للغرف والمشاركة السكنية، قارِن عروض SpareRoom والمواقع العقارية المعروفة مثل Rightmove وZoopla. وللإقامة المؤقتة عند الوصول، قارِن الفنادق أو الوحدات المخدومة القريبة من مسار وصولك وقسمك. تحقق مع الجهة المؤجرة من العنوان الدقيق وإمكان المعاينة والتكلفة الإجمالية وتاريخ الاستلام قبل الدفع.",
+            "en": "For private rooms and flatshares, compare listings on SpareRoom and established property websites such as Rightmove or Zoopla. For an initial short stay, compare licensed hotels or serviced accommodation close to your arrival route and department. Confirm the precise address, viewing arrangements, total cost and move-in date with the provider before paying."
+          },
+          "refs": [
+            {
+              "label": "Oxford: housing options",
+              "url": "https://www.ox.ac.uk/admissions/graduate/after-you-apply/applying-for-accommodation"
+            },
+            {
+              "label": "SpareRoom: Oxford rooms",
+              "url": "https://www.spareroom.co.uk/flatshare/oxfordshire/oxford"
+            }
+          ],
+          "id": "private-rooms"
+        },
+        {
+          "q": {
+            "ar": "هل يمكن معاينة سكن في أكسفورد قبل وصولي إلى بريطانيا؟",
+            "en": "Can I arrange a viewing of an Oxford property before arriving?"
+          },
+          "a": {
+            "ar": "اطلب من مكتب السكن أو الوكيل معاينة فيديو مباشرة ومخطط الوحدة بدل الاكتفاء بالصور التسويقية. افحص المدخل والمطبخ والحمام والنوافذ ومساحات التخزين أثناء الاتصال. وإذا عاينها شخص تعرفه حضوريًا، فاطلب منه فيديو قصيرًا والتأكد من مطابقة العنوان للإعلان.",
+            "en": "Ask the accommodation office or agent for a live video viewing and a floor plan, not only promotional photos. Verify the entrance, kitchen, bathroom, window outlook and available storage on the call. If someone you know visits in person, have them send a short video and confirm that the displayed address matches the listing."
+          },
+          "refs": [
+            {
+              "label": "Oxford: housing options",
+              "url": "https://www.ox.ac.uk/admissions/graduate/after-you-apply/applying-for-accommodation"
+            }
+          ],
+          "id": "remote-viewing"
+        },
+        {
+          "q": {
+            "ar": "أين أجد أثاثًا وأغراضًا منزلية مستعملة في أكسفورد؟",
+            "en": "Where can I find second-hand furniture and household items in Oxford?"
+          },
+          "a": {
+            "ar": "ابحث في متاجر الأثاث والأجهزة التابعة لجمعية British Heart Foundation والمتاجر الخيرية المحلية وFacebook Marketplace ومجموعات إعادة الاستخدام. وللأغراض الجديدة قارن IKEA وArgos ومتاجر الأدوات المنزلية. قِس الأبواب والسلالم قبل شراء الأثاث الكبير وتأكد مسبقًا من إمكان الاستلام أو التوصيل.",
+            "en": "Check the British Heart Foundation furniture and electrical stores, local charity shops, Facebook Marketplace and neighbourhood re-use groups; for new basics, compare IKEA, Argos and local homeware shops. Measure doorways and stairs before buying large furniture and confirm collection or delivery arrangements in advance."
+          },
+          "refs": [
+            {
+              "label": "British Heart Foundation: furniture shops",
+              "url": "https://www.bhf.org.uk/what-we-do/find-bhf-near-you?servicetype=furniture-electrical-store"
+            },
+            {
+              "label": "Argos UK: household essentials",
+              "url": "https://www.argos.co.uk/"
+            }
+          ],
+          "id": "second-hand-furniture"
+        },
+        {
+          "q": {
+            "ar": "ما الذي أوثّقه عند بدء خدمات الكهرباء والماء والتدفئة في السكن؟",
+            "en": "What should I record when setting up household utilities?"
+          },
+          "a": {
+            "ar": "عند استلام السكن، صوّر قراءات عدادات الكهرباء والغاز إن وُجدت، واحتفظ بالتاريخ والعنوان وبيانات المزوّد الواردة من مسؤول السكن. تحقّق من الخدمات والإنترنت المشمولة في الإيجار. وأي خدمة منفصلة تواصل بشأنها مباشرة مع المزوّد المختص وقارن خططه باستخدام عنوان المنزل.",
+            "en": "On move-in day, photograph any electricity and gas meter readings and save the date, property address and supplier information provided by your accommodation manager. Check which utilities and internet services are already included. For any separate service, contact the named provider directly and compare its available plans using your address."
+          },
+          "refs": [
+            {
+              "label": "Moving home: meter readings",
+              "url": "https://www.citizensadvice.org.uk/consumer/energy/energy-supply/moving-home-your-energy-supply/moving-home-dealing-with-your-energy-supply/"
+            }
+          ],
+          "id": "utilities"
+        },
+        {
+          "q": {
+            "ar": "كيف أتحقق من تغطية الجوال والإنترنت المنزلي قبل الاشتراك؟",
+            "en": "How can I check mobile and broadband coverage before choosing a provider?"
+          },
+          "a": {
+            "ar": "أدخل الرمز البريدي للسكن في أداة Ofcom لفحص تغطية شبكات الجوال وخيارات الإنترنت الثابت المتوقعة. بعد ذلك تحقّق من العنوان الكامل في موقع المزوّد الذي تفكر فيه، وراجع موعد التركيب ومدة الاشتراك. قد تختلف التغطية داخل السكن عن جودة الإشارة في وسط المدينة.",
+            "en": "Enter the property postcode in Ofcom’s mobile and broadband coverage checker; it shows predicted coverage and available broadband types. Then check the exact address on your preferred provider’s website, including installation date and contract length. A network that works well in central Oxford may perform differently inside your accommodation."
+          },
+          "refs": [
+            {
+              "label": "Ofcom: coverage checker",
+              "url": "https://www.ofcom.org.uk/phones-and-broadband/coverage-and-speeds/Ofcom-checker"
+            }
+          ],
+          "id": "mobile-broadband"
+        },
+        {
+          "q": {
+            "ar": "كيف أتحقق من إعلان سكن أو طلب دفع قد يكون احتياليًا؟",
+            "en": "How can I check whether a rental listing or payment request is genuine?"
+          },
+          "a": {
+            "ar": "رتّب معاينة مباشرة متى أمكن، وتأكد من هوية الوكيل أو الجهة المؤجرة عبر بيانات اتصال مستقلة عن الإعلان. توخَّ الحذر إذا طُلب منك تحويل المال فورًا أو إلى حساب شخصي دون تفسير واضح. وإذا بدا البريد أو رابط الدفع مريبًا، فتواصل مع الجهة عبر موقعها الرسمي بدل الرد على الرسالة نفسها.",
+            "en": "Arrange a live viewing where possible and verify the agent or accommodation provider using contact details published independently of the listing. Be cautious of pressure to transfer money immediately or to a personal account that has not been explained. If an email or payment link seems suspicious, contact the organisation through its official website rather than replying to the message."
+          },
+          "refs": [
+            {
+              "label": "NCSC: spot scams",
+              "url": "https://www.ncsc.gov.uk/collection/phishing-scams/spot-scams"
+            }
+          ],
+          "id": "rental-scams"
+        }
+      ]
+    },
+    {
+      "id": "academic",
+      "title": {
+        "en": "Academic life & University services",
+        "ar": "الدراسة والخدمات الجامعية"
+      },
+      "items": [
+        {
+          "q": {
+            "ar": "كيف أحصل على إفادة التسجيل الرسمية من أكسفورد؟",
+            "en": "How do I download proof of enrolment from Oxford?"
+          },
+          "a": {
+            "ar": "ادخل إلى Student Self Service بحساب أكسفورد الموحد، وافتح «Check my details» ثم اختر «Generate enrolment certificate». نزّل إفادة التسجيل أو اطبعها للعام الحالي. تتضمن الإفادة معلومات تسجيلك وبرنامجك، وهي مفيدة لإجراءات البنك والابتعاث والسكن.",
+            "en": "Log into Oxford Student Self Service with your Single Sign-On, open “Check my details” and choose “Generate enrolment certificate”. Download or print the current certificate. It records your enrolment and programme and is often useful for bank, sponsorship and accommodation administration."
+          },
+          "refs": [
+            {
+              "label": "Oxford: Student Self Service",
+              "url": "https://www.ox.ac.uk/students/academic/guidance/student-self-service"
+            }
+          ],
+          "id": "proof-of-enrolment"
+        },
+        {
+          "q": {
+            "ar": "ما المستند الجامعي المناسب إذا طلب البنك إثبات الحالة الدراسية؟",
+            "en": "What Oxford document can I use when a bank asks for proof of student status?"
+          },
+          "a": {
+            "ar": "أصدر إفادة التسجيل من Student Self Service؛ وتذكر الجامعة إمكان استخدامها لدعم فتح حساب بنكي. وإذا طلب البنك خطابًا يتضمن العنوان تحديدًا، فاطلبه من مكتب كليتك بحسب عنوان السكن المسجل لديهم. تأكد من تطابق البيانات مع طلب البنك قبل تقديمها.",
+            "en": "Generate your Oxford enrolment certificate in Student Self Service; the University expressly identifies it as a document that can support opening a bank account. If a bank requires an address-specific letter, ask your college office for a letter showing your recorded accommodation address. Check that your details match the bank application before submitting."
+          },
+          "refs": [
+            {
+              "label": "Oxford: Student Self Service",
+              "url": "https://www.ox.ac.uk/students/academic/guidance/student-self-service"
+            }
+          ],
+          "id": "bank-student-status"
+        },
+        {
+          "q": {
+            "ar": "أين يجد طالب الدكتوراه تقارير الإشراف والتقدم الدراسي في أكسفورد؟",
+            "en": "Where do DPhil students find their official supervision and progress reports?"
+          },
+          "a": {
+            "ar": "استخدم Student Self Service وافتح «My Supervision Reporting» للوصول إلى نظام Graduate Supervision Reporting (GSR). ستجد فيه التقييمات الذاتية وتقارير الإشراف. وإذا طلبت جهة الابتعاث خطاب تقدم دراسي مستقلًا وموقّعًا بدل تقرير GSR، فاطلبه من مكتب الدراسات العليا أو المشرف.",
+            "en": "Use Oxford Student Self Service and open the “My Supervision Reporting” area for Graduate Supervision Reporting (GSR). It contains student self-assessments and supervisor reporting records. If a sponsor needs a separate signed progress letter rather than the GSR report, request that document from your graduate studies office or supervisor."
+          },
+          "refs": [
+            {
+              "label": "Oxford: Student Self Service",
+              "url": "https://www.ox.ac.uk/students/academic/guidance/student-self-service"
+            }
+          ],
+          "id": "supervision-reports"
+        },
+        {
+          "q": {
+            "ar": "كيف أحصل على بحث أو فصل كتاب غير متاح ضمن مقتنيات أكسفورد؟",
+            "en": "How can I obtain an academic paper or book chapter that Oxford does not hold?"
+          },
+          "a": {
+            "ar": "ابحث أولًا في SOLO بعنوان المرجع أو معرّف DOI. وإذا لم يكن متاحًا في مكتبات أكسفورد، استخدم خدمة «Inter-library requests» من خيار «Need more?» داخل SOLO. يمكن من خلالها طلب كتب وأبحاث وفصول، وستوضح المكتبة إمكانية توفير المادة المطلوبة.",
+            "en": "First search SOLO for the title or DOI. If Oxford does not hold it, use the Bodleian Libraries “Inter-library requests” service through the “Need more?” option in SOLO. It supports requests for books, journal articles and chapters; the library will advise what can be supplied."
+          },
+          "refs": [
+            {
+              "label": "Bodleian: inter-library requests",
+              "url": "https://www.bodleian.ox.ac.uk/services/borrow/inter-library-requests"
+            },
+            {
+              "label": "Bodleian: item requests",
+              "url": "https://www.bodleian.ox.ac.uk/services/borrow/request"
+            }
+          ],
+          "id": "inter-library-requests"
+        },
+        {
+          "q": {
+            "ar": "أين أطور الكتابة الأكاديمية والتحدث بالإنجليزية في أكسفورد؟",
+            "en": "Where can I improve academic writing and spoken English at Oxford?"
+          },
+          "a": {
+            "ar": "يقدم مركز اللغات في أكسفورد دورات للإنجليزية الأكاديمية تشمل الكتابة والعروض والتواصل الشفهي، ومنها كتابة الرسائل والأطروحات. راجع أوصاف المقررات وسجّل عبر نظام المركز بحساب أكسفورد. يقع المركز في 12 Woodstock Road.",
+            "en": "Oxford’s Language Centre offers Academic English courses covering academic writing, presentations and spoken communication, including thesis and dissertation writing. Review the course descriptions and book through the University’s Language Centre system using your Oxford account. The centre is based at 12 Woodstock Road."
+          },
+          "refs": [
+            {
+              "label": "Oxford: Academic English",
+              "url": "https://www.ox.ac.uk/students/academic/guidance/skills/language"
+            }
+          ],
+          "id": "academic-english"
+        },
+        {
+          "q": {
+            "ar": "ما المقصود بزي Sub Fusc وما الرداء المناسب لطالب الدراسات العليا؟",
+            "en": "What is Oxford sub fusc, and what gown should a postgraduate use?"
+          },
+          "a": {
+            "ar": "«Sub Fusc» هو الزي الرسمي الذي يُلبس تحت الرداء الأكاديمي في المناسبات والاختبارات الجامعية المحددة. تسرد صفحة الجامعة الملابس الداكنة والقميص الأبيض ذي الياقة وربطة العنق أو الشريط المناسب. ويستخدم طلاب الدراسات العليا عادة رداء Advanced Student. تأكد من النوع المطلوب لمناسبتك لدى الكلية قبل الاستئجار أو الشراء.",
+            "en": "Sub fusc is the formal dress worn beneath an academic gown at specified University ceremonies and examinations. Oxford’s academic-dress page lists the required dark clothing, white collared shirt and appropriate tie or ribbon; postgraduate taught and research students ordinarily use the advanced-student gown. Confirm the required gown for your ceremony with your college before hiring or buying."
+          },
+          "refs": [
+            {
+              "label": "Oxford: academic dress",
+              "url": "https://www.ox.ac.uk/students/academic/dress"
+            }
+          ],
+          "id": "sub-fusc"
+        },
+        {
+          "q": {
+            "ar": "أين يمكنني طباعة ملصق علمي (Poster) في أكسفورد؟",
+            "en": "Where can I have an academic poster printed in Oxford?"
+          },
+          "a": {
+            "ar": "توفر وحدة Media Services في قسم الفيزياء خدمة طباعة الملصقات البحثية لأقسام أكسفورد وللجهات الخارجية. وتوصي بإرسال ملف PDF جاهز للطباعة وتوضح الأحجام وآلية التسليم. مدة الإنجاز الاعتيادية المنشورة يومَا عمل للملصقات الورقية أو القماشية؛ لذا تواصل معهم مباشرة إذا كنت تحتاج موعدًا أقصر ولا تفترض توفر الطباعة الفورية.",
+            "en": "The University’s Physics Media Services Unit prints research posters for Oxford departments and external customers. It recommends a print-ready PDF and publishes accepted sizes and submission arrangements. The stated normal turnaround is two working days for paper or fabric posters, so ask directly about availability if you need a faster turnaround rather than assuming same-day printing."
+          },
+          "refs": [
+            {
+              "label": "Oxford Physics: poster printing",
+              "url": "https://www.physics.ox.ac.uk/about-us/our-facilities-and-services/media-services"
+            }
+          ],
+          "id": "poster-printing"
+        },
+        {
+          "q": {
+            "ar": "أين أجد المراحل الرسمية للدكتوراه البحثية في أكسفورد؟",
+            "en": "Where can I check the official stages of an Oxford DPhil?"
+          },
+          "a": {
+            "ar": "تشرح صفحة «Research Degree Stages» في أكسفورد نقل الحالة الأكاديمية (Transfer of Status) وتأكيدها (Confirmation of Status) وتسليم الأطروحة ومناقشتها. ابدأ بالصفحة ثم راجع دليل برنامجك لدى القسم لمعرفة الإجراءات والمواعيد الخاصة به. يستطيع موظف الدراسات العليا توجيهك إلى النماذج والمراحل الصحيحة.",
+            "en": "Oxford’s Research Degree Stages page covers transfer of status, confirmation of status, thesis submission and examination. Start with that guide, then read your department’s course handbook for programme-specific requirements and deadlines. Your Graduate Studies Assistant can direct you to the correct forms and milestones for your course."
+          },
+          "refs": [
+            {
+              "label": "Oxford: research degree stages",
+              "url": "https://www.ox.ac.uk/students/academic/graduate/research"
+            }
+          ],
+          "id": "dphil-stages"
+        },
+        {
+          "q": {
+            "ar": "أين يجد طلاب أكسفورد فرص التدريب والتطوير المهني؟",
+            "en": "Where can Oxford students find internships and career-development opportunities?"
+          },
+          "a": {
+            "ar": "استخدم منصة CareerConnect التابعة لخدمة المسار المهني في الجامعة للبحث عن التدريبات والفعاليات المهنية وبرامج المهارات ومواعيد الاستشارات. تشمل المنصة برامج التدريب الصيفي وMicro-Internships مع شروط التقديم ومواعيده لكل فرصة. وقد يعلن القسم والكلية أيضًا عن فرص مرتبطة بالتخصص.",
+            "en": "Use the University Careers Service’s CareerConnect platform to search internships, employer events, skills programmes and careers appointments. The portal includes the Summer Internship and Micro-Internship programmes and shows eligibility and deadlines on each opportunity. Your department and college may also advertise field-specific opportunities."
+          },
+          "refs": [
+            {
+              "label": "Oxford: CareerConnect",
+              "url": "https://www.ox.ac.uk/careers/what-we-offer/careerconnect-platform"
+            }
+          ],
+          "id": "internships"
+        },
+        {
+          "q": {
+            "ar": "كيف أبدأ طلب معادلة الشهادة الجامعية السعودية بعد التخرج من أكسفورد؟",
+            "en": "How do I begin Saudi degree equivalency after graduating?"
+          },
+          "a": {
+            "ar": "استخدم خدمة معادلة الشهادات لدى وزارة التعليم السعودية والبوابة الإلكترونية التي توجه إليها حاليًا. جهّز وثيقة التخرج وكشف الدرجات والهوية والمستندات الإضافية المطلوبة في الطلب. اختر الدرجة وأكمل النموذج واحتفظ برقم الطلب للمتابعة. تتولى الوزارة تقييم الطلب وفق معاييرها المعتمدة.",
+            "en": "Use the Saudi Ministry of Education’s equivalency service and the portal it currently directs applicants to. Prepare the degree certificate, transcript, identity documents and any additional records shown in the application. Choose the degree level, complete the online form and retain the application number to track the request. The Ministry decides the application under its own criteria."
+          },
+          "refs": [
+            {
+              "label": "Saudi Ministry: degree equivalence",
+              "url": "https://www.moe.gov.sa/ar/services/unified-services-guide/certeq"
+            },
+            {
+              "label": "Saudi Ministry: equivalence portal",
+              "url": "https://eqs.moe.gov.sa/Home/Landing"
+            }
+          ],
+          "id": "degree-equivalency"
+        }
+      ]
+    },
+    {
+      "id": "daily-life",
+      "title": {
+        "en": "Daily life & family",
+        "ar": "الحياة اليومية والأسرة"
+      },
+      "items": [
+        {
+          "q": {
+            "ar": "أين أجد لحومًا حلالًا وبقالة عربية في أكسفورد؟",
+            "en": "Where can I buy halal meat and Middle Eastern groceries in Oxford?"
+          },
+          "a": {
+            "ar": "تضم Cowley Road والأحياء المجاورة في شرق أكسفورد عدة متاجر للحوم الحلال والبقالة الدولية. وتوفر الجمعية الإسلامية الجامعية دليلًا يتضمن Al-Amin في 216 Cowley Road وMaroc Deli في 66 Cowley Road وTahmid Stores في 53 Cowley Road. تحقّق مباشرة من توفر المنتجات ومواعيد العمل ومعلومات اعتماد الحلال لدى كل متجر.",
+            "en": "Cowley Road and nearby East Oxford have several halal butchers and international grocers. Oxford University Islamic Society maintains a practical shopping list, including Al-Amin at 216 Cowley Road, Maroc Deli at 66 Cowley Road and Tahmid Stores at 53 Cowley Road. Check current stock, opening times and any certification details directly with each shop."
+          },
+          "refs": [
+            {
+              "label": "OUISoc: halal shopping guide",
+              "url": "https://ouisoc.org/halal-food-in-oxford"
+            }
+          ],
+          "id": "halal-groceries"
+        },
+        {
+          "q": {
+            "ar": "أين أشتري ملابس الشتاء والأغراض المنزلية الأساسية بأسعار مناسبة؟",
+            "en": "Where can I buy affordable winter clothing and household essentials?"
+          },
+          "a": {
+            "ar": "لملابس الاستخدام اليومي وطبقات الشتاء، قارِن متاجر مثل Uniqlo وPrimark ومحلات وسط أكسفورد والمتاجر الخيرية. وللأدوات المنزلية الأساسية جرّب Argos والمتاجر الكبيرة. اجعل الأولوية لمعطف مقاوم للمطر وطبقة دافئة وحذاء مناسب، فشتاء أكسفورد قد يكون باردًا وممطرًا.",
+            "en": "For everyday clothing and winter layers, compare high-street retailers such as Uniqlo and Primark, the Oxford city-centre shopping area and local charity shops. For basic household equipment, try Argos and larger homeware stores. Prioritise a waterproof coat, warm mid-layer and suitable shoes; the weather can be wet and cold through winter."
+          },
+          "refs": [
+            {
+              "label": "Uniqlo UK: winter clothing",
+              "url": "https://www.uniqlo.com/uk/en/"
+            },
+            {
+              "label": "Primark UK: clothing",
+              "url": "https://www.primark.com/en-gb"
+            },
+            {
+              "label": "Argos UK: household essentials",
+              "url": "https://www.argos.co.uk/"
+            }
+          ],
+          "id": "winter-clothing"
+        },
+        {
+          "q": {
+            "ar": "كيف أقدّم لطفلي على مدرسة في أوكسفوردشاير عند الانتقال خلال العام؟",
+            "en": "How do I apply for an Oxfordshire school place when moving mid-year?"
+          },
+          "a": {
+            "ar": "استخدم بوابة القبول المدرسي الإلكترونية التابعة لمجلس أوكسفوردشاير واختر طلب «In-year» للصف المطلوب عند الانتقال خلال العام. أدخل العنوان وتفضيلات المدارس وأرسل النموذج كاملًا؛ فالمسودة غير المرسلة لا تُعالج. يوضح المجلس الفرق بين التسجيل المعتاد لشهر سبتمبر والانتقال أثناء السنة الدراسية.",
+            "en": "Use Oxfordshire County Council’s online school admissions portal and choose an in-year application for the child’s intended year group. Enter your address and preferences and submit the completed form; an unsent draft will not be processed. The council explains the separate process for usual September entry and mid-year transfers."
+          },
+          "refs": [
+            {
+              "label": "Oxfordshire: school admissions",
+              "url": "https://www.oxfordshire.gov.uk/schools/apply-school-place/online-applications"
+            }
+          ],
+          "id": "school-places"
+        },
+        {
+          "q": {
+            "ar": "كيف أستمر في استقبال رسائل التحقق على رقمي السعودي أثناء وجودي في بريطانيا؟",
+            "en": "How do I keep receiving verification codes on my Saudi phone number while abroad?"
+          },
+          "a": {
+            "ar": "قبل السفر، تأكد من شركة الاتصالات السعودية أن شريحتك نشطة وقادرة على استقبال الرسائل أثناء التجوال في بريطانيا. حدّث وسائل استرداد الحساب، واختبر الاستقبال بعد الوصول، واحتفظ بالوصول إلى شريحة SIM أو eSIM الأصلية. إذا توقفت الرسائل فتواصل مع دعم التجوال الرسمي للمشغّل بدل الاعتماد على حلول غير موثوقة.",
+            "en": "Before travelling, confirm with your Saudi mobile operator that your SIM remains active and can receive SMS while roaming in the UK. Check that account-recovery methods are up to date, test reception after arrival, and keep access to your original SIM or eSIM. If messages stop, use the provider’s official roaming-support channel rather than relying on third-party workarounds."
+          },
+          "refs": [
+            {
+              "label": "STC: international roaming support",
+              "url": "https://www.stc.com.sa/en/personal/mobile/roaming/roaming-prices/roaming-outside-the-kingdom.html"
+            }
+          ],
+          "id": "saudi-sim-codes"
+        }
+      ]
+    },
+    {
+      "id": "prayer-health",
+      "title": {
+        "en": "Prayer, health & wellbeing",
+        "ar": "الصلاة والصحة والدعم"
+      },
+      "items": [
+        {
+          "q": {
+            "ar": "أين يقع المصلى الإسلامي الرئيس في المنطقة العلمية بأكسفورد؟",
+            "en": "Where is the main Muslim prayer room in the Oxford Science Area?"
+          },
+          "a": {
+            "ar": "يقع مصلى الجمعية الإسلامية بجامعة أكسفورد داخل مبنى Robert Hooke Building في Parks Road برمز بريدي OX1 3PP. وتوضح الجمعية إتاحة الوصول للطلاب على مدار الساعة، مع الحاجة إلى رمز للدخول يُطلب عبر وسيلة التواصل المبينة في صفحة المصلى. لا تنشر رموز دخول قديمة للعامة.",
+            "en": "Oxford University Islamic Society’s dedicated prayer room is inside the Robert Hooke Building on Parks Road, OX1 3PP. The society describes 24-hour student access; the entrance requires an access code, requested from the Islamic Society using the contact instructions on its prayer-spaces page. Do not share an old access code publicly."
+          },
+          "refs": [
+            {
+              "label": "OUISoc: prayer room access",
+              "url": "https://ouisoc.org/prayer-spaces"
+            }
+          ],
+          "id": "prayer-room"
+        },
+        {
+          "q": {
+            "ar": "أين أتحقق من أوقات صلاة الجمعة الحالية في أكسفورد؟",
+            "en": "Where can I check the current Friday prayer times at Oxford University?"
+          },
+          "a": {
+            "ar": "راجع جدول الصلاة الحالي الذي تنشره الجمعية الإسلامية الجامعية؛ فهو يتضمن أوقات جماعات الجمعة والتحديثات الشهرية. تحقّق من الوقت والمكان قبل الجمعة بدل الاعتماد على إعلان فصل سابق أو تطبيق مواقيت عام. كما توضح صفحة المصلى طريقة الوصول إلى Robert Hooke Building.",
+            "en": "Use Oxford University Islamic Society’s current prayer timetable, which includes the Friday congregations and updates by month. Check the exact time and venue shortly before Friday instead of relying on a previous term’s poster or a general prayer-time app. The society’s prayer-spaces page also explains how to reach the Robert Hooke Building."
+          },
+          "refs": [
+            {
+              "label": "OUISoc: current prayer times",
+              "url": "https://ouisoc.org/prayer-times"
+            },
+            {
+              "label": "OUISoc: prayer room access",
+              "url": "https://ouisoc.org/prayer-spaces"
+            }
+          ],
+          "id": "friday-prayer-times"
+        },
+        {
+          "q": {
+            "ar": "هل توجد أماكن للصلاة في مستشفيَي جون رادكليف وتشرشل؟",
+            "en": "Are there prayer spaces at the John Radcliffe and Churchill hospitals?"
+          },
+          "a": {
+            "ar": "نعم. تذكر مستشفيات أكسفورد مصلى في المستوى الثاني بمستشفى John Radcliffe ومساحة إضافية في الجناح الغربي. وفي مستشفى Churchill توجد غرفة هدوء مقابل WHSmith قرب المدخل الرئيس، إضافة إلى مصلى بالقرب من OCDEM. تنشر إدارة المستشفيات مواقعها وتفاصيل صلاة الجمعة في صفحة Chaplaincy.",
+            "en": "Yes. Oxford University Hospitals lists a main chapel/prayer room on Level 2 at John Radcliffe Hospital and an additional space in its West Wing. At Churchill Hospital, it lists a quiet space opposite WHSmith near the main entrance and a chapel/prayer room near OCDEM. The Trust publishes the locations and any Friday-prayer details on its Chaplaincy page."
+          },
+          "refs": [
+            {
+              "label": "Oxford University Hospitals: chaplaincy",
+              "url": "https://www.ouh.nhs.uk/patient-guide/chaplaincy/"
+            }
+          ],
+          "id": "hospital-prayer-spaces"
+        },
+        {
+          "q": {
+            "ar": "كيف أسجّل لدى طبيب الأسرة (GP) بعد الانتقال إلى أكسفورد؟",
+            "en": "How do I register with a local NHS GP surgery after moving to Oxford?"
+          },
+          "a": {
+            "ar": "افتح خدمة «Find a GP» التابعة لـNHS وأدخل الرمز البريدي لسكنك في أكسفورد، ثم اختر عيادة تقبل التسجيل من منطقتك. اتبع خطوات التسجيل الإلكتروني وقدّم المعلومات الشخصية والصحية المطلوبة في النموذج. يسجّل كل فرد من أفراد الأسرة عادةً بصورة مستقلة.",
+            "en": "Open the NHS “Find a GP” service, enter your Oxford postcode and choose a surgery accepting patients from your area. Follow its online registration instructions and provide the personal and medical information requested on the form. Each family member normally completes their own registration."
+          },
+          "refs": [
+            {
+              "label": "NHS: find a GP",
+              "url": "https://www.nhs.uk/service-search/find-a-gp/"
+            }
+          ],
+          "id": "register-gp"
+        },
+        {
+          "q": {
+            "ar": "أين يمكن لطلاب أكسفورد طلب الدعم النفسي والإرشاد الطلابي؟",
+            "en": "Where can Oxford students access counselling and wellbeing support?"
+          },
+          "a": {
+            "ar": "تقدم خدمة الإرشاد الطلابي في أكسفورد مواعيد فردية سرية ومجموعات وورش عمل للطلاب. استخدم صفحة حجز المواعيد الرسمية لمعرفة طريقة طلب الخدمة، ويمكن لفريق الدعم في كليتك إرشادك إلى الموارد الجامعية. الخدمة ليست مخصصة للاستجابة للطوارئ.",
+            "en": "Oxford’s Student Counselling Service offers confidential appointments, groups and workshops for students. Use its official appointment page to learn how to request support; your college welfare team can also direct you to university services. The service is not an emergency-response service."
+          },
+          "refs": [
+            {
+              "label": "Oxford: counselling appointments",
+              "url": "https://www.ox.ac.uk/students/welfare/counselling/appointment"
+            }
+          ],
+          "id": "counselling"
+        }
+      ]
+    },
+    {
+      "id": "community",
+      "title": {
+        "en": "Community, events & activities",
+        "ar": "المجتمع والفعاليات والأنشطة"
+      },
+      "items": [
+        {
+          "q": {
+            "ar": "كيف أتعرف على طلاب وباحثين سعوديين في أكسفورد؟",
+            "en": "How can I meet other Saudi students or researchers at Oxford?"
+          },
+          "a": {
+            "ar": "ابدأ بالفعاليات التي تعلنها الجمعية السعودية في أكسفورد وبأنشطة غرفة الدراسات العليا في كليتك (MCR/GCR). كما تضم قائمة الجمعيات الجامعية أندية تخصصية وإقليمية، وتساعد ندوات الأقسام في التعرف على الباحثين في مجالك. استخدم قنوات التواصل المعلنة للفعاليات والجمعيات بدل تداول بيانات الآخرين الشخصية دون إذن.",
+            "en": "Start with events announced by the Oxford Saudi Society and with your college’s Middle or Graduate Common Room (MCR/GCR). Oxford’s registered clubs list also includes subject-based and regional societies, and departmental seminars are useful for meeting researchers in your field. Use public event and society contact channels rather than circulating personal contact details without permission."
+          },
+          "refs": [
+            {
+              "label": "Oxford: clubs and societies",
+              "url": "https://www.ox.ac.uk/students/life/clubs/clubs/registered-clubs/current-clubs-and-societies"
+            },
+            {
+              "label": "Oxford: events listings",
+              "url": "https://www.ox.ac.uk/events"
+            }
+          ],
+          "id": "meet-saudis"
+        },
+        {
+          "q": {
+            "ar": "أين أجد المحاضرات والمعارض والفعاليات القادمة في أكسفورد؟",
+            "en": "Where can I find talks, exhibitions and events happening in Oxford?"
+          },
+          "a": {
+            "ar": "تصفح صفحة Oxford Events التابعة للجامعة، ثم جداول الأقسام والكليات والمتاحف ذات الصلة باهتماماتك. توضح إعلانات الفعاليات التسجيل أو الحجز عند الحاجة، فبعضها مفتوح للجمهور وبعضها محدود الحضور. اعتمد صفحة الجهة المنظمة للتحقق من المكان وشروط الدخول.",
+            "en": "Browse the University’s Oxford Events page and then check the calendars of relevant departments, colleges and museums. Event listings indicate registration or booking where applicable; some university events are public and others are restricted. Always use the organiser’s listing for the final venue and entry details."
+          },
+          "refs": [
+            {
+              "label": "Oxford: events listings",
+              "url": "https://www.ox.ac.uk/events"
+            }
+          ],
+          "id": "oxford-events"
+        },
+        {
+          "q": {
+            "ar": "كيف أبحث عن جمعيات وأندية أكسفورد المرتبطة باهتماماتي؟",
+            "en": "How can I find Oxford clubs and groups related to my interests?"
+          },
+          "a": {
+            "ar": "استخدم سجل أندية وجمعيات الجامعة للبحث بحسب التخصص أو النشاط، ثم ادخل إلى صفحة النادي وقنواته المعلنة. وتنظم غرف الدراسات العليا في الكليات (MCR/GCR) أنشطة أصغر أيضًا. تضم القوائم مجالات علمية وثقافية ومهنية وترفيهية.",
+            "en": "Use the University’s register of clubs and societies to search by subject or activity, then open the individual club’s published contact or events page. Your college MCR/GCR also organises smaller activities. The registered list covers academic, cultural, professional and recreational interests."
+          },
+          "refs": [
+            {
+              "label": "Oxford: clubs and societies",
+              "url": "https://www.ox.ac.uk/students/life/clubs/clubs/registered-clubs/current-clubs-and-societies"
+            }
+          ],
+          "id": "clubs-societies"
+        },
+        {
+          "q": {
+            "ar": "أين أمارس كرة القدم أو أستخدم النادي الرياضي في أكسفورد؟",
+            "en": "Where can I play football, use a gym or join sporting activities in Oxford?"
+          },
+          "a": {
+            "ar": "توفر Oxford University Sport مرافق في Iffley Road، منها صالات رياضية ومسبح وملاعب رياضات المضرب. وتنشر الجامعة قائمة الأندية الرياضية، كما تدير الكليات فرقًا ومرافق خاصة بها. تحقّق من نوع النشاط والعضوية وطريقة الحجز قبل الذهاب لأن الدخول يختلف من مرفق لآخر.",
+            "en": "Oxford University Sport operates facilities at Iffley Road, including gyms, a pool and racket-sport spaces. The University also lists student sports clubs, while colleges run their own teams and facilities. Check the sport, membership type and booking instructions before visiting; access varies by venue."
+          },
+          "refs": [
+            {
+              "label": "Oxford: sport and facilities",
+              "url": "https://www.ox.ac.uk/students/life/sport"
+            }
+          ],
+          "id": "sport"
+        }
+      ]
+    }
+  ]
+}

@@ -16,6 +16,7 @@ The site is a *static* site: a small program (`build/build.js`) reads the conten
 src/content/settings.json      fees, payment links, bank details, email, social accounts
 src/content/events/*.json      one file per event (titles, copy, artwork, proposed date and venue)
 src/content/venues.json        the venues events can use
+src/content/faq.json           the FAQ: sections → questions (EN + AR) with official reference links; edited in the desk under FAQ
 src/assets/events/             event artwork (web 1080px + thumbs 440px)
 netlify/functions/api.mjs      the events API (/api/*): interest, bookings, tickets, check-in, committee desk
 netlify/functions/jobs.mjs     every 10 minutes: send queued email, expire waitlist offers, reminders, retention

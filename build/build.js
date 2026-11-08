@@ -7,6 +7,7 @@ const fs = require('fs');
 const path = require('path');
 const cheerio = require('cheerio');
 const EV = require('./events');
+const FAQ = require('./faq');
 
 const ROOT = path.join(__dirname, '..');
 const SRC = path.join(ROOT, 'src');
@@ -21,6 +22,7 @@ const settings = readJson(path.join(SRC, 'content/settings.json'));
 const roles = readJson(path.join(SRC, 'content/roles.json'));
 const committees = readDir(path.join(SRC, 'content/committees')).sort((a, b) => String(b.term).localeCompare(String(a.term)));
 const events = EV.loadEvents();
+const faq = FAQ.load();
 const people = readDir(path.join(SRC, 'content/people')).filter((p) => p.name && p.published !== false).sort((a, b) => String(a.name).localeCompare(String(b.name)));
 const BASE = (settings.domain || 'https://saudi-oxford.org').replace(/\/$/, '');
 
@@ -34,7 +36,7 @@ const ROUTES = [
   { id: 'community', path: 'community', title: { en: 'Community', ar: 'مجتمعنا' }, desc: { en: 'Students, alumni and friends of the Oxford Saudi Society — a public directory of people who have chosen to be listed.', ar: 'طلبة وخريجون وأصدقاء الجمعية السعودية في أكسفورد — دليل عام لمن اختار الظهور فيه.' } },
   { id: 'ideas', path: 'ideas', title: { en: 'Ideas', ar: 'أفكار' }, desc: { en: 'Suggest, vote on and discuss ideas for the Oxford Saudi Society — the committee reviews the board every term.', ar: 'اقترح أفكاراً للجمعية السعودية في أكسفورد وصوّت عليها وناقشها — تراجع اللجنة اللوحة كل فصل دراسي.' } },
   { id: 'join', path: 'join', title: { en: 'Join', ar: 'انضم إلينا' }, desc: { en: 'Become a member of the Oxford Saudi Society. Free for Saudi students; a small annual fee for everyone else.', ar: 'كن عضواً في الجمعية السعودية في أكسفورد. مجاناً للطلبة السعوديين ورسم سنوي بسيط لغيرهم.' } },
-  { id: 'faq', path: 'faq', title: { en: 'FAQ', ar: 'الأسئلة الشائعة' }, desc: { en: 'Answers to the questions we are asked most about membership, events and the Society.', ar: 'إجابات عن أكثر الأسئلة التي تصلنا حول العضوية والفعاليات والجمعية.' } },
+  { id: 'faq', path: 'faq', title: { en: 'FAQ — studying and living in Oxford', ar: 'الأسئلة الشائعة — الدراسة والحياة في أكسفورد' }, desc: { en: 'Practical answers for Saudi students in Oxford: Safir and the Cultural Bureau, arrival and transport, housing, University services, daily life, prayer and health, and the Society itself.', ar: 'إجابات عملية للطلبة السعوديين في أكسفورد: سفير والملحقية، الوصول والتنقل، السكن، الخدمات الجامعية، الحياة اليومية، الصلاة والصحة، والجمعية نفسها.' } },
   { id: 'privacy', path: 'privacy', title: { en: 'Privacy notice', ar: 'إشعار الخصوصية' }, desc: { en: 'How the Oxford Saudi Society handles your information.', ar: 'كيف تتعامل الجمعية السعودية في أكسفورد مع بياناتك.' } },
   { id: 'terms', path: 'terms', title: { en: 'Terms of use', ar: 'شروط الاستخدام' }, desc: { en: 'Terms of use for the Oxford Saudi Society website.', ar: 'شروط استخدام موقع الجمعية السعودية في أكسفورد.' } },
   { id: 'past-committees', path: 'committees', title: { en: 'Committees', ar: 'اللجان' }, desc: { en: 'The people who have led the Oxford Saudi Society, year by year.', ar: 'من قاد الجمعية السعودية في أكسفورد عبر السنين.' } },
@@ -150,6 +152,7 @@ function renderLang(lang) {
   }
   // data-driven regions
   $('#ev-index').html(EV.indexHtml(events, lang, urlFor, settings));
+  $('#faq-page').html(FAQ.pageHtml(faq, lang, urlFor, settings));
   const ne = EV.nextEvent(events, lang);
   if (ne) { $('#next-title').html(`<a href="${urlFor('event:' + ne.e.slug, lang)}">${esc(ne.title)}</a>`); $('#next-sub').text(ne.sub); }
   else { $('#next-title').html(ph(s.nextPh)); $('#next-sub').html(ph(s.nextSubPh)); }

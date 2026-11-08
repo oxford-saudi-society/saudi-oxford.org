@@ -105,6 +105,58 @@
     var qi = $('dir-q'); if (qi) qi.addEventListener('input', function () { q = this.value; applyDir(); });
   }
 
+  /* ── FAQ: search, topic chips, expand/collapse, deep links ───────── */
+  (function faq() {
+    var page = $('faq-page'); if (!page || !page.children.length) return;
+    var items = Array.prototype.slice.call(page.querySelectorAll('.faq-item'));
+    var secs = Array.prototype.slice.call(page.querySelectorAll('.faq-sec'));
+    var q = $('faq-q'), count = $('faq-count'), toggle = $('faq-toggle'), empty = $('faq-empty'), clear = $('faq-clear');
+    var chips = Array.prototype.slice.call(page.querySelectorAll('.faq-nav .chip'));
+    var total = items.length;
+    var countText = function (n) { return lang === 'ar' ? new Intl.NumberFormat('ar-SA-u-nu-arab').format(n) + ' ' + (n === 1 ? 'سؤال' : n === 2 ? 'سؤالان' : n <= 10 ? 'أسئلة' : 'سؤالًا') : n + ' question' + (n === 1 ? '' : 's'); };
+    function norm(x) { return String(x || '').toLowerCase().replace(/[ً-ْـ]/g, '').replace(/[أإآ]/g, 'ا').replace(/ى/g, 'ي').replace(/ة/g, 'ه').replace(/\s+/g, ' ').trim(); }
+    items.forEach(function (d) { d.setAttribute('data-search', norm(d.getAttribute('data-search'))); });
+    var wasOpen = null; // remembered open state while a search is active
+    function apply() {
+      var qq = norm(q.value), shown = 0;
+      if (qq && !wasOpen) { wasOpen = items.map(function (d) { return d.open; }); }
+      items.forEach(function (d) { var ok = !qq || d.getAttribute('data-search').indexOf(qq) !== -1; d.hidden = !ok; if (ok) shown++; if (qq && ok && qq.length >= 2) d.open = true; });
+      if (!qq && wasOpen) { items.forEach(function (d, i) { d.open = wasOpen[i]; }); wasOpen = null; }
+      secs.forEach(function (sec) {
+        var n = sec.querySelectorAll('.faq-item:not([hidden])').length; sec.hidden = n === 0;
+        var lab = sec.querySelector('.faq-sec-n'); if (lab) lab.textContent = countText(n);
+        var chip = chips.filter(function (c) { return c.getAttribute('data-sec') === sec.getAttribute('data-sec'); })[0]; if (chip) chip.hidden = n === 0;
+      });
+      count.textContent = countText(shown); empty.hidden = shown > 0;
+      try { var p = new URLSearchParams(location.search); if (qq) p.set('q', q.value.trim()); else p.delete('q'); history.replaceState(null, '', location.pathname + (p.toString() ? '?' + p : '') + location.hash); } catch (e) { /* ignore */ }
+      syncToggle();
+    }
+    function syncToggle() { var vis = items.filter(function (d) { return !d.hidden; }), allOpen = vis.length > 0 && vis.every(function (d) { return d.open; }); toggle.textContent = toggle.getAttribute(allOpen ? 'data-collapse' : 'data-expand'); toggle.setAttribute('aria-pressed', allOpen ? 'true' : 'false'); }
+    toggle.addEventListener('click', function () { var vis = items.filter(function (d) { return !d.hidden; }), allOpen = vis.every(function (d) { return d.open; }); vis.forEach(function (d) { d.open = !allOpen; }); wasOpen = null; syncToggle(); });
+    q.addEventListener('input', apply);
+    clear.addEventListener('click', function () { q.value = ''; apply(); q.focus(); });
+    try { var p0 = new URLSearchParams(location.search); if (p0.get('q')) { q.value = p0.get('q'); } } catch (e) { /* ignore */ }
+    // deep links: open the question named in the hash; write the hash when a question is opened
+    function openHash() { var id = decodeURIComponent((location.hash || '').slice(1)); if (!id) return; var d = document.getElementById(id); if (d && d.classList.contains('faq-item')) { d.open = true; setTimeout(function () { d.scrollIntoView({ block: 'start', behavior: 'smooth' }); }, 60); } }
+    items.forEach(function (d) {
+      d.addEventListener('toggle', function () { if (d.open && !q.value) { try { history.replaceState(null, '', location.pathname + location.search + '#' + d.id); } catch (e) { /* ignore */ } } syncToggle(); });
+      var cp = d.querySelector('.faq-copy');
+      if (cp) cp.addEventListener('click', function () { var url = location.origin + location.pathname + '#' + d.id, keep = cp.textContent; var pr = (navigator.clipboard && navigator.clipboard.writeText) ? navigator.clipboard.writeText(url) : Promise.reject(); pr.then(function () { cp.textContent = cp.getAttribute('data-copied'); }, function () { cp.textContent = url; }); setTimeout(function () { cp.textContent = keep; }, 2200); });
+    });
+    window.addEventListener('hashchange', openHash);
+    // topic chips: highlight the section in view
+    if ('IntersectionObserver' in window) {
+      var current = null;
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) { if (en.isIntersecting) current = en.target.getAttribute('data-sec'); });
+        chips.forEach(function (c) { c.classList.toggle('on', c.getAttribute('data-sec') === current); });
+      }, { rootMargin: '-120px 0px -60% 0px', threshold: 0 });
+      secs.forEach(function (sec) { io.observe(sec); });
+    }
+    window.addEventListener('beforeprint', function () { items.forEach(function (d) { d.open = true; }); });
+    apply(); openHash();
+  })();
+
   /* ── join form ─────────────────────────────────────────────────── */
   var form = $('join-form'); if (!form) return;
   var done = $('join-done');

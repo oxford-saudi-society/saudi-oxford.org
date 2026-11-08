@@ -138,6 +138,33 @@ collections:
           - { label: "Artwork approved by the committee", name: "approved", widget: "boolean", default: false }
       - { label: "Published", name: "published", widget: "boolean", default: true }
 
+  - name: "faq"
+    label: "FAQ"
+    description: "Questions and answers shown on /faq/ (English) and /ar/faq/ (Arabic). Keep each answer short and factual; put official sources in the references."
+    files:
+      - name: "faq"
+        label: "Questions & answers"
+        file: "src/content/faq.json"
+        fields:
+          - { label: "Last reviewed (YYYY-MM-DD)", name: "updated", widget: "string", hint: "Shown at the foot of the page" }
+          - { label: "Introduction", name: "intro", widget: "object", fields: [ { label: "English", name: "en", widget: "text" }, { label: "Arabic", name: "ar", widget: "text" } ] }
+          - label: "Sections"
+            name: "sections"
+            widget: "list"
+            summary: "{{fields.title.en}}"
+            fields:
+              - { label: "Section id (letters, digits, dashes — used in links)", name: "id", widget: "string", pattern: ["^[a-z0-9-]+$", "lower-case letters, digits and dashes only"] }
+              - { label: "Title", name: "title", widget: "object", fields: [ { label: "English", name: "en", widget: "string" }, { label: "Arabic", name: "ar", widget: "string" } ] }
+              - label: "Questions"
+                name: "items"
+                widget: "list"
+                summary: "{{fields.q.en}}"
+                fields:
+                  - { label: "Question id (letters, digits, dashes — the link people share)", name: "id", widget: "string", pattern: ["^[a-z0-9-]+$", "lower-case letters, digits and dashes only"] }
+                  - { label: "Question", name: "q", widget: "object", fields: [ { label: "English", name: "en", widget: "string" }, { label: "Arabic", name: "ar", widget: "string" } ] }
+                  - { label: "Answer", name: "a", widget: "object", hint: "Plain text. A link is written as [words](https://…) or [words](#ideas) for a site page.", fields: [ { label: "English", name: "en", widget: "text" }, { label: "Arabic", name: "ar", widget: "text" } ] }
+                  - { label: "Official references", name: "refs", widget: "list", required: false, summary: "{{fields.label}}", fields: [ { label: "Label (e.g. SACB: financial guarantees)", name: "label", widget: "string" }, { label: "Link (https://…)", name: "url", widget: "string", pattern: ["^https://", "must start with https://"] } ] }
+
   - name: "venues"
     label: "Venues"
     files:
