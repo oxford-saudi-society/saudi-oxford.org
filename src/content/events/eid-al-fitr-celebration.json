@@ -1,0 +1,58 @@
+{
+  "id": "oss-004",
+  "slug": "eid-al-fitr-celebration",
+  "order": 4,
+  "title": {
+    "en": "Eid al-Fitr Celebration",
+    "ar": "العيد يجمعنا — معايدة عيد الفطر المبارك"
+  },
+  "description": {
+    "en": "An Eid al-Fitr celebration to exchange greetings, share traditional hospitality and spend time with the Oxford community. The event is planned after the anticipated Eid date.",
+    "ar": "لقاء للمعايدة بمناسبة عيد الفطر المبارك، نتبادل فيه التهاني ونجتمع في أجواء من الألفة والضيافة السعودية."
+  },
+  "agenda": {
+    "en": [
+      "Eid greetings",
+      "community activities",
+      "hospitality."
+    ],
+    "ar": [
+      "تبادل التهاني",
+      "أنشطة اجتماعية",
+      "ضيافة العيد."
+    ]
+  },
+  "category": "religion",
+  "startLocal": "2027-03-12T18:00:00",
+  "endLocal": "2027-03-12T21:00:00",
+  "timezone": "Europe/London",
+  "venueKey": "noa-main-hall",
+  "audience": "public",
+  "price": {
+    "status": "free",
+    "currency": "GBP",
+    "amountMinor": 0
+  },
+  "bookingRequired": true,
+  "registrationMode": "interest_only",
+  "eventStatus": "proposed",
+  "visibility": "published_as_proposal",
+  "capacity": null,
+  "waitlistEnabled": false,
+  "dateNotice": {
+    "en": "The Eid-related timing is provisional and may be changed following the lunar-calendar announcement.",
+    "ar": "قد يختلف الموعد الهجري يومًا بحسب إعلان دخول الشهر، وستؤكد اللجنة أي تعديل."
+  },
+  "image": {
+    "web": "/assets/events/web/event-04-eid-al-fitr-celebration.webp",
+    "thumb": "/assets/events/thumbs/event-04-eid-al-fitr-celebration.webp",
+    "alt": {
+      "en": "Illustrated concept artwork for Eid al-Fitr Celebration, Oxford Saudi Society.",
+      "ar": "تصميم توضيحي لفعالية العيد يجمعنا — معايدة عيد الفطر المبارك للجمعية السعودية بجامعة أكسفورد."
+    },
+    "credit": "AI-generated concept artwork supplied through the society planning conversation.",
+    "reviewNote": "AI-generated illustrative image, not a photograph of an actual event; inspect logos/flags for authenticity.",
+    "approved": false
+  },
+  "published": true
+}

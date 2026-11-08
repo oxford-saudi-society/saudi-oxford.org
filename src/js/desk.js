@@ -1,0 +1,308 @@
+/* /admin/events/ — the committee desk: programme status, bookings, check-in, notices, members, staff, audit.
+   Everything here is enforced again on the server; the page only shows what the signed-in role may do. */
+(function () {
+  'use strict';
+  var O = window.OSS, $ = O.$, esc = O.esc, lang = O.lang, base = O.base, L = O.L;
+  var S = {
+    en: {
+      title: 'Committee desk', sub: 'Events operations', signinH: 'Staff sign-in', signinP: 'Enter your committee email and we will send you a sign-in link.', email: 'Email', send: 'Email me a sign-in link', sent: 'Check your email', notStaff: 'This address is not on the staff list. Ask a super admin to add you.',
+      tabs: { overview: 'Programme', checkin: 'Check-in', mail: 'Email queue', members: 'Members', staff: 'Staff', audit: 'Audit log' }, back: '← Programme',
+      th: { event: 'Event', when: 'When', status: 'Status', mode: 'Registration', cap: 'Capacity', interested: 'Interest', confirmed: 'Confirmed', waitlist: 'Waitlist', checkedIn: 'Checked in', actions: '' },
+      st: { proposed: 'Proposed', confirmed: 'Confirmed', postponed: 'Postponed', cancelled: 'Cancelled', completed: 'Completed' },
+      mode: { none: 'No booking', interest_only: 'Interest only', open: 'Open', waitlist_only: 'Waitlist only', closed: 'Closed' },
+      state: { interest: 'Taking interest', soon: 'Opening soon', book: 'Booking open', waitlist: 'Waitlist open', full: 'Full', closed: 'Closed', none: 'No booking', cancelled: 'Cancelled', tbc: 'Date TBC', past: 'Past' },
+      manage: 'Manage', roster: 'Bookings', checkin: 'Check-in', comms: 'Notices', unlimited: 'unlimited', publish: 'Publish site', publishHint: 'Rebuilds the public pages from the desk content (needs the build hook).', published: 'Publish started.',
+      edit: 'Event settings', editP: 'Dates and venue are proposed until you confirm them. Registration can only open on a confirmed event; tickets are issued only then.',
+      f: { status: 'Event status', mode: 'Registration mode', audience: 'Audience', capacity: 'Capacity (blank = unlimited)', waitlist: 'Waitlist when full', opens: 'Booking opens (Oxford time, optional)', closes: 'Booking closes (optional)', start: 'Starts (Oxford time)', end: 'Ends', venue: 'Venue', price: 'Price', reason: 'Reason / note for attendees (optional)', save: 'Save changes', saved: 'Saved.', public: 'All welcome', members: 'Members only', free: 'Free', tbd: 'To be announced', publishedF: 'Visible on the website' },
+      previewH: 'This change notifies registered people', previewP: '{n} people will receive an email. The calendar entry version becomes {v}.', confirmSend: 'Apply and notify', cancelBtn: 'Go back',
+      counts: { interested: 'Interest', confirmed: 'Confirmed', waitlisted: 'Waitlisted', offered: 'Offered', checked_in: 'Checked in', cancelled: 'Cancelled' },
+      rosterH: 'Bookings & interest', search: 'Search name or email', all: 'All statuses', csv: 'Download CSV', none: 'No registrations match.', cancelReg: 'Cancel', resend: 'Resend ticket', cancelQ: 'Cancel this registration?', cancelT: 'The person is emailed; a freed seat goes to the waitlist.', reasonPrompt: 'Reason (sent to the person)', yes: 'Yes, cancel', done: 'Done.', page: 'Page {p} of {n}', prev: 'Previous', next: 'Next',
+      rth: { name: 'Name', email: 'Email', status: 'Status', kind: 'Type', registered: 'Registered', member: 'Member', news: 'News opt-in', actions: '' }, kind: { interest: 'Interest', booking: 'Booking' },
+      rst: { interested: 'Interested', confirmed: 'Confirmed', waitlisted: 'Waitlisted', offered: 'Offered', checked_in: 'Checked in', cancelled: 'Cancelled', expired: 'Expired', declined: 'Declined' },
+      scanH: 'Scan tickets', scanP: 'Point the camera at the QR code. If the camera is unavailable, paste the ticket code or search by name.', startCam: 'Start camera', stopCam: 'Stop camera', noCam: 'Camera scanning is not supported in this browser — use the code field or name search.', codeF: 'Ticket code', admit: 'Admit', nameF: 'Find by name (3+ letters)', find: 'Find', manualAdmit: 'Admit manually', ready: 'Ready to scan', chooseEvent: 'Choose the event first',
+      res: { admitted: 'Admitted', duplicate: 'Already checked in', invalid: 'Not a valid ticket', wrong_event: 'Ticket is for another event', revoked: 'Ticket cancelled or replaced', not_confirmed: 'Registration not confirmed' }, at: 'at {t}', tally: '{a} of {c} checked in',
+      commsH: 'Notice to registered people', commsP: 'Write both languages; each person receives the language they registered in. Preview first.', to: 'Send to', seg: { confirmed: 'Confirmed attendees', waitlisted: 'Waitlist', interested: 'Registered interest', all_active: 'Everyone active' }, subject: 'Subject', body: 'Message', preview: 'Preview', sendN: 'Send to {n} people', queued: 'Queued {n} emails.',
+      mailH: 'Email queue', mth: { when: 'Queued', kind: 'Type', to: 'To', subject: 'Subject', status: 'Status', attempts: 'Tries', error: 'Last error', actions: '' }, retry: 'Retry', process: 'Send queued now', filter: 'All', processed: 'Sent {s}, failed {f}.',
+      membersH: 'Verified members', membersP: 'Members-only events check this list. Add people once their membership is approved; revoke when it lapses.', addH: 'Add or update a member', name: 'Name', tier: 'Membership type', validUntil: 'Valid until (optional)', mstatus: 'Status', mst: { approved: 'Approved', pending: 'Pending', revoked: 'Revoked', expired: 'Expired' }, add: 'Save member', bulkH: 'Paste a list', bulkP: 'One per line: email, name (optional). All are saved as approved.', bulkBtn: 'Import list', imported: 'Saved {n} members.', mth2: { email: 'Email', name: 'Name', status: 'Status', tier: 'Type', until: 'Valid until', by: 'Approved by' },
+      staffH: 'Staff & roles', staffP: 'super_admin: everything · events_admin: edit events, bookings, notices, members · checkin_staff: check-in only (optionally limited to chosen events).', role: 'Role', events: 'Limit to events (optional)', addStaff: 'Save staff member', disable: 'Remove', sth: { email: 'Email', name: 'Name', role: 'Role', events: 'Events', status: 'Status' }, active: 'Active', disabled: 'Removed',
+      auditH: 'Audit log', ath: { at: 'When', actor: 'Who', action: 'Action', resource: 'Resource', meta: 'Details' },
+      err: 'Something went wrong.', errCodes: { capacity_below_seated: 'Capacity cannot be lower than the seats already taken.', confirm_before_opening: 'Confirm the event (status = Confirmed) before opening registration.', paid_not_enabled: 'Paid events are not enabled yet.', bad_times: 'The end must be after the start.', forbidden: 'Your role does not allow this.', rate_limited: 'Too many requests — wait a moment.', build_hook_not_configured: 'The publish hook is not configured yet (NETLIFY_BUILD_HOOK).' },
+      signout: 'Sign out', who: 'Signed in as'
+    },
+    ar: {
+      title: 'مكتب اللجنة', sub: 'إدارة الفعاليات', signinH: 'دخول أعضاء اللجنة', signinP: 'أدخل بريدك في اللجنة وسنرسل لك رابط دخول.', email: 'البريد الإلكتروني', send: 'أرسل لي رابط الدخول', sent: 'تحقّق من بريدك', notStaff: 'هذا البريد ليس في قائمة الموظفين. اطلب من المشرف العام إضافتك.',
+      tabs: { overview: 'البرنامج', checkin: 'تسجيل الحضور', mail: 'قائمة البريد', members: 'الأعضاء', staff: 'الموظفون', audit: 'سجل التدقيق' }, back: '→ البرنامج',
+      th: { event: 'الفعالية', when: 'الموعد', status: 'الحالة', mode: 'التسجيل', cap: 'السعة', interested: 'اهتمام', confirmed: 'مؤكد', waitlist: 'انتظار', checkedIn: 'حضر', actions: '' },
+      st: { proposed: 'مقترحة', confirmed: 'مؤكدة', postponed: 'مؤجلة', cancelled: 'ملغاة', completed: 'منتهية' },
+      mode: { none: 'بلا حجز', interest_only: 'اهتمام فقط', open: 'مفتوح', waitlist_only: 'قائمة انتظار فقط', closed: 'مغلق' },
+      state: { interest: 'يستقبل الاهتمام', soon: 'يُفتح قريبًا', book: 'الحجز مفتوح', waitlist: 'قائمة الانتظار مفتوحة', full: 'مكتمل', closed: 'مغلق', none: 'بلا حجز', cancelled: 'ملغاة', tbc: 'التاريخ قيد التأكيد', past: 'منتهية' },
+      manage: 'إدارة', roster: 'الحجوزات', checkin: 'الحضور', comms: 'الإشعارات', unlimited: 'غير محدود', publish: 'نشر الموقع', publishHint: 'يعيد بناء الصفحات العامة من محتوى المكتب (يتطلب رابط البناء).', published: 'بدأ النشر.',
+      edit: 'إعدادات الفعالية', editP: 'التواريخ والأماكن مقترحة حتى تؤكدها. لا يُفتح التسجيل إلا لفعالية مؤكدة، ولا تُصدر التذاكر إلا حينها.',
+      f: { status: 'حالة الفعالية', mode: 'وضع التسجيل', audience: 'الجمهور', capacity: 'السعة (فارغ = غير محدود)', waitlist: 'قائمة انتظار عند الاكتمال', opens: 'يُفتح الحجز (بتوقيت أكسفورد، اختياري)', closes: 'يُغلق الحجز (اختياري)', start: 'يبدأ (بتوقيت أكسفورد)', end: 'ينتهي', venue: 'المكان', price: 'الرسوم', reason: 'السبب / ملاحظة للحضور (اختياري)', save: 'حفظ التغييرات', saved: 'تم الحفظ.', public: 'مرحبًا بالجميع', members: 'للأعضاء فقط', free: 'مجاني', tbd: 'تُعلن لاحقًا', publishedF: 'ظاهرة على الموقع' },
+      previewH: 'هذا التغيير يُشعر المسجّلين', previewP: 'سيصل بريد إلى {n} شخصًا. يصبح إصدار التقويم {v}.', confirmSend: 'تطبيق وإرسال', cancelBtn: 'رجوع',
+      counts: { interested: 'اهتمام', confirmed: 'مؤكد', waitlisted: 'انتظار', offered: 'معروض', checked_in: 'حضر', cancelled: 'ملغى' },
+      rosterH: 'الحجوزات والاهتمام', search: 'ابحث بالاسم أو البريد', all: 'كل الحالات', csv: 'تنزيل CSV', none: 'لا تسجيلات مطابقة.', cancelReg: 'إلغاء', resend: 'إعادة إرسال التذكرة', cancelQ: 'إلغاء هذا التسجيل؟', cancelT: 'يُرسل بريد للشخص، ويذهب المقعد المحرر إلى قائمة الانتظار.', reasonPrompt: 'السبب (يُرسل للشخص)', yes: 'نعم، ألغِ', done: 'تم.', page: 'صفحة {p} من {n}', prev: 'السابق', next: 'التالي',
+      rth: { name: 'الاسم', email: 'البريد', status: 'الحالة', kind: 'النوع', registered: 'سُجّل في', member: 'عضو', news: 'أخبار', actions: '' }, kind: { interest: 'اهتمام', booking: 'حجز' },
+      rst: { interested: 'مهتم', confirmed: 'مؤكد', waitlisted: 'انتظار', offered: 'معروض', checked_in: 'حضر', cancelled: 'ملغى', expired: 'منتهٍ', declined: 'مرفوض' },
+      scanH: 'مسح التذاكر', scanP: 'وجّه الكاميرا نحو رمز QR. إن لم تتوفر الكاميرا فألصق رمز التذكرة أو ابحث بالاسم.', startCam: 'تشغيل الكاميرا', stopCam: 'إيقاف الكاميرا', noCam: 'المسح بالكاميرا غير مدعوم في هذا المتصفح — استخدم حقل الرمز أو البحث بالاسم.', codeF: 'رمز التذكرة', admit: 'إدخال', nameF: 'ابحث بالاسم (٣ أحرف فأكثر)', find: 'بحث', manualAdmit: 'إدخال يدوي', ready: 'جاهز للمسح', chooseEvent: 'اختر الفعالية أولًا',
+      res: { admitted: 'تم الإدخال', duplicate: 'سُجّل حضوره مسبقًا', invalid: 'تذكرة غير صالحة', wrong_event: 'التذكرة لفعالية أخرى', revoked: 'التذكرة ملغاة أو مستبدلة', not_confirmed: 'التسجيل غير مؤكد' }, at: 'في {t}', tally: 'حضر {a} من {c}',
+      commsH: 'إشعار للمسجّلين', commsP: 'اكتب باللغتين؛ يصل كل شخص باللغة التي سجّل بها. عاين أولًا.', to: 'إرسال إلى', seg: { confirmed: 'الحضور المؤكدون', waitlisted: 'قائمة الانتظار', interested: 'المهتمون', all_active: 'الجميع' }, subject: 'الموضوع', body: 'الرسالة', preview: 'معاينة', sendN: 'إرسال إلى {n}', queued: 'أُدرج {n} بريدًا في القائمة.',
+      mailH: 'قائمة البريد', mth: { when: 'أُدرج', kind: 'النوع', to: 'إلى', subject: 'الموضوع', status: 'الحالة', attempts: 'محاولات', error: 'آخر خطأ', actions: '' }, retry: 'إعادة', process: 'أرسل المنتظر الآن', filter: 'الكل', processed: 'أُرسل {s}، فشل {f}.',
+      membersH: 'الأعضاء المعتمدون', membersP: 'تتحقق فعاليات الأعضاء من هذه القائمة. أضف الأشخاص بعد اعتماد عضويتهم، وألغِ عند انتهائها.', addH: 'إضافة أو تحديث عضو', name: 'الاسم', tier: 'نوع العضوية', validUntil: 'صالحة حتى (اختياري)', mstatus: 'الحالة', mst: { approved: 'معتمد', pending: 'قيد المراجعة', revoked: 'ملغى', expired: 'منتهٍ' }, add: 'حفظ العضو', bulkH: 'لصق قائمة', bulkP: 'سطر لكل شخص: البريد، الاسم (اختياري). يُحفظ الجميع كمعتمدين.', bulkBtn: 'استيراد القائمة', imported: 'حُفظ {n} عضوًا.', mth2: { email: 'البريد', name: 'الاسم', status: 'الحالة', tier: 'النوع', until: 'حتى', by: 'اعتمده' },
+      staffH: 'الموظفون والأدوار', staffP: 'super_admin: كل شيء · events_admin: تعديل الفعاليات والحجوزات والإشعارات والأعضاء · checkin_staff: تسجيل الحضور فقط (يمكن حصره بفعاليات محددة).', role: 'الدور', events: 'حصر بفعاليات (اختياري)', addStaff: 'حفظ الموظف', disable: 'إزالة', sth: { email: 'البريد', name: 'الاسم', role: 'الدور', events: 'الفعاليات', status: 'الحالة' }, active: 'نشط', disabled: 'مُزال',
+      auditH: 'سجل التدقيق', ath: { at: 'متى', actor: 'من', action: 'الإجراء', resource: 'المورد', meta: 'التفاصيل' },
+      err: 'حدث خطأ ما.', errCodes: { capacity_below_seated: 'لا يمكن أن تقل السعة عن المقاعد المحجوزة.', confirm_before_opening: 'أكّد الفعالية (الحالة = مؤكدة) قبل فتح التسجيل.', paid_not_enabled: 'الفعاليات المدفوعة غير مفعّلة بعد.', bad_times: 'يجب أن تكون النهاية بعد البداية.', forbidden: 'دورك لا يسمح بهذا.', rate_limited: 'طلبات كثيرة — انتظر قليلًا.', build_hook_not_configured: 'رابط النشر غير مهيأ بعد (NETLIFY_BUILD_HOOK).' },
+      signout: 'تسجيل الخروج', who: 'مسجّل الدخول باسم'
+    }
+  };
+  var s = S[lang];
+  document.body.insertAdjacentHTML('afterbegin', O.header('desk'));
+  var app = $('app');
+  var me = null, overview = null;
+  var errText = function (e) { return (e && e.data && s.errCodes[e.data.error]) || (e && e.status === 429 ? s.errCodes.rate_limited : s.err); };
+  function flash(html, kind) { var el = $('flash'); if (!el) return; el.innerHTML = html ? '<p class="alert ' + (kind || 'ok') + '">' + html + '</p>' : ''; window.scrollTo({ top: 0, behavior: 'smooth' }); }
+  var canEdit = function () { return me && (me.role === 'events_admin' || me.role === 'super_admin'); };
+
+  function signin(note) {
+    app.innerHTML = '<div class="app-head"><div><p class="eyebrow">' + esc(s.title) + '</p><h1>' + esc(s.signinH) + '</h1></div></div>' + (note || '') +
+      '<form id="si" class="pane stack" style="max-width:520px" novalidate><p class="muted" style="margin:0">' + esc(s.signinP) + '</p><div class="f"><label class="lbl" for="si-email">' + esc(s.email) + '</label><input id="si-email" type="email" autocomplete="email" required dir="ltr"></div><div class="rowc"><button class="btn btn-p" type="submit" id="si-btn">' + esc(s.send) + '</button></div><p class="alert bad" id="si-err" hidden></p></form>';
+    $('si').addEventListener('submit', async function (e) {
+      e.preventDefault(); var email = $('si-email').value.trim(); if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return;
+      $('si-btn').disabled = true;
+      try { await O.api('/auth/request-link', { method: 'POST', body: { email: email, lang: lang, redirect: location.pathname } }); app.innerHTML = '<div class="app-head"><div><p class="eyebrow">' + esc(s.title) + '</p><h1>' + esc(s.sent) + '</h1></div></div>'; }
+      catch (ex) { $('si-err').textContent = errText(ex); $('si-err').hidden = false; $('si-btn').disabled = false; }
+    });
+  }
+
+  function shell(tab, inner) {
+    var tabs = ['overview', 'checkin', 'mail', 'members', 'staff', 'audit'].filter(function (t) { if (t === 'staff') return me.role === 'super_admin'; if (t === 'mail' || t === 'members' || t === 'audit') return canEdit(); return true; });
+    app.innerHTML = '<div class="app-head"><div><p class="eyebrow">' + esc(s.sub) + '</p><h1>' + esc(s.title) + '</h1><p class="who">' + esc(s.who) + ' <b dir="ltr">' + esc(me.email) + '</b> · ' + esc(me.role) + '</p></div><div class="rowc">' + (canEdit() ? '<button class="btn btn-s btn-sm" id="publish" title="' + esc(s.publishHint) + '">' + esc(s.publish) + '</button>' : '') + '<button class="btn btn-s btn-sm" id="signout">' + esc(s.signout) + '</button></div></div>' +
+      '<div class="tabs" role="tablist">' + tabs.map(function (t) { return '<a class="chip" role="tab" href="#' + t + '" aria-selected="' + (t === tab) + '">' + esc(s.tabs[t]) + '</a>'; }).join('') + '</div><div id="flash"></div><div id="view">' + inner + '</div>';
+    $('signout').addEventListener('click', async function () { try { await O.api('/auth/logout', { method: 'POST' }); } catch (e) { /* ignore */ } location.reload(); });
+    var pb = $('publish'); if (pb) pb.addEventListener('click', async function () { pb.disabled = true; try { await O.api('/admin/publish', { method: 'POST' }); flash(esc(s.published)); } catch (e) { flash(esc(errText(e)), 'bad'); } pb.disabled = false; });
+  }
+  var view = function () { return $('view'); };
+
+  /* ── overview ─────────────────────────────────────────────────── */
+  async function showOverview() {
+    overview = await O.api('/admin/overview');
+    var rows = overview.events.map(function (e) {
+      var c = e.counts;
+      return '<tr><td><a class="ev-link" href="#event/' + esc(e.id) + '">' + esc(L(e.title)) + '</a><div class="ln">' + esc(e.id) + ' · ' + esc(L(e.venue)) + (e.published ? '' : ' · hidden') + '</div></td><td class="nowrap">' + esc(O.fmtShort(e.startUtc)) + '<div class="ln">' + esc(O.fmtRange(e.startUtc, e.endUtc)) + '</div></td>' +
+        '<td><span class="badge ' + esc(e.eventStatus) + '">' + esc(s.st[e.eventStatus] || e.eventStatus) + '</span></td><td>' + esc(s.mode[e.registrationMode]) + '<div class="ln">' + esc(s.state[e.state] || e.state) + '</div></td><td class="num">' + (e.capacity == null ? esc(s.unlimited) : O.num(c.seated) + ' / ' + O.num(e.capacity)) + '</td>' +
+        '<td class="num">' + O.num(c.interested) + '</td><td class="num">' + O.num(c.confirmed + c.checked_in) + '</td><td class="num">' + O.num(c.waitlisted + c.offered) + '</td><td class="num">' + O.num(c.checked_in) + '</td>' +
+        '<td><div class="rowc" style="justify-content:flex-end">' + (canEdit() ? '<a class="btn btn-s btn-sm" href="#event/' + esc(e.id) + '">' + esc(s.manage) + '</a>' : '') + '<a class="btn btn-s btn-sm" href="#roster/' + esc(e.id) + '">' + esc(s.roster) + '</a><a class="btn btn-s btn-sm" href="#checkin/' + esc(e.id) + '">' + esc(s.checkin) + '</a></div></td></tr>';
+    }).join('');
+    var tot = overview.events.reduce(function (a, e) { a.i += e.counts.interested; a.c += e.counts.confirmed + e.counts.checked_in; a.w += e.counts.waitlisted + e.counts.offered; return a; }, { i: 0, c: 0, w: 0 });
+    var mailBad = (overview.mail.failed || 0) + (overview.mail.dead || 0);
+    shell('overview', '<div class="kpis"><div class="kpi"><b>' + O.num(overview.events.length) + '</b><span>' + esc(s.tabs.overview) + '</span></div><div class="kpi"><b>' + O.num(tot.i) + '</b><span>' + esc(s.counts.interested) + '</span></div><div class="kpi"><b>' + O.num(tot.c) + '</b><span>' + esc(s.counts.confirmed) + '</span></div><div class="kpi"><b>' + O.num(tot.w) + '</b><span>' + esc(s.counts.waitlisted) + '</span></div>' + (canEdit() ? '<div class="kpi"><b>' + O.num(overview.mail.queued || 0) + (mailBad ? ' <small style="color:#f8d2d2;font-size:14px">+' + O.num(mailBad) + '</small>' : '') + '</b><span>' + esc(s.tabs.mail) + '</span></div>' : '') + '</div>' +
+      '<div class="tbl-wrap"><table class="tbl"><thead><tr><th>' + esc(s.th.event) + '</th><th>' + esc(s.th.when) + '</th><th>' + esc(s.th.status) + '</th><th>' + esc(s.th.mode) + '</th><th class="num">' + esc(s.th.cap) + '</th><th class="num">' + esc(s.th.interested) + '</th><th class="num">' + esc(s.th.confirmed) + '</th><th class="num">' + esc(s.th.waitlist) + '</th><th class="num">' + esc(s.th.checkedIn) + '</th><th></th></tr></thead><tbody>' + rows + '</tbody></table></div>');
+  }
+
+  /* ── event settings ───────────────────────────────────────────── */
+  async function showEvent(id) {
+    var d = await O.api('/admin/events/' + id), e = d.event, c = e.counts;
+    var opt = function (obj, cur) { return Object.keys(obj).map(function (k) { return '<option value="' + k + '"' + (k === cur ? ' selected' : '') + '>' + esc(obj[k]) + '</option>'; }).join(''); };
+    var venueOpts = '<option value="">—</option>' + e.venues.map(function (v) { return '<option value="' + esc(v.key) + '"' + (v.key === e.venueKey ? ' selected' : '') + '>' + esc(L(v.name)) + '</option>'; }).join('');
+    shell('overview', '<p><a class="lnk" href="#overview">' + esc(s.back) + '</a></p><div class="app-head"><div><p class="eyebrow">' + esc(s.edit) + '</p><h1 style="font-size:30px">' + esc(L(e.title)) + '</h1><p class="who">' + esc(e.id) + ' · <span class="badge ' + esc(e.eventStatus) + '">' + esc(s.st[e.eventStatus]) + '</span> · ' + esc(s.state[e.state]) + ' · v' + O.num(e.version) + '</p></div><div class="rowc"><a class="btn btn-s btn-sm" href="#roster/' + esc(e.id) + '">' + esc(s.roster) + '</a><a class="btn btn-s btn-sm" href="#checkin/' + esc(e.id) + '">' + esc(s.checkin) + '</a><a class="btn btn-s btn-sm" href="#comms/' + esc(e.id) + '">' + esc(s.comms) + '</a><a class="btn btn-s btn-sm" href="' + base + '/events/' + esc(e.slug) + '/" target="_blank" rel="noopener">↗</a></div></div>' +
+      '<div class="kpis">' + ['interested', 'confirmed', 'waitlisted', 'offered', 'checked_in', 'cancelled'].map(function (k) { return '<div class="kpi"><b>' + O.num(c[k]) + '</b><span>' + esc(s.counts[k]) + '</span></div>'; }).join('') + '</div>' +
+      '<form id="ef" class="grid2" novalidate><div class="pane"><p class="muted" style="margin:0 0 14px;font-size:14px">' + esc(s.editP) + '</p>' +
+      '<div class="f"><label class="lbl" for="f-status">' + esc(s.f.status) + '</label><select id="f-status">' + opt(s.st, e.eventStatus) + '</select></div>' +
+      '<div class="f"><label class="lbl" for="f-mode">' + esc(s.f.mode) + '</label><select id="f-mode">' + opt(s.mode, e.registrationMode) + '</select></div>' +
+      '<div class="f"><label class="lbl" for="f-aud">' + esc(s.f.audience) + '</label><select id="f-aud"><option value="public"' + (e.audience === 'public' ? ' selected' : '') + '>' + esc(s.f.public) + '</option><option value="members"' + (e.audience === 'members' ? ' selected' : '') + '>' + esc(s.f.members) + '</option></select></div>' +
+      '<div class="f"><label class="lbl" for="f-price">' + esc(s.f.price) + '</label><select id="f-price"><option value="free"' + (e.priceStatus === 'free' ? ' selected' : '') + '>' + esc(s.f.free) + '</option><option value="tbd"' + (e.priceStatus === 'tbd' ? ' selected' : '') + '>' + esc(s.f.tbd) + '</option></select></div>' +
+      '<div class="f"><label class="lbl" for="f-cap">' + esc(s.f.capacity) + '</label><input id="f-cap" type="text" inputmode="numeric" value="' + (e.capacity == null ? '' : e.capacity) + '"></div>' +
+      '<div class="f"><label class="chk-l"><input type="checkbox" id="f-wl"' + (e.waitlistEnabled ? ' checked' : '') + '><span>' + esc(s.f.waitlist) + '</span></label></div>' +
+      '<div class="f"><label class="chk-l"><input type="checkbox" id="f-pub"' + (e.published !== false ? ' checked' : '') + '><span>' + esc(s.f.publishedF) + '</span></label></div></div>' +
+      '<div class="pane"><div class="f"><label class="lbl" for="f-start">' + esc(s.f.start) + '</label><input id="f-start" type="datetime-local" value="' + esc(e.startLocal) + '"></div><div class="f"><label class="lbl" for="f-end">' + esc(s.f.end) + '</label><input id="f-end" type="datetime-local" value="' + esc(e.endLocal) + '"></div>' +
+      '<div class="f"><label class="lbl" for="f-venue">' + esc(s.f.venue) + '</label><select id="f-venue">' + venueOpts + '</select></div>' +
+      '<div class="f"><label class="lbl" for="f-opens">' + esc(s.f.opens) + '</label><input id="f-opens" type="datetime-local" value="' + esc(O.toLocalInput(e.bookingOpensAt)) + '"></div><div class="f"><label class="lbl" for="f-closes">' + esc(s.f.closes) + '</label><input id="f-closes" type="datetime-local" value="' + esc(O.toLocalInput(e.bookingClosesAt)) + '"></div>' +
+      '<div class="f"><label class="lbl" for="f-reason">' + esc(s.f.reason) + '</label><input id="f-reason" type="text" maxlength="300"></div>' +
+      '<div class="form-foot"><button class="btn btn-p" type="submit" id="f-save">' + esc(s.f.save) + '</button></div></div></form>');
+    if (!canEdit()) view().querySelectorAll('input,select,button').forEach(function (x) { x.disabled = true; });
+    var dl = function (v) { return v ? new Date(v + ':00' + offsetSuffix(v)).toISOString() : null; };
+    function offsetSuffix(local) { // datetime-local in Oxford time → ISO with the right offset
+      var guess = new Date(local + ':00Z'); var p = {}; new Intl.DateTimeFormat('en-US', { timeZone: 'Europe/London', timeZoneName: 'longOffset' }).formatToParts(guess).forEach(function (x) { p[x.type] = x.value; }); var m = /GMT([+-]\d{2}:\d{2})?/.exec(p.timeZoneName || 'GMT'); return m && m[1] ? m[1] : '+00:00';
+    }
+    $('ef').addEventListener('submit', async function (ev) {
+      ev.preventDefault();
+      var body = { eventStatus: $('f-status').value, registrationMode: $('f-mode').value, audience: $('f-aud').value, priceStatus: $('f-price').value, capacity: $('f-cap').value.trim() === '' ? null : Number($('f-cap').value), waitlistEnabled: $('f-wl').checked, published: $('f-pub').checked, venueKey: $('f-venue').value, reason: $('f-reason').value.trim() };
+      if ($('f-start').value !== e.startLocal || $('f-end').value !== e.endLocal) { body.startLocal = $('f-start').value; body.endLocal = $('f-end').value; }
+      body.bookingOpensAt = dl($('f-opens').value); body.bookingClosesAt = dl($('f-closes').value);
+      await save(body);
+    });
+    async function save(body) {
+      $('f-save').disabled = true;
+      try {
+        var r = await O.api('/admin/events/' + id, { method: 'PATCH', body: body });
+        if (r.preview) {
+          var ok = await O.confirm(s.previewH, s.previewP.replace('{n}', O.num(r.affected)).replace('{v}', O.num(r.versionAfter)) + (r.changes.length ? '\n' + r.changes.map(function (x) { return x[lang]; }).join('\n') : ''), s.confirmSend);
+          if (ok) return save(Object.assign({}, body, { confirm: true }));
+          $('f-save').disabled = false; return;
+        }
+        await showEvent(id); flash(esc(s.f.saved) + (r.notified ? ' (' + O.num(r.notified) + ')' : ''));
+      } catch (e2) { flash(esc(errText(e2)), 'bad'); $('f-save').disabled = false; }
+    }
+  }
+
+  /* ── roster ───────────────────────────────────────────────────── */
+  async function showRoster(id, params) {
+    params = params || { page: 1, q: '', status: '' };
+    var qs = '?page=' + params.page + (params.q ? '&q=' + encodeURIComponent(params.q) : '') + (params.status ? '&status=' + params.status : '');
+    var d = await O.api('/admin/events/' + id + '/registrations' + qs);
+    var pages = Math.max(1, Math.ceil(d.total / d.per));
+    var rows = d.registrations.map(function (r) {
+      var acts = canEdit() && ['interested', 'confirmed', 'waitlisted', 'offered'].indexOf(r.status) !== -1 ? '<button class="btn btn-s btn-sm btn-danger" data-cancel="' + esc(r.id) + '">' + esc(s.cancelReg) + '</button>' : '';
+      if (canEdit() && r.status === 'confirmed') acts += ' <button class="btn btn-s btn-sm" data-resend="' + esc(r.id) + '">' + esc(s.resend) + '</button>';
+      return '<tr><td>' + esc(r.name) + '</td><td dir="ltr">' + esc(r.email) + '</td><td><span class="badge ' + esc(r.status) + '">' + esc(s.rst[r.status] || r.status) + '</span>' + (r.status === 'offered' && r.claim_expires_at ? '<div class="ln">' + esc(O.fmtStamp(r.claim_expires_at)) + '</div>' : '') + '</td><td>' + esc(s.kind[r.kind]) + '</td><td>' + esc(O.fmtStamp(r.created_at)) + '</td><td>' + (r.member_at_booking ? '✓' : '') + '</td><td>' + (r.marketing_opt_in ? '✓' : '') + '</td><td><div class="rowc" style="justify-content:flex-end">' + acts + '</div></td></tr>';
+    }).join('');
+    shell('overview', '<p><a class="lnk" href="#overview">' + esc(s.back) + '</a></p><div class="app-head"><div><p class="eyebrow">' + esc(s.rosterH) + '</p><h1 style="font-size:30px">' + esc(L(d.event.title)) + '</h1><p class="who">' + O.num(d.total) + '</p></div><div class="rowc">' + (canEdit() ? '<a class="btn btn-s btn-sm" href="/api/admin/events/' + esc(id) + '/registrations.csv">' + esc(s.csv) + '</a><a class="btn btn-s btn-sm" href="#event/' + esc(id) + '">' + esc(s.manage) + '</a>' : '') + '<a class="btn btn-s btn-sm" href="#checkin/' + esc(id) + '">' + esc(s.checkin) + '</a></div></div>' +
+      '<form id="rf" class="rowc" style="margin-bottom:14px"><div class="f"><input id="r-q" type="text" placeholder="' + esc(s.search) + '" value="' + esc(params.q) + '"></div><div class="f" style="flex:0 1 200px"><select id="r-st"><option value="">' + esc(s.all) + '</option>' + Object.keys(s.rst).map(function (k) { return '<option value="' + k + '"' + (params.status === k ? ' selected' : '') + '>' + esc(s.rst[k]) + '</option>'; }).join('') + '</select></div><button class="btn btn-s btn-sm" type="submit">' + esc(s.find) + '</button></form>' +
+      (d.registrations.length ? '<div class="tbl-wrap"><table class="tbl"><thead><tr><th>' + esc(s.rth.name) + '</th><th>' + esc(s.rth.email) + '</th><th>' + esc(s.rth.status) + '</th><th>' + esc(s.rth.kind) + '</th><th>' + esc(s.rth.registered) + '</th><th>' + esc(s.rth.member) + '</th><th>' + esc(s.rth.news) + '</th><th></th></tr></thead><tbody>' + rows + '</tbody></table></div>' : '<p class="dir-empty">' + esc(s.none) + '</p>') +
+      '<div class="pager"><span>' + esc(s.page.replace('{p}', O.num(d.page)).replace('{n}', O.num(pages))) + '</span>' + (d.page > 1 ? '<button class="btn btn-s btn-sm" id="pg-prev">' + esc(s.prev) + '</button>' : '') + (d.page < pages ? '<button class="btn btn-s btn-sm" id="pg-next">' + esc(s.next) + '</button>' : '') + '</div>');
+    $('rf').addEventListener('submit', function (e) { e.preventDefault(); showRoster(id, { page: 1, q: $('r-q').value.trim(), status: $('r-st').value }); });
+    if ($('pg-prev')) $('pg-prev').addEventListener('click', function () { showRoster(id, Object.assign({}, params, { page: params.page - 1 })); });
+    if ($('pg-next')) $('pg-next').addEventListener('click', function () { showRoster(id, Object.assign({}, params, { page: params.page + 1 })); });
+    view().querySelectorAll('[data-cancel]').forEach(function (b) { b.addEventListener('click', async function () { if (!(await O.confirm(s.cancelQ, s.cancelT, s.yes))) return; var reason = window.prompt(s.reasonPrompt, '') || ''; b.disabled = true; try { await O.api('/admin/registrations/' + b.getAttribute('data-cancel') + '/cancel', { method: 'POST', body: { reason: reason } }); await showRoster(id, params); flash(esc(s.done)); } catch (e) { flash(esc(errText(e)), 'bad'); b.disabled = false; } }); });
+    view().querySelectorAll('[data-resend]').forEach(function (b) { b.addEventListener('click', async function () { b.disabled = true; try { await O.api('/admin/registrations/' + b.getAttribute('data-resend') + '/resend-ticket', { method: 'POST' }); flash(esc(s.done)); } catch (e) { flash(esc(errText(e)), 'bad'); } b.disabled = false; }); });
+  }
+
+  /* ── check-in ─────────────────────────────────────────────────── */
+  var stream = null, scanTimer = null;
+  function stopCam() { if (scanTimer) { clearInterval(scanTimer); scanTimer = null; } if (stream) { stream.getTracks().forEach(function (t) { t.stop(); }); stream = null; } var b = $('cam-btn'); if (b) b.textContent = s.startCam; }
+  async function showCheckin(id) {
+    stopCam();
+    if (!overview) overview = await O.api('/admin/overview');
+    var evs = overview.events;
+    var sel = '<div class="f" style="max-width:520px"><label class="lbl" for="ci-ev">' + esc(s.th.event) + '</label><select id="ci-ev"><option value="">' + esc(s.chooseEvent) + '</option>' + evs.map(function (e) { return '<option value="' + esc(e.id) + '"' + (e.id === id ? ' selected' : '') + '>' + esc(L(e.title)) + ' — ' + esc(O.fmtShort(e.startUtc)) + '</option>'; }).join('') + '</select></div>';
+    var ev = evs.find(function (e) { return e.id === id; });
+    var tally = ev ? '<p class="who" id="tally">' + esc(s.tally.replace('{a}', O.num(ev.counts.checked_in)).replace('{c}', O.num(ev.counts.confirmed + ev.counts.checked_in))) + '</p>' : '';
+    shell('checkin', '<div class="app-head"><div><p class="eyebrow">' + esc(s.tabs.checkin) + '</p><h1 style="font-size:30px">' + esc(s.scanH) + '</h1>' + tally + '</div></div>' + sel + (ev ? '<p class="muted" style="font-size:14px">' + esc(s.scanP) + '</p><div class="scan"><div><video id="cam" playsinline muted hidden></video><div class="rowc" style="margin-top:10px"><button class="btn btn-s btn-sm" id="cam-btn" type="button">' + esc(s.startCam) + '</button><span class="ln" id="cam-note"></span></div>' +
+      '<form id="code-f" class="rowc" style="margin-top:14px"><div class="f"><label class="lbl" for="ci-code">' + esc(s.codeF) + '</label><input id="ci-code" type="text" autocomplete="off" dir="ltr"></div><button class="btn btn-p btn-sm" type="submit" style="align-self:flex-end">' + esc(s.admit) + '</button></form>' +
+      '<form id="name-f" class="rowc" style="margin-top:14px"><div class="f"><label class="lbl" for="ci-name">' + esc(s.nameF) + '</label><input id="ci-name" type="text" autocomplete="off"></div><button class="btn btn-s btn-sm" type="submit" style="align-self:flex-end">' + esc(s.find) + '</button></form><ul class="results" id="ci-results"></ul></div>' +
+      '<div class="scan-result" id="ci-res" aria-live="assertive"><span class="ln">' + esc(s.ready) + '</span></div></div>' : ''));
+    $('ci-ev').addEventListener('change', function () { location.hash = '#checkin/' + $('ci-ev').value; });
+    if (!ev) return;
+    async function admit(body) {
+      try {
+        var r = await O.api('/admin/events/' + id + '/check-in', { method: 'POST', body: body });
+        var cls = r.result === 'admitted' ? 'admitted' : r.result === 'duplicate' ? 'duplicate' : 'bad';
+        $('ci-res').className = 'scan-result ' + cls;
+        $('ci-res').innerHTML = '<b>' + esc(s.res[r.result] || r.result) + '</b>' + (r.name ? '<span class="nm">' + esc(r.name) + '</span>' : '') + (r.checkedInAt ? '<span class="ln">' + esc(s.at.replace('{t}', O.fmtStamp(r.checkedInAt))) + '</span>' : '');
+        if (r.result === 'admitted') { ev.counts.checked_in++; var t = $('tally'); if (t) t.textContent = s.tally.replace('{a}', O.num(ev.counts.checked_in)).replace('{c}', O.num(ev.counts.confirmed + ev.counts.checked_in)); if (navigator.vibrate) navigator.vibrate(80); }
+        return r;
+      } catch (e) { $('ci-res').className = 'scan-result bad'; $('ci-res').innerHTML = '<b>' + esc(errText(e)) + '</b>'; }
+    }
+    $('code-f').addEventListener('submit', function (e) { e.preventDefault(); var v = $('ci-code').value.trim(); if (!v) return; var m = /\/t\/([A-Za-z0-9_-]+)/.exec(v); admit({ token: m ? m[1] : v }); $('ci-code').value = ''; });
+    $('name-f').addEventListener('submit', async function (e) {
+      e.preventDefault(); var q = $('ci-name').value.trim(); if (q.length < 3) return;
+      try { var r = await O.api('/admin/events/' + id + '/check-in?q=' + encodeURIComponent(q)); $('ci-results').innerHTML = r.results.map(function (x) { return '<li><span>' + esc(x.name) + ' <span class="ln" dir="ltr">' + esc(x.email) + '</span> <span class="badge ' + esc(x.status) + '">' + esc(s.rst[x.status]) + '</span></span>' + (x.status === 'confirmed' ? '<button class="btn btn-p btn-sm" data-admit="' + esc(x.id) + '">' + esc(s.manualAdmit) + '</button>' : '') + '</li>'; }).join('') || '<li>' + esc(s.none) + '</li>';
+        $('ci-results').querySelectorAll('[data-admit]').forEach(function (b) { b.addEventListener('click', function () { admit({ registrationId: b.getAttribute('data-admit'), manual: true }); b.disabled = true; }); });
+      } catch (e2) { flash(esc(errText(e2)), 'bad'); }
+    });
+    var last = '', lastAt = 0;
+    $('cam-btn').addEventListener('click', async function () {
+      if (stream) { stopCam(); $('cam').hidden = true; return; }
+      if (!('BarcodeDetector' in window) || !navigator.mediaDevices) { $('cam-note').textContent = s.noCam; return; }
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false });
+        var video = $('cam'); video.srcObject = stream; video.hidden = false; await video.play(); $('cam-btn').textContent = s.stopCam;
+        var det = new window.BarcodeDetector({ formats: ['qr_code'] });
+        scanTimer = setInterval(async function () {
+          try { var codes = await det.detect(video); if (!codes.length) return; var raw = codes[0].rawValue || ''; var m = /(?:OSS1:|\/t\/)([A-Za-z0-9_-]{20,})/.exec(raw); var tok = m ? m[1] : raw; if (tok === last && Date.now() - lastAt < 4000) return; last = tok; lastAt = Date.now(); admit({ token: tok }); } catch (e) { /* frame not ready */ }
+        }, 400);
+      } catch (e) { $('cam-note').textContent = s.noCam; stopCam(); }
+    });
+  }
+
+  /* ── communications ───────────────────────────────────────────── */
+  async function showComms(id) {
+    var d = await O.api('/admin/events/' + id);
+    shell('overview', '<p><a class="lnk" href="#event/' + esc(id) + '">' + esc(s.back) + '</a></p><div class="app-head"><div><p class="eyebrow">' + esc(s.commsH) + '</p><h1 style="font-size:30px">' + esc(L(d.event.title)) + '</h1></div></div><p class="muted" style="font-size:14px;max-width:70ch">' + esc(s.commsP) + '</p>' +
+      '<form id="cf" class="grid2"><div class="pane"><div class="f"><label class="lbl" for="c-to">' + esc(s.to) + '</label><select id="c-to">' + Object.keys(s.seg).map(function (k) { return '<option value="' + k + '">' + esc(s.seg[k]) + '</option>'; }).join('') + '</select></div><div class="f"><label class="lbl" for="c-sen">' + esc(s.subject) + ' (EN)</label><input id="c-sen" type="text" maxlength="150" required></div><div class="f"><label class="lbl" for="c-ben">' + esc(s.body) + ' (EN)</label><textarea id="c-ben" required></textarea></div></div>' +
+      '<div class="pane"><div class="f"><label class="lbl" for="c-sar">' + esc(s.subject) + ' (AR)</label><input id="c-sar" type="text" dir="rtl" maxlength="150"></div><div class="f"><label class="lbl" for="c-bar">' + esc(s.body) + ' (AR)</label><textarea id="c-bar" dir="rtl"></textarea></div><div class="form-foot"><button class="btn btn-p" type="submit" id="c-prev">' + esc(s.preview) + '</button></div></div></form><div id="c-out" style="margin-top:16px"></div>');
+    $('cf').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      var body = { to: $('c-to').value, subject: { en: $('c-sen').value.trim(), ar: $('c-sar').value.trim() }, body: { en: $('c-ben').value.trim(), ar: $('c-bar').value.trim() } };
+      if (!body.subject.en || !body.body.en) return;
+      try {
+        var p = await O.api('/admin/events/' + id + '/notify', { method: 'POST', body: body });
+        $('c-out').innerHTML = '<div class="pane"><h3>' + esc(s.preview) + ' — ' + O.num(p.affected) + ' (EN ' + O.num(p.byLang.en) + ' · AR ' + O.num(p.byLang.ar) + ')</h3><div class="grid2"><div class="preview" dir="ltr"><b>' + esc(p.sample.en.subject) + '</b>\n\n' + esc(p.sample.en.body) + '</div><div class="preview" dir="rtl"><b>' + esc(p.sample.ar.subject) + '</b>\n\n' + esc(p.sample.ar.body) + '</div></div><div class="form-foot"><button class="btn btn-p" id="c-send"' + (p.affected ? '' : ' disabled') + '>' + esc(s.sendN.replace('{n}', O.num(p.affected))) + '</button></div></div>';
+        $('c-send').addEventListener('click', async function () { $('c-send').disabled = true; try { var r = await O.api('/admin/events/' + id + '/notify', { method: 'POST', body: Object.assign({ confirm: true }, body) }); $('c-out').innerHTML = ''; flash(esc(s.queued.replace('{n}', O.num(r.queued)))); } catch (e2) { flash(esc(errText(e2)), 'bad'); } });
+      } catch (e3) { flash(esc(errText(e3)), 'bad'); }
+    });
+  }
+
+  /* ── mail queue ───────────────────────────────────────────────── */
+  async function showMail(status) {
+    var d = await O.api('/admin/mail' + (status ? '?status=' + status : ''));
+    var rows = d.mail.map(function (m) { return '<tr><td>' + esc(O.fmtStamp(m.created_at)) + '</td><td>' + esc(m.kind) + '</td><td dir="ltr">' + esc(m.to_email) + '</td><td>' + esc(m.subject) + '</td><td><span class="badge ' + (m.status === 'sent' ? 'confirmed' : m.status === 'queued' || m.status === 'sending' ? 'waitlisted' : 'cancelled') + '">' + esc(m.status) + '</span></td><td class="num">' + O.num(m.attempts) + '</td><td class="ln">' + esc(m.last_error || '') + '</td><td>' + (m.status === 'failed' || m.status === 'dead' ? '<button class="btn btn-s btn-sm" data-retry="' + esc(m.id) + '">' + esc(s.retry) + '</button>' : '') + '</td></tr>'; }).join('');
+    shell('mail', '<div class="app-head"><div><p class="eyebrow">' + esc(s.tabs.mail) + '</p><h1 style="font-size:30px">' + esc(s.mailH) + '</h1></div><div class="rowc"><select id="m-st" class="chip" style="font:inherit;font-size:13.5px;padding:10px 14px;border:0;color:var(--ink)"><option value="">' + esc(s.filter) + '</option>' + ['queued', 'sent', 'failed', 'dead'].map(function (k) { return '<option value="' + k + '"' + (status === k ? ' selected' : '') + '>' + k + '</option>'; }).join('') + '</select><button class="btn btn-s btn-sm" id="m-proc">' + esc(s.process) + '</button></div></div>' +
+      '<div class="tbl-wrap"><table class="tbl"><thead><tr><th>' + esc(s.mth.when) + '</th><th>' + esc(s.mth.kind) + '</th><th>' + esc(s.mth.to) + '</th><th>' + esc(s.mth.subject) + '</th><th>' + esc(s.mth.status) + '</th><th class="num">' + esc(s.mth.attempts) + '</th><th>' + esc(s.mth.error) + '</th><th></th></tr></thead><tbody>' + rows + '</tbody></table></div>');
+    $('m-st').addEventListener('change', function () { showMail($('m-st').value); });
+    $('m-proc').addEventListener('click', async function () { $('m-proc').disabled = true; try { var r = await O.api('/admin/mail/process', { method: 'POST' }); await showMail(status); flash(esc(s.processed.replace('{s}', O.num(r.sent)).replace('{f}', O.num(r.failed + r.dead)))); } catch (e) { flash(esc(errText(e)), 'bad'); } });
+    view().querySelectorAll('[data-retry]').forEach(function (b) { b.addEventListener('click', async function () { b.disabled = true; try { await O.api('/admin/mail/' + b.getAttribute('data-retry') + '/retry', { method: 'POST' }); await showMail(status); } catch (e) { flash(esc(errText(e)), 'bad'); } }); });
+  }
+
+  /* ── members ──────────────────────────────────────────────────── */
+  async function showMembers(q) {
+    var d = await O.api('/admin/members' + (q ? '?q=' + encodeURIComponent(q) : ''));
+    var rows = d.members.map(function (m) { return '<tr><td dir="ltr">' + esc(m.email) + '</td><td>' + esc(m.name || '') + '</td><td><span class="badge ' + (m.status === 'approved' ? 'confirmed' : m.status === 'pending' ? 'waitlisted' : 'cancelled') + '">' + esc(s.mst[m.status] || m.status) + '</span></td><td>' + esc(m.tier || '') + '</td><td>' + (m.valid_until ? esc(String(m.valid_until).slice(0, 10)) : '') + '</td><td class="ln">' + esc(m.approved_by || '') + '</td></tr>'; }).join('');
+    shell('members', '<div class="app-head"><div><p class="eyebrow">' + esc(s.tabs.members) + '</p><h1 style="font-size:30px">' + esc(s.membersH) + '</h1><p class="who">' + Object.keys(d.totals).map(function (k) { return esc(s.mst[k] || k) + ' ' + O.num(d.totals[k]); }).join(' · ') + '</p></div></div><p class="muted" style="font-size:14px;max-width:70ch">' + esc(s.membersP) + '</p>' +
+      '<div class="grid2" style="margin-bottom:18px"><form id="mf" class="pane"><h3>' + esc(s.addH) + '</h3><div class="f"><label class="lbl" for="m-email">' + esc(s.email) + '</label><input id="m-email" type="email" required dir="ltr"></div><div class="f"><label class="lbl" for="m-name">' + esc(s.name) + '</label><input id="m-name" type="text"></div><div class="rowc"><div class="f"><label class="lbl" for="m-tier">' + esc(s.tier) + '</label><select id="m-tier"><option value="saudi">Saudi student</option><option value="student">Student</option><option value="associate">Associate</option><option value="honorary">Honorary</option></select></div><div class="f"><label class="lbl" for="m-status">' + esc(s.mstatus) + '</label><select id="m-status">' + Object.keys(s.mst).map(function (k) { return '<option value="' + k + '">' + esc(s.mst[k]) + '</option>'; }).join('') + '</select></div></div><div class="f"><label class="lbl" for="m-until">' + esc(s.validUntil) + '</label><input id="m-until" type="date"></div><div class="form-foot"><button class="btn btn-p" type="submit">' + esc(s.add) + '</button></div></form>' +
+      '<form id="bf" class="pane"><h3>' + esc(s.bulkH) + '</h3><p class="muted" style="font-size:13.5px;margin:0 0 10px">' + esc(s.bulkP) + '</p><div class="f"><textarea id="b-rows" dir="ltr" placeholder="name@ox.ac.uk, Full Name"></textarea></div><div class="form-foot"><button class="btn btn-s" type="submit">' + esc(s.bulkBtn) + '</button></div></form></div>' +
+      '<form id="msf" class="rowc" style="margin-bottom:12px"><div class="f"><input id="ms-q" type="text" placeholder="' + esc(s.search) + '" value="' + esc(q || '') + '"></div><button class="btn btn-s btn-sm" type="submit">' + esc(s.find) + '</button></form>' +
+      '<div class="tbl-wrap"><table class="tbl"><thead><tr><th>' + esc(s.mth2.email) + '</th><th>' + esc(s.mth2.name) + '</th><th>' + esc(s.mth2.status) + '</th><th>' + esc(s.mth2.tier) + '</th><th>' + esc(s.mth2.until) + '</th><th>' + esc(s.mth2.by) + '</th></tr></thead><tbody>' + rows + '</tbody></table></div>');
+    $('mf').addEventListener('submit', async function (e) { e.preventDefault(); try { await O.api('/admin/members', { method: 'POST', body: { email: $('m-email').value, name: $('m-name').value, tier: $('m-tier').value, status: $('m-status').value, validUntil: $('m-until').value || null } }); await showMembers(q); flash(esc(s.done)); } catch (e2) { flash(esc(errText(e2)), 'bad'); } });
+    $('bf').addEventListener('submit', async function (e) { e.preventDefault(); var rowsIn = $('b-rows').value.split(/\n+/).map(function (l) { var p = l.split(/[,;\t]/); return { email: (p[0] || '').trim(), name: (p[1] || '').trim(), status: 'approved' }; }).filter(function (r) { return r.email; }); if (!rowsIn.length) return; try { var r = await O.api('/admin/members', { method: 'POST', body: { rows: rowsIn } }); await showMembers(q); flash(esc(s.imported.replace('{n}', O.num(r.count)))); } catch (e2) { flash(esc(errText(e2)), 'bad'); } });
+    $('msf').addEventListener('submit', function (e) { e.preventDefault(); showMembers($('ms-q').value.trim()); });
+  }
+
+  /* ── staff ────────────────────────────────────────────────────── */
+  async function showStaff() {
+    var d = await O.api('/admin/staff');
+    if (!overview) overview = await O.api('/admin/overview');
+    var rows = d.staff.map(function (m) { return '<tr><td dir="ltr">' + esc(m.email) + '</td><td>' + esc(m.name || '') + '</td><td>' + esc(m.role) + '</td><td class="ln">' + esc(m.event_ids ? m.event_ids.join(', ') : '—') + '</td><td>' + (m.disabled ? '<span class="badge cancelled">' + esc(s.disabled) + '</span>' : '<span class="badge confirmed">' + esc(s.active) + '</span>') + '</td><td>' + (!m.disabled && m.email !== me.email ? '<button class="btn btn-s btn-sm btn-danger" data-dis="' + esc(m.email) + '">' + esc(s.disable) + '</button>' : '') + '</td></tr>'; }).join('');
+    shell('staff', '<div class="app-head"><div><p class="eyebrow">' + esc(s.tabs.staff) + '</p><h1 style="font-size:30px">' + esc(s.staffH) + '</h1></div></div><p class="muted" style="font-size:14px;max-width:80ch">' + esc(s.staffP) + '</p>' +
+      '<form id="sf" class="pane" style="margin-bottom:18px"><div class="rowc"><div class="f"><label class="lbl" for="s-email">' + esc(s.email) + '</label><input id="s-email" type="email" required dir="ltr"></div><div class="f"><label class="lbl" for="s-name">' + esc(s.name) + '</label><input id="s-name" type="text"></div><div class="f"><label class="lbl" for="s-role">' + esc(s.role) + '</label><select id="s-role"><option value="checkin_staff">checkin_staff</option><option value="events_admin">events_admin</option><option value="super_admin">super_admin</option></select></div></div><div class="f" style="margin-top:12px"><label class="lbl" for="s-ev">' + esc(s.events) + '</label><select id="s-ev" multiple size="4">' + overview.events.map(function (e) { return '<option value="' + esc(e.id) + '">' + esc(e.id) + ' — ' + esc(L(e.title)) + '</option>'; }).join('') + '</select></div><div class="form-foot"><button class="btn btn-p" type="submit">' + esc(s.addStaff) + '</button></div></form>' +
+      '<div class="tbl-wrap"><table class="tbl"><thead><tr><th>' + esc(s.sth.email) + '</th><th>' + esc(s.sth.name) + '</th><th>' + esc(s.sth.role) + '</th><th>' + esc(s.sth.events) + '</th><th>' + esc(s.sth.status) + '</th><th></th></tr></thead><tbody>' + rows + '</tbody></table></div>');
+    $('sf').addEventListener('submit', async function (e) { e.preventDefault(); var ids = Array.prototype.slice.call($('s-ev').selectedOptions).map(function (o) { return o.value; }); try { await O.api('/admin/staff', { method: 'POST', body: { email: $('s-email').value, name: $('s-name').value, role: $('s-role').value, eventIds: ids } }); await showStaff(); flash(esc(s.done)); } catch (e2) { flash(esc(errText(e2)), 'bad'); } });
+    view().querySelectorAll('[data-dis]').forEach(function (b) { b.addEventListener('click', async function () { try { await O.api('/admin/staff/' + encodeURIComponent(b.getAttribute('data-dis')), { method: 'DELETE' }); await showStaff(); } catch (e) { flash(esc(errText(e)), 'bad'); } }); });
+  }
+
+  /* ── audit ────────────────────────────────────────────────────── */
+  async function showAudit() {
+    var d = await O.api('/admin/audit?limit=300');
+    shell('audit', '<div class="app-head"><div><p class="eyebrow">' + esc(s.tabs.audit) + '</p><h1 style="font-size:30px">' + esc(s.auditH) + '</h1></div></div><div class="tbl-wrap"><table class="tbl"><thead><tr><th>' + esc(s.ath.at) + '</th><th>' + esc(s.ath.actor) + '</th><th>' + esc(s.ath.action) + '</th><th>' + esc(s.ath.resource) + '</th><th>' + esc(s.ath.meta) + '</th></tr></thead><tbody>' +
+      d.audit.map(function (a) { return '<tr><td>' + esc(O.fmtStamp(a.at)) + '</td><td dir="ltr">' + esc(a.actor) + '</td><td>' + esc(a.action) + '</td><td class="mono">' + esc(a.resource || '') + '</td><td class="mono">' + esc(a.meta ? JSON.stringify(a.meta) : '') + '</td></tr>'; }).join('') + '</tbody></table></div>');
+  }
+
+  /* ── router ───────────────────────────────────────────────────── */
+  async function go() {
+    stopCam();
+    var h = (location.hash || '').replace(/^#/, '');
+    if (!h && /\/checkin\/?$/.test(location.pathname)) h = 'checkin';
+    var m = h.split('/'), v = m[0] || 'overview', id = m[1];
+    try {
+      if (v === 'event' && id) return await showEvent(id);
+      if (v === 'roster' && id) return await showRoster(id);
+      if (v === 'checkin') return await showCheckin(id);
+      if (v === 'comms' && id) return await showComms(id);
+      if (v === 'mail') return await showMail('');
+      if (v === 'members') return await showMembers('');
+      if (v === 'staff') return await showStaff();
+      if (v === 'audit') return await showAudit();
+      return await showOverview();
+    } catch (e) {
+      if (e.status === 401) return signin();
+      if (e.status === 403 && me) { flash(esc(s.errCodes.forbidden), 'bad'); return; }
+      if (!$('view')) app.innerHTML = '<p class="alert bad">' + esc(errText(e)) + '</p>'; else flash(esc(errText(e)), 'bad');
+    }
+  }
+  (async function () {
+    try { me = await O.api('/admin/me'); } catch (e) { if (e.status === 401) return signin(); if (e.status === 403) return signin('<p class="alert warn">' + esc(s.notStaff) + '</p>'); app.innerHTML = '<p class="alert bad">' + esc(s.err) + '</p>'; return; }
+    var p = new URLSearchParams(location.search); if (p.get('verified')) { p.delete('verified'); history.replaceState(null, '', location.pathname + (p.toString() ? '?' + p : '') + location.hash); }
+    window.addEventListener('hashchange', go);
+    go();
+  })();
+})();

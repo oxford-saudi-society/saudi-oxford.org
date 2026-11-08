@@ -1,0 +1,58 @@
+{
+  "id": "oss-008",
+  "slug": "summer-sports-games-gathering",
+  "order": 8,
+  "title": {
+    "en": "Summer Sports & Games Gathering",
+    "ar": "اجتماع الصيف الرياضي — كورة وألعاب جماعية"
+  },
+  "description": {
+    "en": "An informal society sports and games get-together, featuring football and accessible group activities outdoors.",
+    "ar": "اجتماع صيفي للأعضاء يتضمن الكورة والألعاب الجماعية في أجواء رياضية وتنافسية خفيفة."
+  },
+  "agenda": {
+    "en": [
+      "Football",
+      "group games",
+      "member social."
+    ],
+    "ar": [
+      "كورة",
+      "ألعاب جماعية",
+      "لقاء للأعضاء."
+    ]
+  },
+  "category": "sports",
+  "startLocal": "2027-06-12T14:00:00",
+  "endLocal": "2027-06-12T17:00:00",
+  "timezone": "Europe/London",
+  "venueKey": "university-parks",
+  "audience": "members",
+  "price": {
+    "status": "free",
+    "currency": "GBP",
+    "amountMinor": 0
+  },
+  "bookingRequired": true,
+  "registrationMode": "interest_only",
+  "eventStatus": "proposed",
+  "visibility": "published_as_proposal",
+  "capacity": null,
+  "waitlistEnabled": false,
+  "dateNotice": {
+    "en": "Date and venue are proposed and not confirmed.",
+    "ar": "التاريخ والمكان مقترحان ولم يُؤكّدا بعد."
+  },
+  "image": {
+    "web": "/assets/events/web/event-08-summer-sports-games-gathering.webp",
+    "thumb": "/assets/events/thumbs/event-08-summer-sports-games-gathering.webp",
+    "alt": {
+      "en": "Illustrated concept artwork for Summer Sports & Games Gathering, Oxford Saudi Society.",
+      "ar": "تصميم توضيحي لفعالية اجتماع الصيف الرياضي — كورة وألعاب جماعية للجمعية السعودية بجامعة أكسفورد."
+    },
+    "credit": "AI-generated concept artwork supplied through the society planning conversation.",
+    "reviewNote": "AI-generated illustrative image, not a photograph of an actual event; inspect logos/flags for authenticity.",
+    "approved": false
+  },
+  "published": true
+}

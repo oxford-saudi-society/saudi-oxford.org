@@ -1,16 +1,28 @@
 {
   "name": "saudi-oxford.org",
   "version": "1.0.0",
-  "description": "Oxford Saudi Society website \u2014 static, bilingual (EN/AR), built from src/ into dist/",
+  "description": "Oxford Saudi Society website — static, bilingual (EN/AR), built from src/ into dist/",
   "scripts": {
+    "prebuild": "node build/fetch-live.js",
     "build": "node build/build.js",
-    "check": "node build/check.js"
+    "check": "node build/check.js",
+    "test": "node --test tests/",
+    "dev": "node qa/dev-server.mjs",
+    "e2e": "node qa/events-static.js && node qa/events-e2e.js"
   },
   "keywords": [],
   "author": "",
   "license": "UNLICENSED",
   "dependencies": {
-    "cheerio": "^1.2.0"
+    "cheerio": "^1.2.0",
+    "pg": "^8.23.1",
+    "qrcode": "^1.5.4"
   },
-  "private": true
+  "private": true,
+  "devDependencies": {
+    "@electric-sql/pglite": "^0.5.15"
+  },
+  "engines": {
+    "node": ">=20"
+  }
 }

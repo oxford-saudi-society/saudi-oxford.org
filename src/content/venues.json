@@ -1,0 +1,53 @@
+{
+  "noa-annexe": {
+    "key": "noa-annexe",
+    "name": {
+      "en": "North Oxford Association — Annexe",
+      "ar": "قاعة أنيكس — جمعية شمال أكسفورد"
+    },
+    "type": "indoor",
+    "bookingStatus": "not_requested_or_unconfirmed",
+    "officialBookingUrl": "https://northoxfordassociation.org.uk/page/roomhire",
+    "locationNote": "Venue is a proposed choice; verify hire eligibility, access, exact address and 2027 availability.",
+    "addressVerified": null,
+    "mapsUrl": null,
+    "accessibilityNote": {
+      "en": "",
+      "ar": ""
+    }
+  },
+  "noa-main-hall": {
+    "key": "noa-main-hall",
+    "name": {
+      "en": "North Oxford Association — Main Hall",
+      "ar": "القاعة الرئيسية — جمعية شمال أكسفورد"
+    },
+    "type": "indoor",
+    "bookingStatus": "not_requested_or_unconfirmed",
+    "officialBookingUrl": "https://northoxfordassociation.org.uk/page/roomhire",
+    "locationNote": "Hall booking, kitchen, prayer arrangements and capacity depend on operator approval.",
+    "addressVerified": null,
+    "mapsUrl": null,
+    "accessibilityNote": {
+      "en": "",
+      "ar": ""
+    }
+  },
+  "university-parks": {
+    "key": "university-parks",
+    "name": {
+      "en": "University Parks, Oxford",
+      "ar": "حدائق جامعة أكسفورد"
+    },
+    "type": "outdoor",
+    "bookingStatus": "permission_not_checked",
+    "officialBookingUrl": "https://www.parks.ox.ac.uk/holding-event",
+    "locationNote": "An organised group event may require University Parks permission; check with the landowner.",
+    "addressVerified": null,
+    "mapsUrl": null,
+    "accessibilityNote": {
+      "en": "",
+      "ar": ""
+    }
+  }
+}

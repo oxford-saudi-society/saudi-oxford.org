@@ -6,6 +6,7 @@
 const fs = require('fs');
 const path = require('path');
 const cheerio = require('cheerio');
+const EV = require('./events');
 
 const ROOT = path.join(__dirname, '..');
 const SRC = path.join(ROOT, 'src');
@@ -19,7 +20,7 @@ const readDir = (dir) => fs.existsSync(dir)
 const settings = readJson(path.join(SRC, 'content/settings.json'));
 const roles = readJson(path.join(SRC, 'content/roles.json'));
 const committees = readDir(path.join(SRC, 'content/committees')).sort((a, b) => String(b.term).localeCompare(String(a.term)));
-const events = readDir(path.join(SRC, 'content/events')).filter((e) => e.published !== false).sort((a, b) => (a.order || 0) - (b.order || 0));
+const events = EV.loadEvents();
 const people = readDir(path.join(SRC, 'content/people')).filter((p) => p.name && p.published !== false).sort((a, b) => String(a.name).localeCompare(String(b.name)));
 const BASE = (settings.domain || 'https://saudi-oxford.org').replace(/\/$/, '');
 
@@ -29,7 +30,7 @@ const ROUTES = [
     desc: { en: 'A home for Saudi culture in the heart of Oxford. Events, membership, volunteering and community for Saudi students, researchers, alumni and friends at the University of Oxford.',
             ar: 'بيت للثقافة السعودية في قلب أكسفورد. فعاليات وعضوية وتطوّع ومجتمع للطلبة والباحثين والخريجين والأصدقاء السعوديين في جامعة أكسفورد.' } },
   { id: 'about', path: 'about', title: { en: 'About', ar: 'عن الجمعية' }, desc: { en: 'Who we are, what we stand for and the committee behind the Oxford Saudi Society.', ar: 'من نحن وما نؤمن به واللجنة التي تقف خلف الجمعية السعودية في أكسفورد.' } },
-  { id: 'events', path: 'events', title: { en: 'Events', ar: 'الفعاليات' }, desc: { en: 'What is on this term at the Oxford Saudi Society — cultural evenings, talks, socials and the annual dinner.', ar: 'ما الذي يجري هذا الفصل في الجمعية السعودية في أكسفورد — أمسيات ثقافية وندوات ولقاءات والعشاء السنوي.' } },
+  { id: 'events', path: 'events', title: { en: 'Events & Gatherings', ar: 'فعاليات واجتماعات الجمعية' }, desc: { en: 'The Oxford Saudi Society programme for 2026–27: celebrations, community gatherings, research conversations and shared traditions in Oxford. Dates and venues are proposed until confirmed.', ar: 'برنامج الجمعية السعودية في أكسفورد ٢٠٢٦–٢٠٢٧: احتفالات واجتماعات مجتمعية ولقاءات بحثية وتقاليد مشتركة. المواعيد والأماكن مقترحة حتى تأكيدها.' } },
   { id: 'community', path: 'community', title: { en: 'Community', ar: 'مجتمعنا' }, desc: { en: 'Students, alumni and friends of the Oxford Saudi Society — a public directory of people who have chosen to be listed.', ar: 'طلبة وخريجون وأصدقاء الجمعية السعودية في أكسفورد — دليل عام لمن اختار الظهور فيه.' } },
   { id: 'ideas', path: 'ideas', title: { en: 'Ideas', ar: 'أفكار' }, desc: { en: 'Suggest, vote on and discuss ideas for the Oxford Saudi Society — the committee reviews the board every term.', ar: 'اقترح أفكاراً للجمعية السعودية في أكسفورد وصوّت عليها وناقشها — تراجع اللجنة اللوحة كل فصل دراسي.' } },
   { id: 'join', path: 'join', title: { en: 'Join', ar: 'انضم إلينا' }, desc: { en: 'Become a member of the Oxford Saudi Society. Free for Saudi students; a small annual fee for everyone else.', ar: 'كن عضواً في الجمعية السعودية في أكسفورد. مجاناً للطلبة السعوديين ورسم سنوي بسيط لغيرهم.' } },
@@ -38,6 +39,11 @@ const ROUTES = [
   { id: 'terms', path: 'terms', title: { en: 'Terms of use', ar: 'شروط الاستخدام' }, desc: { en: 'Terms of use for the Oxford Saudi Society website.', ar: 'شروط استخدام موقع الجمعية السعودية في أكسفورد.' } },
   { id: 'past-committees', path: 'committees', title: { en: 'Committees', ar: 'اللجان' }, desc: { en: 'The people who have led the Oxford Saudi Society, year by year.', ar: 'من قاد الجمعية السعودية في أكسفورد عبر السنين.' } },
 ];
+// one page per event, in both languages
+for (const e of events) {
+  ROUTES.push({ id: 'event:' + e.slug, view: 'event', nav: 'events', path: 'events/' + e.slug, event: e,
+    title: { en: e.title.en, ar: e.title.ar }, desc: { en: e.description.en, ar: e.description.ar }, og: e.image && e.image.web });
+}
 const urlFor = (routeId, lang) => {
   const r = ROUTES.find((x) => x.id === routeId);
   const p = r && r.path ? r.path + '/' : '';
@@ -127,22 +133,6 @@ function committeesHtml(lang) {
   });
   return h;
 }
-function eventsHtml(lang) {
-  const s = S[lang];
-  return events.map((e) => {
-    const tag = TAGS[e.tag] || null;
-    const when = `<span class="${e.week ? '' : 'ph'}">${esc(e.week || s.weekPh)}</span><span class="${e.date ? '' : 'ph'}">${esc(e.date || s.datePh)}${e.time ? ' · ' + esc(e.time) : ''}</span>`;
-    const venue = e.venue ? `<p class="meta">${esc(e.venue)}</p>` : '';
-    const book = safeHttp(e.bookingUrl) ? `<a class="btn btn-s" style="padding:9px 16px;font-size:13px;margin-top:10px" href="${esc(safeHttp(e.bookingUrl))}" target="_blank" rel="noopener">${esc(s.book)}</a>` : '';
-    return `<div class="ev"><div class="when">${when}</div><div><h3>${esc(L(e.title, lang))}</h3><p>${esc(L(e.description, lang))}</p>${venue}${book}</div><div>${tag ? `<span class="tag">${esc(tag[lang === 'ar' ? 1 : 0])}</span>` : ''}</div></div>`;
-  }).join('');
-}
-function nextEvent(lang) {
-  const s = S[lang]; const e = events.find((x) => x.date) || null;
-  if (!e) return { title: ph(s.nextPh), sub: ph(s.nextSubPh) };
-  return { title: esc(L(e.title, lang)), sub: esc([[e.date, e.time].filter(Boolean).join(' '), e.venue].filter(Boolean).join(' · ')) };
-}
-
 /* ── page assembly ─────────────────────────────────────────────── */
 const template = fs.readFileSync(path.join(SRC, 'template.html'), 'utf8');
 
@@ -153,13 +143,16 @@ function renderLang(lang) {
   if (lang === 'ar') {
     $('[data-ar]').each((i, el) => { $(el).html($(el).attr('data-ar')); $(el).removeAttr('data-ar'); });
     $('[data-ar-ph]').each((i, el) => { $(el).attr('placeholder', $(el).attr('data-ar-ph')); $(el).removeAttr('data-ar-ph'); });
+    $('[data-ar-aria]').each((i, el) => { $(el).attr('aria-label', $(el).attr('data-ar-aria')); $(el).removeAttr('data-ar-aria'); });
     $('html').attr({ lang: 'ar', dir: 'rtl' });
   } else {
-    $('[data-ar]').removeAttr('data-ar'); $('[data-ar-ph]').removeAttr('data-ar-ph');
+    $('[data-ar]').removeAttr('data-ar'); $('[data-ar-ph]').removeAttr('data-ar-ph'); $('[data-ar-aria]').removeAttr('data-ar-aria');
   }
   // data-driven regions
-  $('#events-list').html(eventsHtml(lang));
-  const ne = nextEvent(lang); $('#next-title').html(ne.title); $('#next-sub').html(ne.sub);
+  $('#ev-index').html(EV.indexHtml(events, lang, urlFor, settings));
+  const ne = EV.nextEvent(events, lang);
+  if (ne) { $('#next-title').html(`<a href="${urlFor('event:' + ne.e.slug, lang)}">${esc(ne.title)}</a>`); $('#next-sub').text(ne.sub); }
+  else { $('#next-title').html(ph(s.nextPh)); $('#next-sub').html(ph(s.nextSubPh)); }
   const cur = currentTerm();
   $('#about-committee').html((cur ? committeeGrid(cur, lang) : '') + `<p style="margin-top:6px"><a href="${urlFor('past-committees', lang)}">${esc(s.pastLink)}</a></p>`);
   $('#committees-list').html(committeesHtml(lang));
@@ -183,7 +176,7 @@ function renderLang(lang) {
     if (ig) { const handle = ig.replace(/^https?:\/\/(www\.)?instagram\.com\//, '').replace(/\/$/, '').replace(/^@/, ''); $(el).attr('href', 'https://instagram.com/' + handle).text('Instagram @' + handle); }
   });
   // settings for the script
-  const site = { lang, email: settings.email || '', treasurerEmail: settings.treasurerEmail || '', fees: settings.fees || {}, payLinks: settings.payLinks || {}, bank: settings.bank || {}, ideas: settings.ideas || {}, formEndpoint: '/' };
+  const site = { lang, email: settings.email || '', treasurerEmail: settings.treasurerEmail || '', fees: settings.fees || {}, payLinks: settings.payLinks || {}, bank: settings.bank || {}, ideas: settings.ideas || {}, formEndpoint: '/', privacyVersion: (settings.privacy && settings.privacy.version) || '2026-11', apiBase: settings.apiBase || '/api' };
   $('#site-settings').text(JSON.stringify(site).replace(/</g, '\\u003c'));
   // Cloudflare Web Analytics (cookie-free) — only when a token is set in settings
   if (settings.analytics && settings.analytics.cloudflareToken) {
@@ -196,7 +189,10 @@ function renderPage(langHtml, route, lang) {
   const $ = cheerio.load(langHtml);
   const s = S[lang];
   // keep one view
-  $('.view').each((i, el) => { const id = $(el).attr('id').replace('v-', ''); if (id === route.id) $(el).removeClass('view on').addClass('page'); else $(el).remove(); });
+  const keep = route.view || route.id;
+  $('.view').each((i, el) => { const id = $(el).attr('id').replace('v-', ''); if (id === keep) $(el).removeClass('view on').addClass('page'); else $(el).remove(); });
+  if (route.event) $('#event-detail').html(EV.detailHtml(route.event, lang, urlFor, settings));
+  if (keep !== 'events' && keep !== 'event') $('script[src="/js/events.js"]').remove();
   // link rewriting: #route → /route/, in-page anchors of other views → that page
   const viewIds = {}; // not needed after removal; map known ids
   const idToRoute = { 'join-form-band': 'join', 'join-form': 'join', profile: 'community', 'join-member': 'join', 'join-volunteer': 'join' };
@@ -208,7 +204,7 @@ function renderPage(langHtml, route, lang) {
     if (idToRoute[h] && idToRoute[h] !== route.id) $(el).attr('href', urlFor(idToRoute[h], lang) + '#' + h);
   });
   $('nav.main a[data-r], nav.tabbar a[data-r]').each((i, el) => {
-    const on = $(el).attr('data-r') === route.id;
+    const on = $(el).attr('data-r') === (route.nav || route.id);
     $(el).toggleClass('on', on);
     if (on) $(el).attr('aria-current', 'page'); else $(el).removeAttr('aria-current');
   });
@@ -231,12 +227,13 @@ function renderPage(langHtml, route, lang) {
     `<meta property="og:title" content="${esc(title)}">`,
     `<meta property="og:description" content="${esc(route.desc[lang])}">`,
     `<meta property="og:url" content="${canonical}">`,
-    `<meta property="og:image" content="${BASE}/assets/og.png">`,
+    `<meta property="og:image" content="${BASE}${route.og || '/assets/og.png'}">`,
+    route.event ? `<meta property="og:image:alt" content="${esc(L(route.event.image.alt, lang))}">` : '',
     `<meta property="og:locale" content="${lang === 'ar' ? 'ar_SA' : 'en_GB'}">`,
     `<meta name="twitter:card" content="summary_large_image">`,
     `<meta name="theme-color" content="#002147">`,
   ].join('\n');
-  $('head').html($('head').html().replace('<!--PAGEMETA-->', meta));
+  $('head').html($('head').html().replace('<!--PAGEMETA-->', meta.replace(/\n\n+/g, '\n') + (route.event ? '\n' + EV.jsonLd(route.event, lang, BASE, urlFor) : '')));
   $('body').attr('data-page', route.id);
   return '<!DOCTYPE html>\n' + $.html().replace(/^<!DOCTYPE html>\s*/i, '');
 }
@@ -249,6 +246,8 @@ copyDir(path.join(SRC, 'css'), path.join(DIST, 'css'));
 copyDir(path.join(SRC, 'js'), path.join(DIST, 'js'));
 copyDir(path.join(SRC, 'assets'), path.join(DIST, 'assets'));
 copyDir(path.join(ROOT, 'admin'), path.join(DIST, 'admin'));
+copyDir(path.join(SRC, 'apps'), path.join(DIST, ''));
+for (const e of events) { const dir = path.join(DIST, 'events', e.slug); fs.mkdirSync(dir, { recursive: true }); fs.writeFileSync(path.join(dir, 'event.ics'), EV.icsFor(e, BASE)); }
 if (fs.existsSync(path.join(SRC, 'assets/favicon.ico'))) fs.copyFileSync(path.join(SRC, 'assets/favicon.ico'), path.join(DIST, 'favicon.ico'));
 const urls = [];
 for (const lang of ['en', 'ar']) {
@@ -263,10 +262,17 @@ for (const lang of ['en', 'ar']) {
 }
 fs.writeFileSync(path.join(DIST, 'sitemap.xml'), '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + urls.map((u) => `  <url><loc>${u}</loc></url>`).join('\n') + '\n</urlset>\n');
 fs.writeFileSync(path.join(DIST, 'robots.txt'), `User-agent: *\nAllow: /\nDisallow: /admin/\nSitemap: ${BASE}/sitemap.xml\n`);
-fs.writeFileSync(path.join(DIST, '_redirects'), '/committee  /admin/  302\n/ar  /ar/  301\n/ideas/*  /ideas/index.html  200\n/ar/ideas/*  /ar/ideas/index.html  200\n');
+fs.writeFileSync(path.join(DIST, '_redirects'), [
+  '/committee  /admin/  302', '/ar  /ar/  301',
+  '/ideas/*  /ideas/index.html  200', '/ar/ideas/*  /ar/ideas/index.html  200',
+  '/account/*  /account/index.html  200', '/ar/account/*  /account/index.html  200',
+  '/t/*  /t/index.html  200', '/ar/t/*  /t/index.html  200',
+  '/admin/events/*  /admin/events/index.html  200', '/ar/admin/events/*  /admin/events/index.html  200', '',
+].join('\n'));
 fs.writeFileSync(path.join(DIST, '_headers'), [
   '/*', '  X-Frame-Options: DENY', '  X-Content-Type-Options: nosniff', '  Referrer-Policy: strict-origin-when-cross-origin',
-  '  Permissions-Policy: camera=(), microphone=(), geolocation=()',
+  '  Permissions-Policy: camera=(self), microphone=(), geolocation=()',
   '/assets/*', '  Cache-Control: public, max-age=31536000, immutable', '/css/*', '  Cache-Control: public, max-age=86400', '/js/*', '  Cache-Control: public, max-age=86400', '',
 ].join('\n'));
+require('./gen-content').generate();
 console.log(`built ${urls.length} pages → dist/  (people: ${people.length}, events: ${events.length}, committees: ${committees.length})`);

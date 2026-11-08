@@ -7,7 +7,7 @@ const cheerio = require('cheerio');
 const DIST = path.join(__dirname, '..', 'dist');
 
 const pages = [];
-(function walk(dir) { for (const f of fs.readdirSync(dir)) { const p = path.join(dir, f); if (fs.statSync(p).isDirectory()) walk(p); else if (f === 'index.html' && !p.includes(path.sep + 'admin' + path.sep)) pages.push(p); } })(DIST);
+(function walk(dir) { for (const f of fs.readdirSync(dir)) { const p = path.join(dir, f); if (fs.statSync(p).isDirectory()) walk(p); else if (f === 'index.html' && !p.includes(path.sep + 'admin' + path.sep) && !/[\\/](account|t)[\\/]index\.html$/.test(p)) pages.push(p); } })(DIST); // app shells (/account, /t, /admin) render client-side
 
 const fails = [];
 const fail = (page, msg) => fails.push(`${path.relative(DIST, page)}: ${msg}`);
@@ -44,11 +44,25 @@ for (const page of pages) {
   const text = $('main').text();
   c(!/undefined|\[object|NaN\b/.test(text), 'suspicious text (undefined/[object/NaN)');
   const main = ['', 'about', 'events', 'community', 'ideas', 'join', 'faq'];
-  const route = rel.replace(/^ar[\\/]?/, '').replace(/[\\/]$/, '');
+  let route = rel.replace(/^ar[\\/]?/, '').replace(/[\\/]$/, '');
+  const isEventPage = /^events[\\/].+/.test(route);
+  if (isEventPage) route = 'events'; // event pages highlight Events
   if (main.includes(route)) c($('nav.main a[data-r].on').length === 1, `nav highlight count ${$('nav.main a[data-r].on').length}`);
   const tabs = ['', 'events', 'community', 'ideas', 'join'];
   c($('nav.tabbar a[data-r]').length === 5, 'tab bar should have five tabs');
   c($('nav.tabbar a[data-r].on').length === (tabs.includes(route) ? 1 : 0), `tab highlight count ${$('nav.tabbar a[data-r].on').length}`);
+  if (isEventPage) {
+    c($('.ev-detail').length === 1 && $('.ev-art img[alt]').length === 1, 'event page needs one detail block with alt text');
+    c($('#reg-cta').length === 1 && $('#reg-dialog').length === 1, 'event page needs the registration control and dialog');
+    c(!/Your seat is confirmed|seat is confirmed/i.test(text), 'event page must not claim a confirmed seat');
+    if ($('.ev-detail').attr('data-status') === 'proposed') c(/Proposed|مقترح/.test($('#reg-panel').text() + $('.status').text()), 'proposed event must say so');
+    c($('a[href$="/event.ics"]').length === 1 && exists($('a[href$="/event.ics"]').attr('href')), 'event page needs its .ics file');
+  }
+  if (route === 'events' && !isEventPage) {
+    c($('.evc').length === 11, `events index should list 11 events, found ${$('.evc').length}`);
+    c($('.evc-img img[alt]').length === 11 && $('.evc-img img').toArray().every((el) => $(el).attr('width') === $(el).attr('height')), 'event cards need square images with alt text');
+    c($('#ev-q').length === 1 && $('.ev-chips .chip').length === 4 && $('#ev-clear').length === 1, 'events filters incomplete');
+  }
   c($('#burger').length === 0 && $('nav.main .n').length === 0, 'old menu markup left behind');
   if (route === 'join') {
     c($('form#join-form[data-netlify="true"]').length === 1, 'join form not marked for Netlify');

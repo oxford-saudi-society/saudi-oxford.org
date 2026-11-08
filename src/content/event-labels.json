@@ -1,0 +1,30 @@
+{
+  "public": {
+    "en": "All Welcome",
+    "ar": "مرحبًا بالجميع"
+  },
+  "members": {
+    "en": "Members Only",
+    "ar": "للأعضاء فقط"
+  },
+  "free": {
+    "en": "Free",
+    "ar": "مجاني"
+  },
+  "booking": {
+    "en": "Booking Required",
+    "ar": "التسجيل مطلوب"
+  },
+  "no_booking": {
+    "en": "No Booking Required",
+    "ar": "لا يتطلب التسجيل"
+  },
+  "tbd": {
+    "en": "Price To Be Announced",
+    "ar": "الرسوم تُعلن لاحقًا"
+  },
+  "proposed": {
+    "en": "Proposed · Not Confirmed",
+    "ar": "مقترح · غير مؤكد"
+  }
+}

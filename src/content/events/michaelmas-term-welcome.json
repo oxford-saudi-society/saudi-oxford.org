@@ -1,0 +1,58 @@
+{
+  "id": "oss-010",
+  "slug": "michaelmas-term-welcome",
+  "order": 10,
+  "title": {
+    "en": "Michaelmas Term Welcome Gathering",
+    "ar": "الاجتماع الترحيبي ببداية فصل مايكلماس"
+  },
+  "description": {
+    "en": "Welcome the Michaelmas term and meet new and returning Oxford students over an informal society gathering.",
+    "ar": "نرحّب بالطلبة الجدد والعائدين مع بداية فصل مايكلماس، ونجتمع للتعارف واستعراض برامج الجمعية."
+  },
+  "agenda": {
+    "en": [
+      "Introductions",
+      "new member welcome",
+      "term events preview."
+    ],
+    "ar": [
+      "تعارف",
+      "استقبال الأعضاء الجدد",
+      "استعراض أنشطة الفصل."
+    ]
+  },
+  "category": "community",
+  "startLocal": "2027-10-10T14:00:00",
+  "endLocal": "2027-10-10T17:00:00",
+  "timezone": "Europe/London",
+  "venueKey": "noa-annexe",
+  "audience": "public",
+  "price": {
+    "status": "free",
+    "currency": "GBP",
+    "amountMinor": 0
+  },
+  "bookingRequired": true,
+  "registrationMode": "interest_only",
+  "eventStatus": "proposed",
+  "visibility": "published_as_proposal",
+  "capacity": null,
+  "waitlistEnabled": false,
+  "dateNotice": {
+    "en": "Date and venue are proposed and not confirmed.",
+    "ar": "التاريخ والمكان مقترحان ولم يُؤكّدا بعد."
+  },
+  "image": {
+    "web": "/assets/events/web/event-10-michaelmas-term-welcome.webp",
+    "thumb": "/assets/events/thumbs/event-10-michaelmas-term-welcome.webp",
+    "alt": {
+      "en": "Illustrated concept artwork for Michaelmas Term Welcome Gathering, Oxford Saudi Society.",
+      "ar": "تصميم توضيحي لفعالية الاجتماع الترحيبي ببداية فصل مايكلماس للجمعية السعودية بجامعة أكسفورد."
+    },
+    "credit": "AI-generated concept artwork supplied through the society planning conversation.",
+    "reviewNote": "AI-generated illustrative image, not a photograph of an actual event; inspect logos/flags for authenticity.",
+    "approved": false
+  },
+  "published": true
+}

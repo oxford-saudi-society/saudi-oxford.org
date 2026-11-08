@@ -14,7 +14,17 @@ The site is a *static* site: a small program (`build/build.js`) reads the conten
 
 ```
 src/content/settings.json      fees, payment links, bank details, email, social accounts
-src/content/events/*.json      one file per event
+src/content/events/*.json      one file per event (titles, copy, artwork, proposed date and venue)
+src/content/venues.json        the venues events can use
+src/assets/events/             event artwork (web 1080px + thumbs 440px)
+netlify/functions/api.mjs      the events API (/api/*): interest, bookings, tickets, check-in, committee desk
+netlify/functions/jobs.mjs     every 10 minutes: send queued email, expire waitlist offers, reminders, retention
+netlify/lib/                   the API's code (database, auth, mail templates, events logic, desk operations)
+shared/time.cjs                Oxford-time helpers used by both the build and the API
+src/apps/                      the account page (/account/), tickets (/t/…) and the committee desk (/admin/events/)
+tests/                         integration tests for the events system (node --test)
+qa/                            browser checks and the local dev server
+docs/EVENTS_OPERATIONS.md      how the events system works and how the committee runs it
 src/content/people/*.json      one file per community-directory profile (photos in src/assets/people/)
 src/content/committees/*.json  one file per committee year (2025-26.json, 2024-25.json …); "current": true marks the sitting committee
 src/content/roles.json         the list of committee roles (rarely changes)
@@ -66,6 +76,10 @@ The step-by-step runbook with screenshots-level detail lives with the committee 
 
 Costs, plainly: Canny's **Free plan stops at 25 tracked users** — anyone who posts, votes or comments counts, so a society of 100+ members will outgrow it in a term; the next plan is around £60–80 a month (check canny.io/pricing). Two ways to handle that: (a) start on Free and watch the count, or (b) use a board from a provider whose free plan has no user cap and paste its embeddable link into *Other provider embed link* — the page works the same way. The Canny token wins if both are set.
 
+## Events: interest, bookings, tickets, check-in
+
+Event pages are built from the content files and then kept live by the events API. The committee runs bookings from `/admin/events/` (sign-in by email link; roles `super_admin`, `events_admin`, `checkin_staff`). Everything about it — the rules it enforces, the step-by-step for a normal event, the environment variables it needs (database, `AUTH_SECRET`, Resend for email, first admin) and how to test it — is in **docs/EVENTS_OPERATIONS.md**. Until the database and secrets are set in Netlify, event pages still show the programme but say registration is temporarily unavailable.
+
 ## The join form
 
 The form on `/join/` is a Netlify Form named `join`. Submissions appear under *Forms* in Netlify (export CSV) and are emailed to the address set in step 2. Each application carries a reference like `OSS-8MGVA0O`; the applicant quotes it when paying by bank transfer, and the treasurer matches payments against it. Saudi students pay nothing; the committee emails them for proof of nationality, checks it, and deletes the image.
@@ -90,5 +104,7 @@ Open `dist/index.html` through a local web server (for example `python3 -m http.
 - [ ] Privacy notice still true (what we collect, retention, who sees it)
 
 ## Things to finish before launch
+
+For the events system: create the database (Netlify DB → Neon, or any PostgreSQL), set `DATABASE_URL`, `AUTH_SECRET`, `ADMIN_BOOTSTRAP_EMAILS`, `RESEND_API_KEY`, `MAIL_FROM` and `SITE_URL` in Netlify, verify the sending domain in Resend, then sign in at `/admin/events/` and add the committee under *Staff*. Full list in `.env.example`.
 
 Placeholders show on the site with a dotted gold underline until filled in the desk: fees (tick *confirmed*), society email, Stripe links, bank details, committee names, this term's events, Instagram handle, privacy retention period, and the ideas board token (see above). Review the privacy notice and terms once with someone who reads such things for a living.

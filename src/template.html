@@ -12,6 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Noto+Sans:wght@400;500;600;700&family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/site.css">
+<link rel="stylesheet" href="/css/events.css">
 </head>
 <body>
 <a class="skip" href="#main" data-ar="تخطَّ إلى المحتوى">Skip to content</a>
@@ -189,23 +190,37 @@
 
 <!-- ══════════════ EVENTS ══════════════ -->
 <div class="view" id="v-events">
-  <section class="band tint head">
-    <div class="wrap">
-      <div class="sec-head">
-        <p class="eyebrow" data-ar="الفعاليات">Events</p>
-        <h2 data-ar="ما الذي يجري هذا الفصل">What's on this term</h2>
-        <hr class="gold-rule">
-        <p data-ar="جميع الفعاليات مفتوحة للأعضاء وغير الأعضاء ما لم يُذكر خلاف ذلك. تُحدَّث التفاصيل في بداية كل فصل دراسي.">All events are open to members and non-members unless noted. Details are confirmed at the start of each term.</p>
-      </div>
-    </div>
-  </section>
+  <div id="ev-index"></div>
+</div>
 
-  <section class="band">
-    <div class="wrap">
-      <p class="eyebrow" style="margin-bottom:22px" data-ar="قادمة">Upcoming</p>
-      <div id="events-list"></div>
-    </div>
+<!-- ══════════════ EVENT (one page per event) ══════════════ -->
+<div class="view" id="v-event">
+  <section class="band ev-page">
+    <div class="wrap" id="event-detail"></div>
   </section>
+  <dialog class="glass reg-dialog" id="reg-dialog" aria-labelledby="reg-title">
+    <form id="reg-form" method="dialog" novalidate>
+      <button type="button" class="reg-close" id="reg-close" aria-label="Close" data-ar-aria="إغلاق">×</button>
+      <p class="eyebrow" id="reg-kind" data-ar="التسجيل">Registration</p>
+      <h3 id="reg-title" class="disp"></h3>
+      <p class="reg-intro" id="reg-intro"></p>
+      <div class="err-sum" id="reg-errs" role="alert"></div>
+      <div class="f"><label class="lbl" for="reg-name" data-ar="الاسم الكامل <span class='req'>*</span>">Full name <span class="req">*</span></label><input id="reg-name" name="name" type="text" autocomplete="name" required maxlength="120"><p class="msg" data-ar="أدخل اسمك الكامل.">Enter your full name.</p></div>
+      <div class="f"><label class="lbl" for="reg-email" data-ar="البريد الإلكتروني <span class='req'>*</span>">Email <span class="req">*</span></label><input id="reg-email" name="email" type="email" autocomplete="email" required maxlength="254" dir="ltr"><p class="msg" data-ar="أدخل بريدًا إلكترونيًا صحيحًا.">Enter a valid email address.</p><p class="hint" data-ar="سنرسل رابط تأكيد إلى هذا البريد؛ لا يكتمل التسجيل قبل الضغط عليه.">We email a confirmation link to this address; registration completes only when you click it.</p></div>
+      <div class="f hp" aria-hidden="true"><label for="reg-website">Website</label><input id="reg-website" name="website" type="text" tabindex="-1" autocomplete="off"></div>
+      <div class="f"><label class="chk-l need"><input type="checkbox" id="reg-privacy" name="consent_privacy" required><span data-ar="قرأت <a href='#privacy' target='_blank'>إشعار الخصوصية</a> وأوافق على استخدام اسمي وبريدي لإدارة هذه الفعالية. <span class='req'>*</span>">I have read the <a href="#privacy" target="_blank">privacy notice</a> and agree to my name and email being used to run this event. <span class="req">*</span></span></label><p class="msg" data-ar="الموافقة على إشعار الخصوصية مطلوبة.">The privacy notice must be acknowledged.</p></div>
+      <div class="f"><label class="chk-l"><input type="checkbox" id="reg-news" name="marketing_opt_in"><span data-ar="أرغب في تلقي أخبار الجمعية بالبريد (اختياري، يمكن إلغاؤه في أي وقت).">Email me Society news (optional, unsubscribe any time).</span></label></div>
+      <p class="reg-sub" id="reg-legal"></p>
+      <div class="form-foot"><button type="submit" class="btn btn-p" id="reg-submit"></button><button type="button" class="btn btn-s" id="reg-cancel" data-ar="إلغاء">Cancel</button></div>
+    </form>
+    <div class="reg-done" id="reg-done" hidden>
+      <p class="eyebrow" data-ar="تم">Done</p>
+      <h3 class="disp" id="reg-done-title"></h3>
+      <p id="reg-done-text"></p>
+      <p class="reg-sub" id="reg-done-sub"></p>
+      <div class="form-foot"><a class="btn btn-p" id="reg-done-link" hidden></a><button type="button" class="btn btn-s" id="reg-done-close" data-ar="إغلاق">Close</button></div>
+    </div>
+  </dialog>
 </div>
 
 <!-- ══════════════ JOIN ══════════════ -->
@@ -658,5 +673,6 @@
 </footer>
 
 <script src="/js/site.js" defer></script>
+<script src="/js/events.js" defer></script>
 </body>
 </html>

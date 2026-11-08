@@ -67,6 +67,7 @@ collections:
             fields:
               - { label: "Retention period (e.g. 'two years')", name: "retention", widget: "string", required: false }
               - { label: "Hosting provider named in the notice", name: "hosting", widget: "string", required: false }
+              - { label: "Privacy notice version (date of the last change, e.g. 2026-11-08)", name: "version", widget: "string", required: false, hint: "Stored with every event registration so the committee knows which notice the person accepted" }
           - label: "Ideas board (Canny)"
             name: "ideas"
             widget: "object"
@@ -87,26 +88,76 @@ collections:
   - name: "events"
     label: "Events"
     label_singular: "Event"
+    description: "Titles, copy, dates and images of the programme. Status, capacity and registrations are managed in the events dashboard at /admin/events/."
     folder: "src/content/events"
     create: true
     format: "json"
     extension: "json"
     identifier_field: "slug"
     slug: "{{slug}}"
-    summary: "{{order}} · {{title.en}} · {{date}}"
-    sortable_fields: ["order", "date"]
+    summary: "{{order}} · {{title.en}} · {{startLocal}}"
+    sortable_fields: ["order", "startLocal"]
     fields:
-      - { label: "Short name for the file (letters and hyphens)", name: "slug", widget: "string", pattern: ["^[a-z0-9-]+$", "lowercase letters, digits and hyphens only"] }
+      - { label: "Stable ID (never change after publishing, e.g. oss-012)", name: "id", widget: "string", pattern: ["^oss-[0-9]{3}$", "format oss-000"] }
+      - { label: "Short name for the link (letters and hyphens)", name: "slug", widget: "string", pattern: ["^[a-z0-9-]+$", "lowercase letters, digits and hyphens only"] }
+      - { label: "Order in the programme", name: "order", widget: "number", value_type: "int", default: 99 }
       - { label: "Title", name: "title", widget: "object", fields: [ { label: "English", name: "en", widget: "string" }, { label: "Arabic", name: "ar", widget: "string" } ] }
-      - { label: "Week (e.g. Week 3)", name: "week", widget: "string", required: false }
-      - { label: "Date (e.g. Thu 23 Jan 2027)", name: "date", widget: "string", required: false }
-      - { label: "Time (e.g. 7:00 pm)", name: "time", widget: "string", required: false }
-      - { label: "Venue", name: "venue", widget: "string", required: false }
       - { label: "Description", name: "description", widget: "object", fields: [ { label: "English", name: "en", widget: "text" }, { label: "Arabic", name: "ar", widget: "text" } ] }
-      - { label: "Tag", name: "tag", widget: "select", options: [ { label: "Free", value: "free" }, { label: "All welcome", value: "open" }, { label: "Booking needed", value: "booking" }, { label: "Members only", value: "members" } ], default: "free" }
-      - { label: "Booking link", name: "bookingUrl", widget: "string", required: false }
-      - { label: "Order on the page (1 = first)", name: "order", widget: "number", value_type: "int", default: 10 }
+      - { label: "Agenda", name: "agenda", widget: "object", required: false, fields: [ { label: "English (one item per line)", name: "en", widget: "list", required: false }, { label: "Arabic (one item per line)", name: "ar", widget: "list", required: false } ] }
+      - { label: "Category", name: "category", widget: "select", options: [ { label: "Community", value: "community" }, { label: "Culture", value: "culture" }, { label: "Culture & religion", value: "culture-religion" }, { label: "Religion", value: "religion" }, { label: "Academic & careers", value: "academic-careers" }, { label: "Sports", value: "sports" } ] }
+      - { label: "Start (Oxford local time)", name: "startLocal", widget: "datetime", format: "YYYY-MM-DDTHH:mm:ss", date_format: "DD MMM YYYY", time_format: "HH:mm", picker_utc: false }
+      - { label: "End (Oxford local time)", name: "endLocal", widget: "datetime", format: "YYYY-MM-DDTHH:mm:ss", date_format: "DD MMM YYYY", time_format: "HH:mm", picker_utc: false }
+      - { label: "Timezone", name: "timezone", widget: "hidden", default: "Europe/London" }
+      - { label: "Venue", name: "venueKey", widget: "select", options: [ { label: "North Oxford Association — Annexe", value: "noa-annexe" }, { label: "North Oxford Association — Main Hall", value: "noa-main-hall" }, { label: "University Parks", value: "university-parks" }, { label: "To be announced", value: "tba" } ] }
+      - { label: "Audience", name: "audience", widget: "select", options: [ { label: "All welcome", value: "public" }, { label: "Members only", value: "members" } ], default: "public" }
+      - label: "Price"
+        name: "price"
+        widget: "object"
+        fields:
+          - { label: "Status", name: "status", widget: "select", options: [ { label: "Free", value: "free" }, { label: "To be announced", value: "tbd" } ], default: "free" }
+          - { label: "Currency", name: "currency", widget: "hidden", default: "GBP" }
+          - { label: "Amount in pence (free = 0)", name: "amountMinor", widget: "number", value_type: "int", required: false }
+      - { label: "Booking required", name: "bookingRequired", widget: "boolean", default: true }
+      - { label: "Initial registration mode (the dashboard overrides this once the event is live)", name: "registrationMode", widget: "select", options: [ { label: "None — no registration", value: "none" }, { label: "Interest only (not a booking)", value: "interest_only" }, { label: "Open", value: "open" }, { label: "Closed", value: "closed" } ], default: "interest_only" }
+      - { label: "Initial status", name: "eventStatus", widget: "select", options: [ { label: "Proposed", value: "proposed" }, { label: "Confirmed", value: "confirmed" }, { label: "Postponed", value: "postponed" }, { label: "Cancelled", value: "cancelled" }, { label: "Completed", value: "completed" } ], default: "proposed" }
+      - { label: "Visibility", name: "visibility", widget: "select", options: [ { label: "Published as a proposal", value: "published_as_proposal" }, { label: "Published", value: "published" }, { label: "Hidden", value: "hidden" } ], default: "published_as_proposal" }
+      - { label: "Capacity (leave empty until the venue confirms)", name: "capacity", widget: "number", value_type: "int", required: false }
+      - { label: "Waitlist when full", name: "waitlistEnabled", widget: "boolean", default: false }
+      - { label: "Date notice", name: "dateNotice", widget: "object", fields: [ { label: "English", name: "en", widget: "string" }, { label: "Arabic", name: "ar", widget: "string" } ] }
+      - label: "Image (square)"
+        name: "image"
+        widget: "object"
+        fields:
+          - { label: "Display image (1080×1080 webp under /assets/events/web/)", name: "web", widget: "image", media_folder: "/src/assets/events/web", public_folder: "/assets/events/web" }
+          - { label: "Thumbnail (440×440 webp under /assets/events/thumbs/)", name: "thumb", widget: "image", media_folder: "/src/assets/events/thumbs", public_folder: "/assets/events/thumbs" }
+          - { label: "Alt text", name: "alt", widget: "object", fields: [ { label: "English", name: "en", widget: "string" }, { label: "Arabic", name: "ar", widget: "string" } ] }
+          - { label: "Credit", name: "credit", widget: "string", required: false }
+          - { label: "Review note", name: "reviewNote", widget: "string", required: false }
+          - { label: "Artwork approved by the committee", name: "approved", widget: "boolean", default: false }
       - { label: "Published", name: "published", widget: "boolean", default: true }
+
+  - name: "venues"
+    label: "Venues"
+    files:
+      - name: "venues"
+        label: "Proposed venues"
+        file: "src/content/venues.json"
+        fields:
+          - label: "North Oxford Association — Annexe"
+            name: "noa-annexe"
+            widget: "object"
+            fields: &venuefields
+              - { label: "Key", name: "key", widget: "hidden" }
+              - { label: "Name", name: "name", widget: "object", fields: [ { label: "English", name: "en", widget: "string" }, { label: "Arabic", name: "ar", widget: "string" } ] }
+              - { label: "Type", name: "type", widget: "select", options: ["indoor", "outdoor"] }
+              - { label: "Booking status", name: "bookingStatus", widget: "select", options: [ { label: "Not requested / unconfirmed", value: "not_requested_or_unconfirmed" }, { label: "Permission not checked", value: "permission_not_checked" }, { label: "Requested", value: "requested" }, { label: "Confirmed", value: "confirmed" } ] }
+              - { label: "Official booking page", name: "officialBookingUrl", widget: "string", required: false }
+              - { label: "Internal note", name: "locationNote", widget: "string", required: false }
+              - { label: "Verified street address (shown only once confirmed)", name: "addressVerified", widget: "string", required: false }
+              - { label: "Map link (shown only once confirmed)", name: "mapsUrl", widget: "string", required: false }
+              - { label: "Accessibility note", name: "accessibilityNote", widget: "object", fields: [ { label: "English", name: "en", widget: "string", required: false }, { label: "Arabic", name: "ar", widget: "string", required: false } ] }
+          - { label: "North Oxford Association — Main Hall", name: "noa-main-hall", widget: "object", fields: *venuefields }
+          - { label: "University Parks", name: "university-parks", widget: "object", fields: *venuefields }
 
   - name: "people"
     label: "Community directory"

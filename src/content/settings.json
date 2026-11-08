@@ -29,7 +29,8 @@
   },
   "privacy": {
     "retention": "",
-    "hosting": "Netlify (hosting) and GitHub (content storage)"
+    "hosting": "Netlify (hosting) and GitHub (content storage)",
+    "version": "2026-11-08"
   },
   "showSupporters": false,
   "ideas": {

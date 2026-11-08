@@ -4,3 +4,11 @@
 
 [build.environment]
   NODE_VERSION = "22"
+
+# Events API (/api/*) and the 10-minute housekeeping job live in netlify/functions.
+# Shared code is in netlify/lib and shared/; the programme content is bundled at build time
+# (netlify/lib/content.generated.mjs is written by `npm run build`).
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+  external_node_modules = ["pg"]

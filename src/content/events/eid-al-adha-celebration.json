@@ -1,0 +1,58 @@
+{
+  "id": "oss-007",
+  "slug": "eid-al-adha-celebration",
+  "order": 7,
+  "title": {
+    "en": "Eid al-Adha Celebration",
+    "ar": "العيد يجمعنا — معايدة عيد الأضحى المبارك"
+  },
+  "description": {
+    "en": "An Eid al-Adha community celebration to exchange greetings and enjoy traditional Saudi hospitality. The date remains provisional pending the adopted lunar-calendar announcement.",
+    "ar": "معايدة عيد الأضحى المبارك، نجتمع فيها لتبادل التهاني والاحتفاء بالعيد في أجواء أسرية واجتماعية. الموعد المقترح قابل للتعديل بحسب الإعلان المعتمد."
+  },
+  "agenda": {
+    "en": [
+      "Eid greetings",
+      "shared community programme",
+      "hospitality."
+    ],
+    "ar": [
+      "تبادل التهاني",
+      "برنامج اجتماعي",
+      "ضيافة العيد."
+    ]
+  },
+  "category": "religion",
+  "startLocal": "2027-05-17T18:00:00",
+  "endLocal": "2027-05-17T21:00:00",
+  "timezone": "Europe/London",
+  "venueKey": "noa-main-hall",
+  "audience": "public",
+  "price": {
+    "status": "free",
+    "currency": "GBP",
+    "amountMinor": 0
+  },
+  "bookingRequired": true,
+  "registrationMode": "interest_only",
+  "eventStatus": "proposed",
+  "visibility": "published_as_proposal",
+  "capacity": null,
+  "waitlistEnabled": false,
+  "dateNotice": {
+    "en": "The Eid-related timing is provisional and may be changed following the lunar-calendar announcement.",
+    "ar": "قد يختلف الموعد الهجري يومًا بحسب إعلان دخول الشهر، وستؤكد اللجنة أي تعديل."
+  },
+  "image": {
+    "web": "/assets/events/web/event-07-eid-al-adha-celebration.webp",
+    "thumb": "/assets/events/thumbs/event-07-eid-al-adha-celebration.webp",
+    "alt": {
+      "en": "Illustrated concept artwork for Eid al-Adha Celebration, Oxford Saudi Society.",
+      "ar": "تصميم توضيحي لفعالية العيد يجمعنا — معايدة عيد الأضحى المبارك للجمعية السعودية بجامعة أكسفورد."
+    },
+    "credit": "AI-generated concept artwork supplied through the society planning conversation.",
+    "reviewNote": "AI-generated illustrative image, not a photograph of an actual event; inspect logos/flags for authenticity.",
+    "approved": false
+  },
+  "published": true
+}
