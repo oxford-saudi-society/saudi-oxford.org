@@ -80,7 +80,8 @@ collections:
             fields:
               - { label: "Site token (Cloudflare → Web Analytics → Manage site → JS snippet)", name: "cloudflareToken", widget: "string", required: false, hint: "Leave empty to collect nothing" }
           - { label: "Show the Supporters section", name: "showSupporters", widget: "boolean", default: false }
-          - { label: "Site name (English)", name: "siteName", widget: "object", fields: [ { label: "English", name: "en", widget: "string" }, { label: "Arabic", name: "ar", widget: "string" } ] }
+          - { label: "Site name", name: "siteName", widget: "object", fields: [ { label: "English", name: "en", widget: "string" }, { label: "Arabic", name: "ar", widget: "string" } ] }
+          - { label: "Subtitle under the name (header and home page)", name: "subtitle", widget: "object", fields: [ { label: "English", name: "en", widget: "string", default: "University of Oxford" }, { label: "Arabic", name: "ar", widget: "string", default: "جامعة أكسفورد" } ] }
           - { label: "Domain", name: "domain", widget: "hidden", default: "https://saudi-oxford.org" }
 
   - name: "events"

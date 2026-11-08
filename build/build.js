@@ -175,6 +175,7 @@ function renderLang(lang) {
   });
   $('[data-setting="email-link"]').each((i, el) => { if (settings.email) $(el).removeClass('ph').attr('href', 'mailto:' + settings.email).text(settings.email); });
   $('[data-setting="founded"]').each((i, el) => { if (settings.founded) $(el).removeClass('ph').text(settings.founded); });
+  $('[data-setting="subtitle"]').each((i, el) => { const v = settings.subtitle && settings.subtitle[lang]; if (v) $(el).text(v); });
   $('[data-setting="retention"]').each((i, el) => { if (settings.privacy && settings.privacy.retention) $(el).removeClass('ph').text(settings.privacy.retention); });
   $('[data-setting="hosting"]').each((i, el) => { if (settings.privacy && settings.privacy.hosting) $(el).removeClass('ph').text(settings.privacy.hosting); });
   $('[data-setting="instagram"]').each((i, el) => {

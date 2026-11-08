@@ -39,5 +39,9 @@
   },
   "analytics": {
     "cloudflareToken": ""
+  },
+  "subtitle": {
+    "en": "University of Oxford",
+    "ar": "جامعة أكسفورد"
   }
 }

@@ -45,14 +45,15 @@ To give a new committee member access: add them as a collaborator on the GitHub 
 
 ## One-time setup (done once, kept for the record)
 
-1. **GitHub** — repository `saudi-oxford.org` under the society's account. Replace `OWNER` in `admin/config.yml` with that account name.
-2. **Netlify** — *Add new site → Import an existing project → GitHub → this repository*. Build command and folder are read from `netlify.toml`. Then:
-   - *Site configuration → Forms → Enable form detection* (the join form).
-   - *Forms → Form notifications → Email* → the society address, so every application arrives in the inbox.
-   - *Domain management → Add a domain → saudi-oxford.org* (and `www`), and follow the DNS records it shows.
-   - *Access & security → OAuth → Install provider → GitHub*, using a GitHub OAuth App created at GitHub → Settings → Developer settings → OAuth Apps (homepage `https://saudi-oxford.org`, callback `https://api.netlify.com/auth/done`). This is what lets the desk sign people in.
-3. **Cloudflare** (DNS and email) — add the domain, point GoDaddy's nameservers at Cloudflare, add the Netlify records (set them to *DNS only*, the grey cloud), then *Email → Email Routing*: `hello@`, `president@`, `treasurer@` → the committee Gmail. In Gmail, *Settings → Accounts → Send mail as* lets replies go out from those addresses.
-4. **Stripe** — account in the society's name; two Payment Links (student, associate); paste them into *Settings* in the desk.
+The step-by-step runbook with screenshots-level detail lives with the committee ("saudi-oxford.org — go-live runbook"). In short:
+
+1. **GitHub** — organisation `oxford-saudi-society`, **public** repository `saudi-oxford.org` (public keeps Netlify from counting every editor as a paid seat; nothing secret is in here). Committee members get *Write* access — that is what lets them use the desk. `admin/config.yml` line 5 must read `repo: oxford-saudi-society/saudi-oxford.org`.
+2. **Netlify** — *Add new project → Import an existing project → GitHub → this repository*; build settings come from `netlify.toml`. Use the **Personal plan ($9/month)**: the Free plan is capped at 300 credits a month and every publish from the desk costs 15, after which the whole site goes offline until the next month. Then:
+   - *Project configuration → Forms → Enable form detection*, trigger one deploy, then *Notifications → Form submission notifications → Email* → the society address.
+   - *Domain management → Add a domain → saudi-oxford.org* (www is added automatically); make the bare domain primary; HTTPS is issued automatically once DNS resolves.
+   - *Access & security → OAuth → Authentication providers → Install provider → GitHub*, using a GitHub OAuth App created **under the organisation** (Settings → Developer settings → OAuth Apps; homepage `https://saudi-oxford.org`, callback `https://api.netlify.com/auth/done`). This is what lets the desk sign people in.
+3. **Cloudflare** (DNS, email, analytics; free) — add the domain, point GoDaddy's nameservers at Cloudflare, then records, all *DNS only* (grey cloud): `CNAME @ → apex-loadbalancer.netlify.com` (or `A @ → 75.2.60.5`), `CNAME www → saudi-oxford.netlify.app`. *Email → Email Routing*: `hello@`, `president@`, `treasurer@`, `secretary@`, `ideas@` → the committee Gmail; in Gmail, *Settings → Accounts → Send mail as* with `smtp.gmail.com`, port 587, the Gmail address and an App Password lets replies go out from those addresses. Set the SPF TXT to `v=spf1 include:_spf.mx.cloudflare.net include:_spf.google.com ~all` and add `_dmarc` `v=DMARC1; p=none; rua=mailto:hello@saudi-oxford.org`. *Web Analytics → Add a site* gives a token; paste it in the desk under *Settings → Visitor analytics* and the cookie-free counter is added to every page.
+4. **Stripe** — account in the society's name; two Payment Links (student, associate) with a required custom field "Application reference"; paste them into *Settings* in the desk.
 5. **GoDaddy** — the domain registration. Keep auto-renew on and the card current; move the domain to the society account so it survives committee changes.
 
 ## The ideas board (Canny)
