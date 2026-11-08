@@ -36,5 +36,8 @@
     "cannyBoardToken": "",
     "url": "",
     "embedUrl": ""
+  },
+  "analytics": {
+    "cloudflareToken": ""
   }
 }

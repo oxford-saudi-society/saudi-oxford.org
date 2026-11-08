@@ -184,6 +184,10 @@ function renderLang(lang) {
   // settings for the script
   const site = { lang, email: settings.email || '', treasurerEmail: settings.treasurerEmail || '', fees: settings.fees || {}, payLinks: settings.payLinks || {}, bank: settings.bank || {}, ideas: settings.ideas || {}, formEndpoint: '/' };
   $('#site-settings').text(JSON.stringify(site).replace(/</g, '\\u003c'));
+  // Cloudflare Web Analytics (cookie-free) — only when a token is set in settings
+  if (settings.analytics && settings.analytics.cloudflareToken) {
+    $('body').append(`<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='${JSON.stringify({ token: settings.analytics.cloudflareToken })}'></script>\n`);
+  }
   return $.html();
 }
 
