@@ -104,7 +104,7 @@ for (const f of ['sitemap.xml', 'robots.txt', '_redirects', '_headers', 'favicon
     });
   }
 })(DIST);
-checks++; if (!/^https:\/\/ousss\.org\/\*\s+https:\/\/\S+\/:splat\s+301!$/m.test(fs.readFileSync(path.join(DIST, '_redirects'), 'utf8'))) fails.push('_redirects: ousss.org must forward to the primary domain');
+for (const h of ['oxsss.org', 'ousss.org']) { checks++; if (!new RegExp('^https://' + h.replace('.', '\\.') + '/\\*\\s+https://\\S+/:splat\\s+301!$', 'm').test(fs.readFileSync(path.join(DIST, '_redirects'), 'utf8'))) fails.push(`_redirects: ${h} must forward to the primary domain`); }
 checks++; if (!/\/js\/\*\n\s+Cache-Control: public, max-age=0, must-revalidate/.test(fs.readFileSync(path.join(DIST, '_headers'), 'utf8'))) fails.push('_headers: /js/* must revalidate on every visit');
 console.log(`${pages.length} pages, ${checks} checks, ${fails.length} failures`);
 fails.forEach((f) => console.log('  FAIL ' + f));

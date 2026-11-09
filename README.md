@@ -2,8 +2,8 @@
 
 This folder **is** the website. Every page, name, event and setting lives here, in plain files, with a full history of changes. Nothing about the site depends on any one person or any one computer.
 
-- Live site: https://oxsss.org (English) · https://oxsss.org/ar/ (Arabic) (also https://saudi-oxford.netlify.app; ousss.org forwards here)
-- Committee desk (editing): https://oxsss.org/admin/ · membership & events: https://oxsss.org/admin/events/
+- Live site: https://stemmania.ai (English) · https://stemmania.ai/ar/ (Arabic) (also https://saudi-oxford.netlify.app; oxsss.org and ousss.org forward here while oxsss.org is too new for university network filters). Society email stays on @oxsss.org.
+- Committee desk (editing): https://stemmania.ai/admin/ · membership & events: https://stemmania.ai/admin/events/
 - Hosting: Netlify · Content storage: GitHub · Email & DNS: Cloudflare · Payments: Stripe
 
 ## How it works, in one paragraph

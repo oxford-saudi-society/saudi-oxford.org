@@ -267,9 +267,9 @@ for (const lang of ['en', 'ar']) {
 }
 fs.writeFileSync(path.join(DIST, 'sitemap.xml'), '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + urls.map((u) => `  <url><loc>${u}</loc></url>`).join('\n') + '\n</urlset>\n');
 fs.writeFileSync(path.join(DIST, 'robots.txt'), `User-agent: *\nAllow: /\nDisallow: /admin/\nSitemap: ${BASE}/sitemap.xml\n`);
-/* Old domains forward to the primary domain, keeping the path (ousss.org/join/ → oxsss.org/join/). Host rules go first. */
+/* Other society domains forward to the primary domain, keeping the path (oxsss.org/join/ → stemmania.ai/join/). Host rules go first. */
 const PRIMARY = (settings.domain || '').replace(/\/$/, '');
-const OLD_HOSTS = ['ousss.org', 'www.ousss.org'];
+const OLD_HOSTS = ['oxsss.org', 'www.oxsss.org', 'ousss.org', 'www.ousss.org'];
 fs.writeFileSync(path.join(DIST, '_redirects'), [
   ...(PRIMARY ? OLD_HOSTS.flatMap((h) => [`https://${h}/*  ${PRIMARY}/:splat  301!`, `http://${h}/*  ${PRIMARY}/:splat  301!`]) : []),
   '/committee  /admin/  302', '/ar  /ar/  301',
