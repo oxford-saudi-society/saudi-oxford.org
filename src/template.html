@@ -286,21 +286,17 @@
         <p class="eyebrow" style="margin-top:44px" data-ar="الخطوة ٢ · الصفة">Step 2 · Status</p>
         <h3 class="disp" style="font-size:28px;margin:10px 0 22px" data-ar="ما صفتك في أكسفورد؟">What is your status at Oxford?</h3>
         <div class="err-sum" id="err-sum" role="alert" data-ar="يرجى إكمال الحقول المظلّلة قبل الإرسال.">Please complete the highlighted fields before sending.</div>
-        <div class="form">
-          <div class="f" data-f="status">
-            <label class="lbl" for="f-status"><span data-ar="الصفة">Status</span> <span class="req">*</span></label>
-            <select id="f-status" name="status" required>
-              <option value="" data-ar="اختر…">Choose…</option>
-              <option value="undergraduate" data-ar="طالب بكالوريوس">Undergraduate</option>
-              <option value="masters" data-ar="دراسات عليا بالمقررات (ماجستير)">Taught postgraduate (Master's)</option>
-              <option value="dphil" data-ar="دراسات عليا بالبحث (دكتوراه)">Research postgraduate (DPhil)</option>
-              <option value="visiting" data-ar="طالب أو باحث زائر">Visiting student or researcher</option>
-              <option value="staff" data-ar="موظف أو باحث في الجامعة">University staff or researcher</option>
-              <option value="alumni" data-ar="خريج">Alumni</option>
-              <option value="other" data-ar="أخرى">Other</option>
-            </select>
-            <span class="msg" data-ar="يرجى اختيار صفتك.">Please choose your status.</span>
-          </div>
+        <div class="f full stat-wrap" data-f="status">
+        <div class="tiers stats" id="statuses" role="radiogroup" aria-label="Status">
+          <label class="tier stat" data-tone="green"><input type="radio" name="status" value="undergraduate"><span class="chk" aria-hidden="true"></span><span class="tn" data-ar="طالب بكالوريوس">Undergraduate</span><span class="td" data-ar="تدرس للحصول على درجتك الجامعية الأولى">Studying for a first degree</span></label>
+          <label class="tier stat" data-tone="gold"><input type="radio" name="status" value="masters"><span class="chk" aria-hidden="true"></span><span class="tn" data-ar="ماجستير بالمقررات">Taught postgraduate</span><span class="td" data-ar="MSc وMPhil وMBA وغيرها من البرامج">Master's: MSc, MPhil, MBA and similar</span></label>
+          <label class="tier stat" data-tone="sky"><input type="radio" name="status" value="dphil"><span class="chk" aria-hidden="true"></span><span class="tn" data-ar="دكتوراه بالبحث">Research postgraduate</span><span class="td" data-ar="بحث الدكتوراه (DPhil) في أكسفورد">DPhil research at Oxford</span></label>
+          <label class="tier stat" data-tone="green"><input type="radio" name="status" value="visiting"><span class="chk" aria-hidden="true"></span><span class="tn" data-ar="طالب أو باحث زائر">Visiting student or researcher</span><span class="td" data-ar="هنا لفصل دراسي أو سنة أو مشروع">Here for a term, a year or a project</span></label>
+          <label class="tier stat" data-tone="gold"><input type="radio" name="status" value="staff"><span class="chk" aria-hidden="true"></span><span class="tn" data-ar="موظف أو باحث في الجامعة">University staff or researcher</span><span class="td" data-ar="أكاديميون وباحثون وموظفون">Academic, research or professional staff</span></label>
+          <label class="tier stat" data-tone="sky"><input type="radio" name="status" value="alumni"><span class="chk" aria-hidden="true"></span><span class="tn" data-ar="خريج">Alumni</span><span class="td" data-ar="درست في أكسفورد سابقاً">Studied at Oxford before</span></label>
+          <label class="tier stat stat-other" data-tone="ivory"><input type="radio" name="status" value="other"><span class="chk" aria-hidden="true"></span><span class="tn" data-ar="أخرى">Other</span><span class="td" data-ar="اختر هذا ثم اكتب صفتك باختصار">Choose this, then tell us in a few words</span><span class="oth"><input type="text" id="f-status-other" name="status_other" maxlength="80" autocomplete="off" placeholder="e.g. Oxford Brookes student" data-ar-ph="مثال: طالب في جامعة أكسفورد بروكس" aria-label="Your status"></span></label>
+        </div>
+        <span class="msg" id="status-msg" data-ar="يرجى اختيار صفتك، وإن اخترت «أخرى» فاكتبها.">Please choose your status, and if you pick Other, type it in.</span>
         </div>
 
         <p class="eyebrow" style="margin-top:44px" data-ar="الخطوة ٣ · بياناتك">Step 3 · Your details</p>

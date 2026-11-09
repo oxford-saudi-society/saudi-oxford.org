@@ -197,4 +197,10 @@ UPDATE oss_members SET member_no = 'OSS-' || to_char(created_at AT TIME ZONE 'Eu
 CREATE INDEX IF NOT EXISTS oss_members_queue ON oss_members (status, applied_at)
 `,
   },
+  {
+    id: '0003_status_other',
+    sql: `
+ALTER TABLE oss_members ADD COLUMN IF NOT EXISTS uni_status_other text;
+`,
+  },
 ];

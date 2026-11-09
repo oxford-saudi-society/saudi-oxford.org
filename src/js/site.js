@@ -183,22 +183,35 @@
     $('step3-label').textContent = STEP3[step3Kind(tier)][lang === 'ar' ? 1 : 0];
     if (tier) { $('tier-msg').style.display = 'none'; $('tiers').classList.remove('err'); }
   }
-  form.addEventListener('change', function (e) { if (e.target.name === 'tier') syncTier(); });
+  form.addEventListener('change', function (e) { if (e.target.name === 'tier') syncTier(); if (e.target.name === 'status') syncStatus(true); });
+  /* Status cards: one tap selects; "Other" opens its own text box inside the card */
+  function selectedStatus() { var r = form.querySelector('input[name="status"]:checked'); return r ? r.value : ''; }
+  function syncStatus(fromUser) {
+    var st = selectedStatus(), other = $('f-status-other');
+    document.querySelectorAll('#statuses .stat').forEach(function (l) { l.classList.toggle('sel', l.querySelector('input[name="status"]').checked); });
+    other.required = st === 'other';
+    if (st === 'other' && fromUser) setTimeout(function () { other.focus(); }, 30);
+    if (st && (st !== 'other' || other.value.trim())) setErr('status', false);
+  }
+  $('f-status-other').addEventListener('input', function () { if (this.value.trim()) setErr('status', false); });
+  // typing in the Other box selects the Other card (and a click in the box must not be swallowed by the card)
+  $('f-status-other').addEventListener('focus', function () { var r = form.querySelector('input[name="status"][value="other"]'); if (!r.checked) { r.checked = true; syncStatus(false); } });
   function setErr(name, on) { var f = form.querySelector('[data-f="' + name + '"]'); if (!f) return; f.classList.toggle('err', !!on); var inp = f.querySelector('input,select'); if (inp) inp.setAttribute('aria-invalid', on ? 'true' : 'false'); }
   function validate() {
     var bad = [], tier = selectedTier();
     $('tier-msg').style.display = tier ? 'none' : 'block'; $('tiers').classList.toggle('err', !tier); if (!tier) bad.push('tiers');
-    var name = $('f-name').value.trim(), email = $('f-email').value.trim(), college = $('f-college').value.trim(), status = $('f-status').value, consent = $('f-consent').checked;
+    var name = $('f-name').value.trim(), email = $('f-email').value.trim(), college = $('f-college').value.trim(), status = selectedStatus(), statusOther = $('f-status-other').value.trim(), consent = $('f-consent').checked;
     setErr('name', !name); if (!name) bad.push('f-name');
     var okMail = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email); setErr('email', !okMail); if (!okMail) bad.push('f-email');
     setErr('college', !college); if (!college) bad.push('f-college');
-    setErr('status', !status); if (!status) bad.push('f-status');
+    var badStatus = !status || (status === 'other' && !statusOther);
+    setErr('status', badStatus); if (badStatus) bad.push(status === 'other' ? 'f-status-other' : 'statuses');
     setErr('consent', !consent); if (!consent) bad.push('f-consent');
     $('err-sum').classList.toggle('on', bad.length > 0);
     if (bad.length) { var el = $(bad[0]); if (el.focus) el.focus(); el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
     return bad.length === 0;
   }
-  ['f-name', 'f-email', 'f-college', 'f-status', 'f-consent'].forEach(function (id) { var clear = function () { setErr(id.replace('f-', ''), false); }; $(id).addEventListener('input', clear); $(id).addEventListener('change', clear); });
+  ['f-name', 'f-email', 'f-college', 'f-consent'].forEach(function (id) { var clear = function () { setErr(id.replace('f-', ''), false); }; $(id).addEventListener('input', clear); $(id).addEventListener('change', clear); });
   /* Submission goes to the society's own database (/api/membership/apply), which issues a permanent
      membership number and a place in the review queue. Nothing is claimed until the server answers. */
   var M = {
@@ -242,7 +255,7 @@
   function num(n) { return lang === 'ar' ? new Intl.NumberFormat('ar-SA-u-nu-arab').format(n) : String(n); }
   function collect() {
     var tier = selectedTier();
-    return { tier: tier ? tier.id : '', name: $('f-name').value.trim(), nameAr: $('f-name-ar').value.trim(), email: $('f-email').value.trim(), college: $('f-college').value.trim(), status: $('f-status').value, phone: $('f-phone').value.trim(),
+    return { tier: tier ? tier.id : '', name: $('f-name').value.trim(), nameAr: $('f-name-ar').value.trim(), email: $('f-email').value.trim(), college: $('f-college').value.trim(), status: selectedStatus(), statusOther: selectedStatus() === 'other' ? $('f-status-other').value.trim() : '', phone: $('f-phone').value.trim(),
       volunteer: Array.prototype.slice.call(form.querySelectorAll('input[name="volunteer"]:checked')).map(function (c) { return c.value; }),
       consent_privacy: $('f-consent').checked, consent_news: form.querySelector('input[name="consent_news"]').checked,
       privacy_version: SITE.privacyVersion || '', lang: lang, website: form.querySelector('input[name="website"]').value };
@@ -261,7 +274,7 @@
     var box = $('join-fail');
     if (!box) { box = document.createElement('div'); box.id = 'join-fail'; box.className = 'err-sum on'; box.setAttribute('role', 'alert'); $('submit-btn').parentNode.parentNode.insertBefore(box, $('submit-btn').parentNode); }
     if (res.status === 400 && res.data && res.data.fields) {
-      var map = { name: 'name', email: 'email', college: 'college', status: 'status', consent: 'consent' };
+      var map = { name: 'name', email: 'email', college: 'college', status: 'status', statusOther: 'status', consent: 'consent' };
       Object.keys(res.data.fields).forEach(function (k) { if (map[k]) setErr(map[k], true); if (k === 'tier') { $('tier-msg').style.display = 'block'; $('tiers').classList.add('err'); } });
       box.hidden = true; $('err-sum').classList.add('on'); return;
     }
@@ -322,7 +335,7 @@
     done.innerHTML = h; done.hidden = false; form.hidden = true; setSteps(isMember ? 'all' : (paid || verify) ? 'pay' : 'all');
     $('mcopy').addEventListener('click', function () { var b = this; var p = (navigator.clipboard && navigator.clipboard.writeText) ? navigator.clipboard.writeText(mem.memberNo) : Promise.reject(); p.then(function () { b.textContent = m('copied'); setTimeout(function () { b.textContent = m('copy'); }, 2000); }, function () { var r = document.createRange(); r.selectNodeContents($('mno')); var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r); }); });
     $('done-print').addEventListener('click', function () { window.print(); });
-    $('again').addEventListener('click', function (ev) { ev.preventDefault(); last = null; form.reset(); done.hidden = true; form.hidden = false; $('err-sum').classList.remove('on'); form.querySelectorAll('.f.err').forEach(function (f) { f.classList.remove('err'); }); syncTier(); setSteps('form'); $('join-form-band').scrollIntoView({ behavior: 'smooth' }); });
+    $('again').addEventListener('click', function (ev) { ev.preventDefault(); last = null; form.reset(); syncStatus(false); done.hidden = true; form.hidden = false; $('err-sum').classList.remove('on'); form.querySelectorAll('.f.err').forEach(function (f) { f.classList.remove('err'); }); syncTier(); setSteps('form'); $('join-form-band').scrollIntoView({ behavior: 'smooth' }); });
     $('join-form-band').scrollIntoView({ behavior: 'smooth' });
   }
   syncTier(); setSteps('form');

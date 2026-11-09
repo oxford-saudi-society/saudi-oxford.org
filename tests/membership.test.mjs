@@ -128,3 +128,18 @@ test('manual additions get numbers; members list searchable by number', async ()
   const nums = (await q(db, 'SELECT member_no FROM oss_members')).map((r) => r.member_no);
   assert.equal(new Set(nums).size, nums.length, 'numbers are unique');
 });
+
+test('status "Other" needs the typed answer, which is stored and shown to the committee', async () => {
+  const missing = await apply({ email: 'other1@example.org', status: 'other' });
+  assert.equal(missing.status, 400); assert.equal(missing.body.fields.statusOther, 'required');
+  const ok = await apply({ email: 'other1@example.org', status: 'other', statusOther: '  Oxford Brookes   student ' });
+  assert.equal(ok.status, 200, JSON.stringify(ok.body));
+  const row = (await q(db, "SELECT uni_status, uni_status_other, heard FROM oss_members WHERE email = 'other1@example.org'"))[0];
+  assert.equal(row.uni_status, 'other'); assert.equal(row.uni_status_other, 'Oxford Brookes student');
+  assert.match(C.lastMail(COMMITTEE, 'membership_committee').body_text, /Other: Oxford Brookes student/);
+  // a normal status ignores any stray "other" text
+  const plain = await apply({ email: 'other2@example.org', status: 'dphil', statusOther: 'ignored', heard: undefined });
+  assert.equal(plain.status, 200);
+  const r2 = (await q(db, "SELECT uni_status_other, heard FROM oss_members WHERE email = 'other2@example.org'"))[0];
+  assert.equal(r2.uni_status_other, null); assert.equal(r2.heard, null);
+});

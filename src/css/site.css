@@ -457,6 +457,35 @@ ol.steps li.done .k{background:var(--green-lt);color:var(--navy);box-shadow:none
 .tier.sel .chk::after{content:"";position:absolute;left:9px;top:5px;width:6px;height:11px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg)}
 .tier:focus-within{outline:2px solid var(--gold-lt);outline-offset:3px}
 html[dir="rtl"] .tier .tn{font-family:var(--arabic)}
+/* Status cards (join step 2): same card language as the membership tiers, compact, one brand tone each */
+.stats{grid-template-columns:repeat(3,1fr);gap:12px}
+.stat{--tone:var(--green-lt);padding:18px 18px 16px;min-height:118px;
+  background:linear-gradient(160deg,color-mix(in srgb,var(--tone) 24%,transparent) 0%,var(--glass) 62%);
+  box-shadow:var(--lift-sm),var(--spec),inset 0 3px 0 var(--tone)}
+.stat[data-tone="gold"]{--tone:var(--gold-lt)}
+.stat[data-tone="sky"]{--tone:var(--sky)}
+.stat[data-tone="ivory"]{--tone:var(--ivory)}
+.stat .chk{top:14px;inset-inline-end:14px;width:22px;height:22px;box-shadow:inset 0 0 0 1.5px var(--tone)}
+.stat .tn{font-size:18px;padding-inline-end:28px}
+.stat .td{font-size:12.5px;margin-top:8px;line-height:1.45}
+.stat-other{grid-column:1/-1;min-height:0}
+.stat.sel{background:linear-gradient(160deg,color-mix(in srgb,var(--tone) 30%,var(--ivory)) 0%,var(--ivory) 70%);box-shadow:0 22px 50px -22px rgba(0,0,0,.6),inset 0 4px 0 var(--tone),inset 0 0 0 1px rgba(255,255,255,.7)}
+.stat[data-tone="green"].sel{--tone:var(--green)}
+.stat[data-tone="gold"].sel{--tone:var(--gold)}
+.stat[data-tone="sky"].sel{--tone:#2f6db5}
+.stat[data-tone="ivory"].sel{--tone:var(--navy)}
+.stat.sel .chk{background:var(--tone)}
+.stat .oth{display:none;margin-top:12px}
+.stat-other.sel .oth{display:block}
+.tier .oth input{position:static;opacity:1;width:100%;height:auto;pointer-events:auto}
+.stat-wrap .tier .oth input[type="text"]{font-size:15px;color:var(--navy);background:#fff;border:0;border-radius:var(--r-sm);padding:12px 14px;
+  box-shadow:inset 0 0 0 1px rgba(0,33,71,.28),inset 0 1px 3px rgba(0,33,71,.12)}
+.stat-wrap .tier .oth input[type="text"]::placeholder{color:rgba(0,33,71,.45)}
+.stat-wrap .tier .oth input[type="text"]:focus{background:#fff;outline:0;box-shadow:inset 0 0 0 1.5px var(--gold),0 0 0 4px rgba(201,154,46,.22)}
+.stat-wrap.err .tier .oth input[type="text"]{box-shadow:inset 0 0 0 1.5px rgba(200,70,70,.85),0 0 0 4px rgba(224,122,122,.18)}
+.stat-wrap.err .stat{box-shadow:var(--lift-sm),var(--spec),inset 0 3px 0 var(--tone),0 0 0 1px rgba(224,122,122,.6)}
+.stat-wrap .msg{margin-top:10px}
+
 
 /* ── fields: inset wells ────────────────────────────────────────── */
 .form{display:grid;grid-template-columns:1fr 1fr;gap:20px 22px;margin-top:8px}
@@ -546,6 +575,10 @@ table.apps td.n{white-space:nowrap}
 
 @media (max-width:860px){
   .tiers,.form,.paygrid,.chks{grid-template-columns:1fr}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .stat{min-height:108px;padding:16px 14px 14px}
+  .stat .tn{font-size:16.5px}
+  .stat-other{min-height:0}
   .tier .tp{font-size:30px}
 }
 

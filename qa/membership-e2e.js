@@ -12,7 +12,7 @@ const link = (to, kind) => { const m = [...mails()].reverse().find((x) => x.to =
 async function applyAs(p, lang, tier, name, email) {
   await p.goto(BASE + (lang === 'ar' ? '/ar' : '') + '/join/'); await p.waitForTimeout(400);
   await p.check(`input[name=tier][value=${tier}]`, { force: true });
-  await p.fill('#f-name', name); await p.fill('#f-email', email); await p.fill('#f-college', 'Hertford College'); await p.selectOption('#f-status', 'dphil'); await p.check('#f-consent', { force: true });
+  await p.fill('#f-name', name); await p.fill('#f-email', email); await p.fill('#f-college', 'Hertford College'); await p.locator('#statuses label', { has: p.locator('input[value=dphil]') }).click(); await p.check('#f-consent', { force: true });
   await p.click('#submit-btn'); await p.waitForTimeout(1500);
   return p.evaluate(() => ({ no: (document.getElementById('mno') || {}).textContent, q: (document.querySelector('.qno') || {}).textContent, st: (document.querySelector('.mstate') || {}).textContent, fail: !!(document.getElementById('join-fail') && !document.getElementById('join-fail').hidden) }));
 }
@@ -80,6 +80,23 @@ async function applyAs(p, lang, tier, name, email) {
   await desk.goto(BASE + '/ar/admin/events/#membership/all'); await desk.waitForTimeout(1400);
   ok(await desk.evaluate(() => document.documentElement.dir === 'rtl' && document.querySelectorAll('.mtbl tbody tr').length === 2), 'Arabic register lists both');
   await shot(desk, 'm-desk-register-ar');
+  // status "Other": one tap opens the text box inside the card; it must be filled before sending
+  await phone.goto(BASE + '/join/'); await phone.waitForTimeout(400);
+  await phone.check('input[name=tier][value=friend]', { force: true });
+  await phone.locator('#statuses label.stat-other').click(); await phone.waitForTimeout(200);
+  let o = await phone.evaluate(() => ({ sel: document.querySelector('#statuses .stat-other').classList.contains('sel'), shown: getComputedStyle(document.querySelector('.stat-other .oth')).display !== 'none', focused: document.activeElement && document.activeElement.id === 'f-status-other' }));
+  ok(o.sel && o.shown && o.focused, 'Other card selected, text box shown and focused ' + JSON.stringify(o));
+  await phone.fill('#f-name', 'Layla Other'); await phone.fill('#f-email', 'layla@example.org'); await phone.fill('#f-college', 'Oxford Brookes University'); await phone.check('#f-consent', { force: true });
+  await phone.click('#submit-btn'); await phone.waitForTimeout(600);
+  ok(await phone.evaluate(() => document.querySelector('[data-f=status]').classList.contains('err') && !document.getElementById('join-done').textContent.trim()), 'empty Other text blocks sending');
+  await phone.fill('#f-status-other', 'Oxford Brookes student');
+  await phone.locator('#statuses label', { has: phone.locator('input[value=masters]') }).click(); await phone.waitForTimeout(150);
+  ok(await phone.evaluate(() => getComputedStyle(document.querySelector('.stat-other .oth')).display === 'none' && document.querySelectorAll('#statuses .stat.sel').length === 1), 'choosing another card closes the Other box (one selection only)');
+  await phone.locator('#statuses label.stat-other').click(); await phone.waitForTimeout(150);
+  await shot(phone, 'm-phone-status-other');
+  await phone.click('#submit-btn'); await phone.waitForTimeout(1500);
+  ok(await phone.evaluate(() => /^OSS-\d{4}-\d{4}$/.test((document.getElementById('mno') || {}).textContent || '')), 'Other applicant gets a number');
+  ok(mails().some((m) => m.kind === 'membership_committee' && /Other: Oxford Brookes student/.test(m.text)), 'committee notice shows the typed status');
   ok(errors.length === 0, 'no page errors: ' + errors.join(' | '));
   await b.close();
   console.log(`${n} checks, ${fails} failures`); process.exit(fails ? 1 : 0);

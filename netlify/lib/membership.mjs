@@ -15,6 +15,7 @@ export const TIERS = {
 const UNI_STATUS = ['undergraduate', 'masters', 'dphil', 'visiting', 'staff', 'alumni', 'other'];
 const HEARD = ['', 'freshers', 'friend', 'club', 'instagram', 'college', 'bureau', 'other'];
 const VOLUNTEER = ['events', 'media', 'partnerships', 'welfare', 'academic'];
+const uniText = (row) => (row.uni_status === 'other' && row.uni_status_other ? 'Other: ' + row.uni_status_other : (UNI_LABEL[row.uni_status] || row.uni_status || ''));
 const UNI_LABEL = { undergraduate: 'Undergraduate', masters: "Taught postgraduate (Master's)", dphil: 'Research postgraduate (DPhil)', visiting: 'Visiting student or researcher', staff: 'University staff or researcher', alumni: 'Alumni', other: 'Other' };
 export const OPEN = ['pending', 'info_requested'];
 
@@ -74,12 +75,14 @@ export async function apply(q, body, site) {
   if (!validEmail(email)) fields.email = 'invalid';
   const college = cleanName(body.college).slice(0, 120); if (college.length < 2) fields.college = 'required';
   if (!UNI_STATUS.includes(uni)) fields.status = 'required';
+  const uniOther = uni === 'other' ? cleanName(body.statusOther).slice(0, 80) : '';
+  if (uni === 'other' && uniOther.length < 2) fields.statusOther = 'required';
   if (body.consent_privacy !== true) fields.consent = 'required';
   if (Object.keys(fields).length) fail(400, 'validation', { fields });
   const volunteer = (Array.isArray(body.volunteer) ? body.volunteer : []).map(String).filter((v) => VOLUNTEER.includes(v));
   const rec = {
-    name, name_ar: cleanName(body.nameAr).slice(0, 120) || null, college, uni_status: uni, phone: String(body.phone || '').replace(/[^\d+()\s-]/g, '').slice(0, 30) || null,
-    volunteer, heard: HEARD.includes(heard) ? heard : 'other', lang, consent_privacy_version: String(body.privacy_version || SETTINGS.privacyVersion || '2026-11').slice(0, 40),
+    name, name_ar: cleanName(body.nameAr).slice(0, 120) || null, college, uni_status: uni, uni_status_other: uniOther || null, phone: String(body.phone || '').replace(/[^\d+()\s-]/g, '').slice(0, 30) || null,
+    volunteer, heard: heard && HEARD.includes(heard) ? heard : null, lang, consent_privacy_version: String(body.privacy_version || SETTINGS.privacyVersion || '2026-11').slice(0, 40),
     consent_news: body.consent_news === true, tier, amount_gbp: priceOf(tier), payment_status: priceOf(tier) > 0 ? 'due' : 'not_required', nationality_status: TIERS[tier].verify ? 'pending' : 'not_required',
   };
   const existing = (await q.query('SELECT * FROM oss_members WHERE email = $1 FOR UPDATE', [email])).rows[0];
@@ -88,14 +91,14 @@ export async function apply(q, body, site) {
   }
   let row;
   if (existing) { // re-application after a decline/revocation/expiry keeps the same membership number
-    row = (await q.query(`UPDATE oss_members SET name=$2, name_ar=$3, college=$4, uni_status=$5, phone=$6, volunteer=$7, heard=$8, lang=$9, consent_privacy_version=$10, consent_news=$11, tier=$12, amount_gbp=$13,
+    row = (await q.query(`UPDATE oss_members SET name=$2, name_ar=$3, college=$4, uni_status=$5, uni_status_other=$16, phone=$6, volunteer=$7, heard=$8, lang=$9, consent_privacy_version=$10, consent_news=$11, tier=$12, amount_gbp=$13,
       payment_status=$14, nationality_status=$15, status='pending', applied_at=now(), info_request=NULL, info_requested_at=NULL, info_response=NULL, info_response_at=NULL, decided_at=NULL, decided_by=NULL, decision_reason=NULL, valid_until=NULL, source='web', updated_at=now()
-      WHERE email=$1 RETURNING *`, [email, rec.name, rec.name_ar, rec.college, rec.uni_status, rec.phone, rec.volunteer, rec.heard, rec.lang, rec.consent_privacy_version, rec.consent_news, rec.tier, rec.amount_gbp, rec.payment_status, rec.nationality_status])).rows[0];
+      WHERE email=$1 RETURNING *`, [email, rec.name, rec.name_ar, rec.college, rec.uni_status, rec.phone, rec.volunteer, rec.heard, rec.lang, rec.consent_privacy_version, rec.consent_news, rec.tier, rec.amount_gbp, rec.payment_status, rec.nationality_status, rec.uni_status_other])).rows[0];
   } else {
     const no = await nextNumber(q);
-    row = (await q.query(`INSERT INTO oss_members (email, member_no, name, name_ar, college, uni_status, phone, volunteer, heard, lang, consent_privacy_version, consent_news, tier, amount_gbp, payment_status, nationality_status, status, applied_at, source)
-      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,'pending',now(),'web') RETURNING *`,
-      [email, no, rec.name, rec.name_ar, rec.college, rec.uni_status, rec.phone, rec.volunteer, rec.heard, rec.lang, rec.consent_privacy_version, rec.consent_news, rec.tier, rec.amount_gbp, rec.payment_status, rec.nationality_status])).rows[0];
+    row = (await q.query(`INSERT INTO oss_members (email, member_no, name, name_ar, college, uni_status, phone, volunteer, heard, lang, consent_privacy_version, consent_news, tier, amount_gbp, payment_status, nationality_status, status, applied_at, source, uni_status_other)
+      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,'pending',now(),'web',$17) RETURNING *`,
+      [email, no, rec.name, rec.name_ar, rec.college, rec.uni_status, rec.phone, rec.volunteer, rec.heard, rec.lang, rec.consent_privacy_version, rec.consent_news, rec.tier, rec.amount_gbp, rec.payment_status, rec.nationality_status, rec.uni_status_other])).rows[0];
   }
   const position = await positionOf(q, row);
   const u = urlsFor(site, lang);
@@ -110,7 +113,7 @@ export async function apply(q, body, site) {
 async function notifyCommittee(q, row, position, site, headline, response) {
   const to = SETTINGS.committeeNotifyEmail; if (!to) return;
   await enqueue(q, { kind: 'membership_committee', to, lang: 'en', dedupeKey: `committee:${headline}:${row.member_no}:${Date.now()}`,
-    vars: { headline, memberNo: row.member_no, name: row.name, nameAr: row.name_ar, email: row.email, tierLabel: tierLabel(row.tier, 'en'), college: row.college || '', uniStatus: UNI_LABEL[row.uni_status] || row.uni_status || '', position: position == null ? '—' : position, response, deskUrl: urlsFor(site, 'en').deskUrl, siteUrl: site } });
+    vars: { headline, memberNo: row.member_no, name: row.name, nameAr: row.name_ar, email: row.email, tierLabel: tierLabel(row.tier, 'en'), college: row.college || '', uniStatus: uniText(row), position: position == null ? '—' : position, response, deskUrl: urlsFor(site, 'en').deskUrl, siteUrl: site } });
 }
 
 /* ── applicant: own record, answer an information request ──────── */
@@ -130,7 +133,7 @@ export async function respond(q, email, body, site) {
 }
 
 /* ── committee desk ─────────────────────────────────────────────── */
-const DESK_FIELDS = 'email, member_no, name, name_ar, college, uni_status, phone, volunteer, heard, lang, consent_news, consent_privacy_version, tier, amount_gbp, payment_status, nationality_status, status, applied_at, email_verified_at, info_request, info_requested_at, info_response, info_response_at, decided_at, decided_by, decision_reason, valid_until, approved_at, approved_by, notes, source, created_at, updated_at';
+const DESK_FIELDS = 'email, member_no, name, name_ar, college, uni_status, uni_status_other, phone, volunteer, heard, lang, consent_news, consent_privacy_version, tier, amount_gbp, payment_status, nationality_status, status, applied_at, email_verified_at, info_request, info_requested_at, info_response, info_response_at, decided_at, decided_by, decision_reason, valid_until, approved_at, approved_by, notes, source, created_at, updated_at';
 export async function list(q, staff, params) {
   requireRole(staff, 'events_admin');
   const view = params.get('view') || 'queue';

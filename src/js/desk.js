@@ -295,6 +295,7 @@
   }[lang];
   var UNI = { undergraduate: ['Undergraduate', 'بكالوريوس'], masters: ["Master's", 'ماجستير'], dphil: ['DPhil', 'دكتوراه'], visiting: ['Visiting', 'زائر'], staff: ['Staff', 'موظف'], alumni: ['Alumni', 'خريج'], other: ['Other', 'أخرى'] };
   var uniL = function (k) { return UNI[k] ? UNI[k][lang === 'ar' ? 1 : 0] : (k || ''); };
+  var uniR = function (r) { return uniL(r.uni_status) + (r.uni_status === 'other' && r.uni_status_other ? ': ' + r.uni_status_other : ''); };
   var TIERL = { saudi: ['Saudi student', 'طالب سعودي'], student: ['Student', 'طالب'], associate: ['Associate', 'منتسب'], friend: ['Friend', 'صديق'] };
   var tierL = function (k) { return TIERL[k] ? TIERL[k][lang === 'ar' ? 1 : 0] : (k || ''); };
   var badgeCls = { pending: 'waitlisted', info_requested: 'offered', approved: 'confirmed', declined: 'cancelled', revoked: 'cancelled', expired: 'cancelled' };
@@ -303,7 +304,7 @@
     var tot = d.totals || {}; var cnt = function (k) { return k === 'queue' ? (tot.pending || 0) + (tot.info_requested || 0) : k === 'all' ? Object.keys(tot).reduce(function (a, x) { return a + tot[x]; }, 0) : (tot[k] || 0); };
     var chips = Object.keys(MS.views).map(function (k) { return '<a class="chip" href="#membership/' + k + '" aria-selected="' + (k === view) + '">' + esc(MS.views[k]) + ' <span class="ln">' + O.num(cnt(k)) + '</span></a>'; }).join('');
     var rows = d.members.map(function (r) {
-      return '<tr class="mrow" data-no="' + esc(r.member_no) + '" tabindex="0"><td class="num">' + (r.position ? '<b>' + O.num(r.position) + '</b>' : '') + '</td><td class="mono" dir="ltr">' + esc(r.member_no) + '</td><td><b>' + esc(r.name) + '</b>' + (r.name_ar ? '<div class="ln" dir="rtl">' + esc(r.name_ar) + '</div>' : '') + '</td><td>' + esc(tierL(r.tier)) + '</td><td>' + esc(r.college || '') + '<div class="ln">' + esc(uniL(r.uni_status)) + '</div></td><td class="nowrap">' + esc(r.applied_at ? O.fmtShort(r.applied_at) : '') + '</td>' +
+      return '<tr class="mrow" data-no="' + esc(r.member_no) + '" tabindex="0"><td class="num">' + (r.position ? '<b>' + O.num(r.position) + '</b>' : '') + '</td><td class="mono" dir="ltr">' + esc(r.member_no) + '</td><td><b>' + esc(r.name) + '</b>' + (r.name_ar ? '<div class="ln" dir="rtl">' + esc(r.name_ar) + '</div>' : '') + '</td><td>' + esc(tierL(r.tier)) + '</td><td>' + esc(r.college || '') + '<div class="ln">' + esc(uniR(r)) + '</div></td><td class="nowrap">' + esc(r.applied_at ? O.fmtShort(r.applied_at) : '') + '</td>' +
         '<td>' + (r.email_verified_at ? '✓' : '<span class="ln">—</span>') + '</td><td>' + esc(MS.pay[r.payment_status] || r.payment_status) + '</td><td>' + esc(MS.nat[r.nationality_status] || r.nationality_status) + '</td><td><span class="badge ' + (badgeCls[r.status] || '') + '">' + esc(MS.st[r.status] || r.status) + '</span></td></tr>';
     }).join('');
     shell('membership', '<div class="app-head"><div><p class="eyebrow">' + esc(s.tabs.membership) + '</p><h1 style="font-size:30px">' + esc(view === 'queue' ? MS.h : MS.hAll) + '</h1><p class="muted" style="font-size:14px;max-width:70ch;margin:6px 0 0">' + esc(MS.p) + '</p></div><div class="rowc"><a class="btn btn-s btn-sm" href="#membership-add">' + esc(MS.add) + '</a></div></div>' +
@@ -330,7 +331,7 @@
     var open = mm.status === 'pending' || mm.status === 'info_requested';
     var kv = function (k, v) { return '<dt>' + esc(k) + '</dt><dd>' + v + '</dd>'; };
     var info = '<dl class="kv mkv">' + kv(D.email, '<span dir="ltr">' + esc(mm.email) + '</span> ' + (mm.email_verified_at ? '<span class="badge confirmed">' + esc(MS.verified) + '</span>' : '<span class="badge waitlisted">' + esc(MS.unverified) + '</span>')) +
-      (mm.phone ? kv(D.phone, '<span dir="ltr">' + esc(mm.phone) + '</span>') : '') + kv(D.college, esc(mm.college || '—')) + kv(D.uni, esc(uniL(mm.uni_status))) +
+      (mm.phone ? kv(D.phone, '<span dir="ltr">' + esc(mm.phone) + '</span>') : '') + kv(D.college, esc(mm.college || '—')) + kv(D.uni, esc(uniR(mm))) +
       kv(D.vol, esc((mm.volunteer || []).join(', ') || '—')) + kv(D.heard, esc(mm.heard || '—')) + kv(D.news, esc(mm.consent_news ? D.yes : D.no)) + kv(D.privacy, esc(mm.consent_privacy_version || '—')) +
       kv(D.applied, esc(mm.applied_at ? O.fmtStamp(mm.applied_at) : '—')) + (mm.position ? kv(D.queue, '<b>' + O.num(mm.position) + '</b>') : '') +
       (mm.decided_at ? kv(D.decided, esc(O.fmtStamp(mm.decided_at)) + ' ' + esc(D.by) + ' <span dir="ltr">' + esc(mm.decided_by || '') + '</span>') : '') + (mm.valid_until ? kv(D.valid, esc(O.fmtShort(mm.valid_until))) : '') +
