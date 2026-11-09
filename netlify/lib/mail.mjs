@@ -107,11 +107,20 @@ export function providerName() {
   if (p) return p;
   return process.env.RESEND_API_KEY ? 'resend' : 'log';
 }
+/* Sender defaults to the site's public address (settings.email, e.g. hello@ousss.org, on the domain verified with
+   the provider); replies default to the committee inbox that actually exists. MAIL_FROM / MAIL_REPLY_TO override. */
+export function senderAddress() {
+  if (process.env.MAIL_FROM) return process.env.MAIL_FROM;
+  return SETTINGS.email ? `${SITE_NAME.en} <${SETTINGS.email}>` : '';
+}
+export function replyToAddress() {
+  return process.env.MAIL_REPLY_TO || SETTINGS.committeeNotifyEmail || undefined;
+}
 async function deliver(msg) {
   const p = providerName();
   if (p === 'resend') {
-    const from = process.env.MAIL_FROM; if (!from) throw new Error('MAIL_FROM not set');
-    const body = { from, to: [msg.to_email], subject: msg.subject, text: msg.body_text, html: msg.body_html || undefined, reply_to: process.env.MAIL_REPLY_TO || undefined,
+    const from = senderAddress(); if (!from) throw new Error('MAIL_FROM not set');
+    const body = { from, to: [msg.to_email], subject: msg.subject, text: msg.body_text, html: msg.body_html || undefined, reply_to: replyToAddress(),
       attachments: msg.attachments ? msg.attachments.map((a) => ({ filename: a.filename, content: a.content })) : undefined, headers: { 'X-Entity-Ref-ID': String(msg.id) } };
     const r = await fetch('https://api.resend.com/emails', { method: 'POST', headers: { Authorization: 'Bearer ' + process.env.RESEND_API_KEY, 'Content-Type': 'application/json', 'Idempotency-Key': 'oss-' + msg.id }, body: JSON.stringify(body) });
     const data = await r.json().catch(() => ({}));
@@ -134,6 +143,12 @@ async function deliver(msg) {
 const BACKOFF_MIN = [2, 10, 30, 120, 360, 720];
 /* Send what is due. Called after each request that queued mail and by the scheduled job. */
 export async function processOutbox(db, limit = 20) {
+  // No provider configured yet: leave everything queued untouched, so nothing burns its retries or goes dead
+  // while email is still being set up. It all goes out on the first run after a provider is added.
+  if (providerName() === 'log') return { sent: 0, failed: 0, dead: 0, waiting: 'no_mail_provider' };
+  // Messages that died only because no provider existed get a fresh start now that one does.
+  await db.query(`UPDATE oss_mail_outbox SET status = 'queued', attempts = 0, next_attempt_at = now(), last_error = NULL
+    WHERE status IN ('dead','failed') AND last_error = 'no_mail_provider'`);
   const claimed = await db.tx(async (q) => {
     const r = await q.query(`SELECT id FROM oss_mail_outbox WHERE status IN ('queued','failed') AND next_attempt_at <= now() ORDER BY created_at LIMIT $1 FOR UPDATE SKIP LOCKED`, [limit]);
     const ids = r.rows.map((x) => x.id);

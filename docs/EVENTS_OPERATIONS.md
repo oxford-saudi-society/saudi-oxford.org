@@ -56,7 +56,7 @@ Staff sign in at `/admin/events/` with an **email link** (no passwords). The fir
 
 ## Configuration (Netlify → Site configuration → Environment variables)
 
-See `.env.example`. Required for the API to work at all: `DATABASE_URL` (or Netlify DB's `NETLIFY_DATABASE_URL`), `AUTH_SECRET`, `ADMIN_BOOTSTRAP_EMAILS`. Required for emails: `RESEND_API_KEY`, `MAIL_FROM` (domain verified in Resend with SPF/DKIM). Until these are set, `/api/*` answers `503 database_not_configured` and the public pages show "Registration is temporarily unavailable".
+See `.env.example`. Required for the API to work at all: `DATABASE_URL` (or Netlify DB's `NETLIFY_DATABASE_URL`), `AUTH_SECRET`, `ADMIN_BOOTSTRAP_EMAILS`. Required for emails: `RESEND_API_KEY` only, with the sending domain (ousss.org) verified in Resend. The sender defaults to the site's public address (settings.email) and replies go to settings.committeeNotifyEmail; `MAIL_FROM` / `MAIL_REPLY_TO` override them. While no provider is configured, mail waits in the outbox untouched and goes out on the first run after the key is added. Until these are set, `/api/*` answers `503 database_not_configured` and the public pages show "Registration is temporarily unavailable".
 
 **Database**: Netlify DB (Neon) via *Extensions → Neon* or `netlify db init`; or any PostgreSQL 14+. Tables are created automatically on first request (`oss_*`); the 11 events are seeded once from the content and never reset by a deploy. Back up with `pg_dump` (Neon also keeps point-in-time history); restore into an empty database and point `DATABASE_URL` at it.
 

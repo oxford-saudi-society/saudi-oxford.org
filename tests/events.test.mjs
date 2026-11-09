@@ -280,6 +280,32 @@ test('C20 mail: provider failure keeps the message queued with backoff, never ma
   assert.ok((await q(db, "SELECT 1 FROM oss_audit WHERE action = 'mail.retried'")).length);
 });
 
+test('C20b mail: with no provider configured, queued mail waits untouched; it is delivered once a provider exists (even if it had died waiting)', async () => {
+  const { processOutbox, senderAddress, replyToAddress } = await import('../netlify/lib/mail.mjs');
+  const { SETTINGS } = await import('../netlify/lib/content.generated.mjs');
+  process.env.MAIL_PROVIDER = 'log';
+  const r = await C.call('POST', '/api/auth/request-link', { body: { email: 'early@example.org', lang: 'en' } });
+  assert.equal(r.body.status, 'link_sent');
+  await db.query("UPDATE oss_mail_outbox SET next_attempt_at = now() WHERE to_email = 'early@example.org'");
+  for (let i = 0; i < 8; i++) await processOutbox(db, 50);
+  let m = (await q(db, "SELECT * FROM oss_mail_outbox WHERE to_email = 'early@example.org'"))[0];
+  assert.equal(m.status, 'queued'); assert.equal(m.attempts, 0);
+  // a message that went dead under the old behaviour is revived
+  await db.query("UPDATE oss_mail_outbox SET status = 'dead', attempts = 7, last_error = 'no_mail_provider' WHERE id = $1", [m.id]);
+  process.env.MAIL_PROVIDER = 'capture';
+  await processOutbox(db, 50);
+  m = (await q(db, 'SELECT * FROM oss_mail_outbox WHERE id = $1', [m.id]))[0];
+  assert.equal(m.status, 'sent'); assert.equal(m.attempts, 1);
+  // sender/reply-to defaults: public address as sender, committee inbox for replies
+  const saved = { from: process.env.MAIL_FROM, reply: process.env.MAIL_REPLY_TO };
+  delete process.env.MAIL_FROM; delete process.env.MAIL_REPLY_TO;
+  assert.equal(senderAddress(), `Oxford Saudi Society <${SETTINGS.email}>`);
+  assert.equal(replyToAddress(), SETTINGS.committeeNotifyEmail);
+  process.env.MAIL_FROM = 'X <x@example.org>'; assert.equal(senderAddress(), 'X <x@example.org>');
+  if (saved.from) process.env.MAIL_FROM = saved.from; else delete process.env.MAIL_FROM;
+  if (saved.reply) process.env.MAIL_REPLY_TO = saved.reply;
+});
+
 test('C19/C21 roster + CSV export: staff-only, formula-safe cells, audited; consent + marketing recorded separately', async () => {
   const cookie = await C.signIn('formula@example.org');
   await openEvent('oss-006', 50);
