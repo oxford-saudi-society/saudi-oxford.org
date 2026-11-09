@@ -244,7 +244,7 @@
     var tier = selectedTier();
     return { tier: tier ? tier.id : '', name: $('f-name').value.trim(), nameAr: $('f-name-ar').value.trim(), email: $('f-email').value.trim(), college: $('f-college').value.trim(), status: $('f-status').value, phone: $('f-phone').value.trim(),
       volunteer: Array.prototype.slice.call(form.querySelectorAll('input[name="volunteer"]:checked')).map(function (c) { return c.value; }),
-      heard: $('f-heard').value, consent_privacy: $('f-consent').checked, consent_news: form.querySelector('input[name="consent_news"]').checked,
+      consent_privacy: $('f-consent').checked, consent_news: form.querySelector('input[name="consent_news"]').checked,
       privacy_version: SITE.privacyVersion || '', lang: lang, website: form.querySelector('input[name="website"]').value };
   }
   async function send(app) {
@@ -282,7 +282,7 @@
     var f = $('join-fail'); if (f) f.hidden = true;
     last = { app: app, result: res.data.result, member: res.data.member }; renderDone();
   });
-  function setSteps(stage) { document.querySelectorAll('#steps li').forEach(function (li) { var n = +li.getAttribute('data-step'); li.classList.remove('on', 'done'); if (stage === 'form') { if (n < 3) li.classList.add('on'); } else if (stage === 'pay') li.classList.add(n < 3 ? 'done' : 'on'); else li.classList.add('done'); }); }
+  function setSteps(stage) { document.querySelectorAll('#steps li').forEach(function (li) { var n = +li.getAttribute('data-step'); li.classList.remove('on', 'done'); if (stage === 'form') { if (n < 4) li.classList.add('on'); } else if (stage === 'pay') li.classList.add(n < 4 ? 'done' : 'on'); else li.classList.add('done'); }); }
   function renderDone() {
     var app = last.app, mem = last.member, kind = last.result, tier = tierOf(mem.tier) || selectedTier() || TIERS[0];
     var first = esc((app.name || mem.name || '').split(/\s+/)[0]);

@@ -206,6 +206,11 @@ nav.main a.on{background:var(--ivory);color:var(--navy);box-shadow:0 6px 18px -6
 .tabbar a svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
 .tabbar a.on{background:var(--ivory);color:var(--navy);box-shadow:0 6px 16px -6px rgba(0,0,0,.5),inset 0 1px 0 #fff}
 html[dir="rtl"] .tabbar a{font-size:11.5px;letter-spacing:0}
+/* Join stands out in the bottom bar: heritage gold pill, navy text */
+.tabbar a.tab-join{background:linear-gradient(160deg,#dcb24d 0%,var(--gold) 55%,#a87c1f 100%);color:var(--navy);font-weight:700;
+  box-shadow:0 8px 20px -8px rgba(201,154,46,.85),inset 0 1px 0 rgba(255,255,255,.55)}
+.tabbar a.tab-join svg{stroke-width:2.2}
+.tabbar a.tab-join.on{background:var(--ivory);color:var(--navy);box-shadow:0 0 0 2px var(--gold),0 8px 20px -8px rgba(201,154,46,.85),inset 0 1px 0 #fff}
 
 /* ── buttons: capsules ───────────────────────────────────────────── */
 .btn{
