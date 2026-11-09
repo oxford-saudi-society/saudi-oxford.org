@@ -1,5 +1,5 @@
 'use strict';
-/* Pre-build step: when SITE_API_URL is set (e.g. https://ousss.org), fetch the live operational
+/* Pre-build step: when SITE_API_URL is set (e.g. https://oxsss.org), fetch the live operational
    state of the programme (status, registration mode, dates the committee changed in the desk) and save it
    to src/content/_live-events.json so the static pages are rendered from the same truth the API serves.
    Without the variable (or if the API is unreachable) the build simply uses the content files. */

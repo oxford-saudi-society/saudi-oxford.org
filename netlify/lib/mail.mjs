@@ -112,15 +112,15 @@ export function providerName() {
 /* Gmail: the society's own Google account sends through Google's mail server with an app password (needs
    2-Step Verification on that account). The visible sender is that Gmail address; ~500 messages a day. */
 function gmailUser() { return process.env.GMAIL_USER || SETTINGS.committeeNotifyEmail || ''; }
-/* Sender defaults to the site's public address (settings.email, e.g. hello@ousss.org, on the domain verified with
-   the provider); replies default to the committee inbox that actually exists. MAIL_FROM / MAIL_REPLY_TO override. */
+/* Sender and reply-to default to the site's public address (settings.email, e.g. hello@oxsss.org, on the domain
+   verified with the provider, with a real inbox behind it). MAIL_FROM / MAIL_REPLY_TO override. */
 export function senderAddress() {
   if (process.env.MAIL_FROM) return process.env.MAIL_FROM;
   if (providerName() === 'gmail') return gmailUser() ? `${SITE_NAME.en} <${gmailUser()}>` : '';
   return SETTINGS.email ? `${SITE_NAME.en} <${SETTINGS.email}>` : '';
 }
 export function replyToAddress() {
-  return process.env.MAIL_REPLY_TO || SETTINGS.committeeNotifyEmail || undefined;
+  return process.env.MAIL_REPLY_TO || SETTINGS.email || undefined;
 }
 let gmailTransport = null;
 async function deliver(msg) {

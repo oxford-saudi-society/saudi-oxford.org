@@ -24,7 +24,7 @@ const committees = readDir(path.join(SRC, 'content/committees')).sort((a, b) => 
 const events = EV.loadEvents();
 const faq = FAQ.load();
 const people = readDir(path.join(SRC, 'content/people')).filter((p) => p.name && p.published !== false).sort((a, b) => String(a.name).localeCompare(String(b.name)));
-const BASE = (settings.domain || 'https://ousss.org').replace(/\/$/, '');
+const BASE = (settings.domain || 'https://oxsss.org').replace(/\/$/, '');
 
 /* ── routes ────────────────────────────────────────────────────── */
 const ROUTES = [

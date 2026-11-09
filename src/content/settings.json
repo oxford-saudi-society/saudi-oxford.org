@@ -4,8 +4,8 @@
     "ar": "الجمعية السعودية في أكسفورد"
   },
   "domain": "https://oxsss.org",
-  "email": "hello@ousss.org",
-  "treasurerEmail": "treasurer@ousss.org",
+  "email": "hello@oxsss.org",
+  "treasurerEmail": "treasurer@oxsss.org",
   "founded": "1981",
   "fees": {
     "student": 10,
@@ -45,10 +45,11 @@
     "en": "University of Oxford",
     "ar": "جامعة أكسفورد"
   },
-  "membershipEmail": "membership@ousss.org",
-  "presidentEmail": "president@ousss.org",
-  "committeeNotifyEmail": "saudioxfordsoc@gmail.com",
+  "membershipEmail": "membership@oxsss.org",
+  "presidentEmail": "president@oxsss.org",
+  "committeeNotifyEmail": "membership@oxsss.org",
   "adminEmails": [
-    "saudioxfordsoc@gmail.com"
+    "president@oxsss.org",
+    "tech@oxsss.org"
   ]
 }

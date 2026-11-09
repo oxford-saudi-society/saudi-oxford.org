@@ -301,11 +301,11 @@ test('C20b mail: with no provider configured, queued mail waits untouched; it is
   await processOutbox(db, 50);
   m = (await q(db, 'SELECT * FROM oss_mail_outbox WHERE id = $1', [m.id]))[0];
   assert.equal(m.status, 'sent'); assert.equal(m.attempts, 1);
-  // sender/reply-to defaults: public address as sender, committee inbox for replies
+  // sender/reply-to defaults: the public address for both
   const saved = { from: process.env.MAIL_FROM, reply: process.env.MAIL_REPLY_TO };
   delete process.env.MAIL_FROM; delete process.env.MAIL_REPLY_TO;
   assert.equal(senderAddress(), `Oxford Saudi Society <${SETTINGS.email}>`);
-  assert.equal(replyToAddress(), SETTINGS.committeeNotifyEmail);
+  assert.equal(replyToAddress(), SETTINGS.email);
   process.env.MAIL_FROM = 'X <x@example.org>'; assert.equal(senderAddress(), 'X <x@example.org>');
   if (saved.from) process.env.MAIL_FROM = saved.from; else delete process.env.MAIL_FROM;
   if (saved.reply) process.env.MAIL_REPLY_TO = saved.reply;
@@ -397,7 +397,7 @@ test('C20c mail via Gmail: sender is the society Gmail, attachments survive, out
     const r = await processOutbox(db, 10);
     assert.equal(r.sent, 1, JSON.stringify(r));
     const raw = got.join('\n');
-    assert.match(raw, /^From: Oxford Saudi Society <[^>]+@gmail\.com>/m);
+    assert.match(raw, new RegExp('^From: Oxford Saudi Society <' + SETTINGS.committeeNotifyEmail.replace(/[.]/g, '\\.') + '>', 'm'));
     assert.match(raw, /^To: gm@example\.org/m);
     assert.match(raw, /filename=a\.ics/);
     const row = (await q(db, "SELECT status, provider_id FROM oss_mail_outbox WHERE to_email = 'gm@example.org'"))[0];

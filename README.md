@@ -1,4 +1,4 @@
-# ousss.org — the Oxford Saudi Society website
+# oxsss.org — the Oxford Saudi Society website
 
 This folder **is** the website. Every page, name, event and setting lives here, in plain files, with a full history of changes. Nothing about the site depends on any one person or any one computer.
 

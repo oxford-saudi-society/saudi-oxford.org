@@ -30,10 +30,10 @@ collections:
         label: "Society settings"
         file: "src/content/settings.json"
         fields:
-          - { label: "Society email (shown on the site)", name: "email", widget: "string", required: false, hint: "e.g. hello@ousss.org" }
-          - { label: "Treasurer email (hardship fund, bank-transfer queries)", name: "treasurerEmail", widget: "string", required: false, hint: "e.g. treasurer@ousss.org" }
-          - { label: "Membership email (applications, proof of nationality)", name: "membershipEmail", widget: "string", required: false, hint: "e.g. membership@ousss.org" }
-          - { label: "President email", name: "presidentEmail", widget: "string", required: false, hint: "e.g. president@ousss.org" }
+          - { label: "Society email (shown on the site)", name: "email", widget: "string", required: false, hint: "e.g. hello@oxsss.org" }
+          - { label: "Treasurer email (hardship fund, bank-transfer queries)", name: "treasurerEmail", widget: "string", required: false, hint: "e.g. treasurer@oxsss.org" }
+          - { label: "Membership email (applications, proof of nationality)", name: "membershipEmail", widget: "string", required: false, hint: "e.g. membership@oxsss.org" }
+          - { label: "President email", name: "presidentEmail", widget: "string", required: false, hint: "e.g. president@oxsss.org" }
           - { label: "Where new membership applications are announced (committee inbox)", name: "committeeNotifyEmail", widget: "string", required: false }
           - { label: "Committee desk super admins (their email signs in as super admin)", name: "adminEmails", widget: "list", required: false }
           - { label: "Founded (year)", name: "founded", widget: "string", required: false }

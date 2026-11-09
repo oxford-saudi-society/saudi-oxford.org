@@ -6,7 +6,8 @@ process.env.OSS_TEST_NO_SECRET = '1';
 const { setupDb, makeClient, q } = await import('./helpers.mjs');
 
 let db, C, root;
-const ADMIN = 'saudioxfordsoc@gmail.com'; // from settings.adminEmails
+const ADMIN = 'president@oxsss.org'; // from settings.adminEmails
+const COMMITTEE = 'membership@oxsss.org'; // settings.committeeNotifyEmail
 const NO = /^OSS-\d{4}-\d{4,}$/;
 const apply = (over) => C.call('POST', '/api/membership/apply', { body: Object.assign({ tier: 'saudi', name: 'Applicant One', nameAr: 'مقدم الطلب', email: 'one@example.org', college: 'Hertford College', status: 'dphil', phone: '+44 7700 900000', volunteer: ['events', 'nope'], heard: 'friend', consent_privacy: true, consent_news: true, lang: 'en' }, over || {}) });
 
@@ -43,7 +44,7 @@ test('apply: permanent number, queue position, confirmation email, committee not
   assert.ok(mail.body_text.includes(m1.memberNo)); assert.match(mail.body_text, /Place in the review queue: 1/); assert.match(mail.body_text, /do not send any identity document/);
   const arMail = C.lastMail('two@example.org', 'membership_received');
   assert.match(arMail.subject, /تم استلام طلب العضوية/); assert.match(arMail.body_text, /£10/); assert.ok(arMail.body_text.includes(r2.body.member.memberNo));
-  assert.ok(C.lastMail(ADMIN, 'membership_committee'), 'committee is told about new applications');
+  assert.ok(C.lastMail(COMMITTEE, 'membership_committee'), 'committee is told about new applications');
   const row = (await q(db, "SELECT volunteer, consent_news, consent_privacy_version, heard FROM oss_members WHERE email = 'one@example.org'"))[0];
   assert.deepEqual(row.volunteer, ['events']); assert.equal(row.consent_news, true); assert.ok(row.consent_privacy_version);
   const dup = await apply({ name: 'Someone Else' });
@@ -65,7 +66,7 @@ test('desk: queue in order with positions; staff only', async () => {
 
 test('request info → applicant answers from their account → back in the queue at the same place', async () => {
   const no = (await q(db, "SELECT member_no FROM oss_members WHERE email = 'one@example.org'"))[0].member_no;
-  const ask = await C.call('POST', `/api/admin/membership/${no}/request-info`, { cookie: root, body: { message: 'Please send a photo of your Saudi passport to membership@ousss.org.' } });
+  const ask = await C.call('POST', `/api/admin/membership/${no}/request-info`, { cookie: root, body: { message: 'Please send a photo of your Saudi passport to membership@oxsss.org.' } });
   assert.equal(ask.status, 200); assert.equal(ask.body.member.status, 'info_requested');
   assert.match(C.lastMail('one@example.org', 'membership_info_request').body_text, /photo of your Saudi passport/);
   // the confirmation email's link signs the applicant in and verifies their address
@@ -77,7 +78,7 @@ test('request info → applicant answers from their account → back in the queu
   assert.equal((await C.call('POST', '/api/membership/respond', { cookie: other, body: { response: 'not mine' } })).status, 400, 'no open question for someone else');
   const ans = await C.call('POST', '/api/membership/respond', { cookie: v.cookie, body: { response: 'Sent it just now, thank you.' } });
   assert.equal(ans.body.member.status, 'pending'); assert.equal(ans.body.member.position, 1);
-  assert.match(C.lastMail(ADMIN, 'membership_committee').body_text, /Sent it just now/);
+  assert.match(C.lastMail(COMMITTEE, 'membership_committee').body_text, /Sent it just now/);
   const acct = await C.call('GET', '/api/me', { cookie: v.cookie });
   assert.equal(acct.body.membership.memberNo, no);
 });

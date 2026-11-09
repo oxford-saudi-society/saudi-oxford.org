@@ -7,7 +7,7 @@ export async function setupDb() {
   if (process.env.OSS_TEST_NO_SECRET) delete process.env.AUTH_SECRET; // exercise the database-generated key
   else process.env.AUTH_SECRET = process.env.AUTH_SECRET || 'test-secret-test-secret-test-secret-0001';
   process.env.MAIL_PROVIDER = 'capture';
-  process.env.SITE_URL = 'https://test.ousss.org';
+  process.env.SITE_URL = 'https://test.oxsss.org';
   process.env.ADMIN_BOOTSTRAP_EMAILS = 'root@example.org';
   process.env.PG_POOL_MAX = '12';
   const base = process.env.TEST_DATABASE_URL;

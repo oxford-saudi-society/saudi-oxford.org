@@ -56,13 +56,13 @@ Staff sign in at `/admin/events/` with an **email link** (no passwords). The fir
 
 ## Configuration (Netlify → Site configuration → Environment variables)
 
-See `.env.example`. Required for the API to work at all: `DATABASE_URL` (or Netlify DB's `NETLIFY_DATABASE_URL`), `AUTH_SECRET`, `ADMIN_BOOTSTRAP_EMAILS`. Required for emails: either `GMAIL_APP_PASSWORD` (the society Gmail sends; app password from myaccount.google.com/apppasswords, needs 2-Step Verification; ~500/day; sender is the Gmail address) or `RESEND_API_KEY`, with the sending domain (ousss.org) verified in Resend. The sender defaults to the site's public address (settings.email) and replies go to settings.committeeNotifyEmail; `MAIL_FROM` / `MAIL_REPLY_TO` override them. While no provider is configured, mail waits in the outbox untouched and goes out on the first run after the key is added. Until these are set, `/api/*` answers `503 database_not_configured` and the public pages show "Registration is temporarily unavailable".
+See `.env.example`. Required for the API to work at all: `DATABASE_URL` (or Netlify DB's `NETLIFY_DATABASE_URL`), `AUTH_SECRET`, `ADMIN_BOOTSTRAP_EMAILS`. Required for emails: either `GMAIL_APP_PASSWORD` (the society Gmail sends; app password from myaccount.google.com/apppasswords, needs 2-Step Verification; ~500/day; sender is the Gmail address) or `RESEND_API_KEY`, with the sending domain (oxsss.org) verified in Resend. The sender defaults to the site's public address (settings.email) and replies go to the same address; `MAIL_FROM` / `MAIL_REPLY_TO` override them. While no provider is configured, mail waits in the outbox untouched and goes out on the first run after the key is added. Until these are set, `/api/*` answers `503 database_not_configured` and the public pages show "Registration is temporarily unavailable".
 
 **Database**: Netlify DB (Neon) via *Extensions → Neon* or `netlify db init`; or any PostgreSQL 14+. Tables are created automatically on first request (`oss_*`); the 11 events are seeded once from the content and never reset by a deploy. Back up with `pg_dump` (Neon also keeps point-in-time history); restore into an empty database and point `DATABASE_URL` at it.
 
 **Scheduled job** (`netlify/functions/jobs.mjs`, every 10 minutes): sends queued mail, expires waitlist offers, sends 7-day and 1-day reminders for confirmed events, marks finished events completed, applies retention.
 
-**Build-time truth**: set `SITE_API_URL=https://ousss.org` so each build reads the live event state and the static HTML matches the desk without waiting for JavaScript. Optional `NETLIFY_BUILD_HOOK` enables the *Publish site* button.
+**Build-time truth**: set `SITE_API_URL=https://oxsss.org` so each build reads the live event state and the static HTML matches the desk without waiting for JavaScript. Optional `NETLIFY_BUILD_HOOK` enables the *Publish site* button.
 
 ## Running locally / tests
 
