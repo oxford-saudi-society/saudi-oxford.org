@@ -356,3 +356,50 @@ test('C18 annual dinner: price to be announced, interest only, nothing to pay or
   assert.equal(e.priceStatus, 'tbd'); assert.equal(e.state, 'interest'); assert.equal(e.audience, 'members');
   const paid = await patch('oss-011', { priceStatus: 'paid' }); assert.equal(paid.status, 400); assert.equal(paid.body.error, 'paid_not_enabled');
 });
+
+test('C20c mail via Gmail: sender is the society Gmail, attachments survive, outbox marks it sent', async () => {
+  const net = await import('node:net');
+  const got = [];
+  const srv = net.createServer((c) => {
+    let data = false, buf = '';
+    c.write('220 fake ESMTP\r\n');
+    c.on('data', (d) => {
+      buf += d.toString();
+      let i;
+      while ((i = buf.indexOf('\r\n')) >= 0) {
+        const line = buf.slice(0, i); buf = buf.slice(i + 2);
+        if (data) { if (line === '.') { data = false; c.write('250 queued\r\n'); } else got.push(line); continue; }
+        const v = line.slice(0, 4).toUpperCase();
+        if (v === 'EHLO') c.write('250-fake\r\n250 AUTH PLAIN LOGIN\r\n');
+        else if (v === 'AUTH') c.write('235 ok\r\n');
+        else if (v === 'DATA') { data = true; c.write('354 go\r\n'); }
+        else if (v === 'QUIT') { c.write('221 bye\r\n'); c.end(); }
+        else c.write('250 ok\r\n');
+      }
+    });
+  });
+  await new Promise((r) => srv.listen(0, '127.0.0.1', r));
+  const { processOutbox, senderAddress } = await import('../netlify/lib/mail.mjs');
+  const { SETTINGS } = await import('../netlify/lib/content.generated.mjs');
+  const saved = { p: process.env.MAIL_PROVIDER, from: process.env.MAIL_FROM };
+  delete process.env.MAIL_PROVIDER; delete process.env.MAIL_FROM; delete process.env.RESEND_API_KEY;
+  Object.assign(process.env, { GMAIL_APP_PASSWORD: 'abcd efgh ijkl mnop', GMAIL_SMTP_HOST: '127.0.0.1', GMAIL_SMTP_PORT: String(srv.address().port) });
+  try {
+    assert.equal(senderAddress(), `Oxford Saudi Society <${SETTINGS.committeeNotifyEmail}>`);
+    await db.query("UPDATE oss_mail_outbox SET status = 'sent' WHERE status <> 'sent'");
+    const { enqueue } = await import('../netlify/lib/mail.mjs');
+    await db.tx((q) => enqueue(q, { kind: 'login_link', to: 'gm@example.org', lang: 'en', vars: { link: 'https://x/y' }, attachments: [{ filename: 'a.ics', content: Buffer.from('BEGIN:VCALENDAR').toString('base64') }] }));
+    const r = await processOutbox(db, 10);
+    assert.equal(r.sent, 1, JSON.stringify(r));
+    const raw = got.join('\n');
+    assert.match(raw, /^From: Oxford Saudi Society <[^>]+@gmail\.com>/m);
+    assert.match(raw, /^To: gm@example\.org/m);
+    assert.match(raw, /filename=a\.ics/);
+    const row = (await q(db, "SELECT status, provider_id FROM oss_mail_outbox WHERE to_email = 'gm@example.org'"))[0];
+    assert.equal(row.status, 'sent');
+  } finally {
+    for (const k of ['GMAIL_APP_PASSWORD', 'GMAIL_SMTP_HOST', 'GMAIL_SMTP_PORT']) delete process.env[k];
+    if (saved.p) process.env.MAIL_PROVIDER = saved.p; if (saved.from) process.env.MAIL_FROM = saved.from;
+    srv.close();
+  }
+});

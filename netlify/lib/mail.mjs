@@ -105,17 +105,24 @@ export const _captured = captured;
 export function providerName() {
   const p = (process.env.MAIL_PROVIDER || '').toLowerCase();
   if (p) return p;
-  return process.env.RESEND_API_KEY ? 'resend' : 'log';
+  if (process.env.RESEND_API_KEY) return 'resend';
+  if (process.env.GMAIL_APP_PASSWORD) return 'gmail';
+  return 'log';
 }
+/* Gmail: the society's own Google account sends through Google's mail server with an app password (needs
+   2-Step Verification on that account). The visible sender is that Gmail address; ~500 messages a day. */
+function gmailUser() { return process.env.GMAIL_USER || SETTINGS.committeeNotifyEmail || ''; }
 /* Sender defaults to the site's public address (settings.email, e.g. hello@ousss.org, on the domain verified with
    the provider); replies default to the committee inbox that actually exists. MAIL_FROM / MAIL_REPLY_TO override. */
 export function senderAddress() {
   if (process.env.MAIL_FROM) return process.env.MAIL_FROM;
+  if (providerName() === 'gmail') return gmailUser() ? `${SITE_NAME.en} <${gmailUser()}>` : '';
   return SETTINGS.email ? `${SITE_NAME.en} <${SETTINGS.email}>` : '';
 }
 export function replyToAddress() {
   return process.env.MAIL_REPLY_TO || SETTINGS.committeeNotifyEmail || undefined;
 }
+let gmailTransport = null;
 async function deliver(msg) {
   const p = providerName();
   if (p === 'resend') {
@@ -126,6 +133,17 @@ async function deliver(msg) {
     const data = await r.json().catch(() => ({}));
     if (!r.ok) throw new Error('resend_' + r.status + ':' + ((data && (data.message || data.name)) || 'error'));
     return { id: data.id || null, provider: 'resend' };
+  }
+  if (p === 'gmail') {
+    const { default: nodemailer } = await import('nodemailer');
+    if (!gmailTransport) gmailTransport = nodemailer.createTransport({ host: process.env.GMAIL_SMTP_HOST || 'smtp.gmail.com', port: Number(process.env.GMAIL_SMTP_PORT || 465),
+      secure: Number(process.env.GMAIL_SMTP_PORT || 465) === 465, ignoreTLS: !!process.env.GMAIL_SMTP_HOST, // host/port overrides exist for tests only
+      auth: { user: gmailUser(), pass: String(process.env.GMAIL_APP_PASSWORD).replace(/\s+/g, '') } });
+    const replyTo = replyToAddress();
+    const info = await gmailTransport.sendMail({ from: senderAddress(), to: msg.to_email, subject: msg.subject, text: msg.body_text, html: msg.body_html || undefined,
+      replyTo: replyTo && replyTo !== gmailUser() ? replyTo : undefined, headers: { 'X-Entity-Ref-ID': String(msg.id) },
+      attachments: msg.attachments ? msg.attachments.map((a) => ({ filename: a.filename, content: a.content, encoding: 'base64' })) : undefined });
+    return { id: info.messageId || null, provider: 'gmail' };
   }
   if (p === 'capture') { captured.push(msg); return { id: 'cap-' + captured.length, provider: 'capture' }; }
   if (p === 'fail') throw new Error('simulated_provider_failure'); // tests: exercise the retry path
