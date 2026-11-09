@@ -2,8 +2,8 @@
 
 This folder **is** the website. Every page, name, event and setting lives here, in plain files, with a full history of changes. Nothing about the site depends on any one person or any one computer.
 
-- Live site: https://ousss.org (English) · https://ousss.org/ar/ (Arabic)
-- Committee desk (editing): https://ousss.org/admin/
+- Live site: https://saudi-oxford.netlify.app (English) · https://saudi-oxford.netlify.app/ar/ (Arabic)
+- Committee desk (editing): https://saudi-oxford.netlify.app/admin/ · membership & events: https://saudi-oxford.netlify.app/admin/events/
 - Hosting: Netlify · Content storage: GitHub · Email & DNS: Cloudflare · Payments: Stripe
 
 ## How it works, in one paragraph
@@ -41,7 +41,7 @@ netlify.toml                   tells Netlify how to build
 
 ## Editing content (committee)
 
-Go to **https://ousss.org/admin/** and sign in with GitHub. You see four sections:
+Go to **https://saudi-oxford.netlify.app/admin/** and sign in with GitHub. You see four sections:
 
 | Section | What it changes | Typical job |
 |---|---|---|
@@ -62,7 +62,7 @@ The step-by-step runbook with screenshots-level detail lives with the committee 
 2. **Netlify** — *Add new project → Import an existing project → GitHub → this repository*; build settings come from `netlify.toml`. Use the **Personal plan ($9/month)**: the Free plan is capped at 300 credits a month and every publish from the desk costs 15, after which the whole site goes offline until the next month. Then:
    - *Project configuration → Forms → Enable form detection*, trigger one deploy, then *Notifications → Form submission notifications → Email* → the society address.
    - *Domain management → Add a domain → ousss.org* (www is added automatically); make the bare domain primary; HTTPS is issued automatically once DNS resolves.
-   - *Access & security → OAuth → Authentication providers → Install provider → GitHub*, using a GitHub OAuth App created **under the organisation** (Settings → Developer settings → OAuth Apps; homepage `https://ousss.org`, callback `https://api.netlify.com/auth/done`). This is what lets the desk sign people in.
+   - *Access & security → OAuth → Authentication providers → Install provider → GitHub*, using a GitHub OAuth App created **under the organisation** (Settings → Developer settings → OAuth Apps; homepage `https://saudi-oxford.netlify.app`, callback `https://api.netlify.com/auth/done`). This is what lets the desk sign people in.
 3. **Cloudflare** (DNS, email, analytics; free) — add the domain, point GoDaddy's nameservers at Cloudflare, then records, all *DNS only* (grey cloud): `CNAME @ → apex-loadbalancer.netlify.com` (or `A @ → 75.2.60.5`), `CNAME www → saudi-oxford.netlify.app`. *Email → Email Routing*: `hello@`, `president@`, `treasurer@`, `secretary@`, `ideas@` → the committee Gmail; in Gmail, *Settings → Accounts → Send mail as* with `smtp.gmail.com`, port 587, the Gmail address and an App Password lets replies go out from those addresses. Set the SPF TXT to `v=spf1 include:_spf.mx.cloudflare.net include:_spf.google.com ~all` and add `_dmarc` `v=DMARC1; p=none; rua=mailto:hello@ousss.org`. *Web Analytics → Add a site* gives a token; paste it in the desk under *Settings → Visitor analytics* and the cookie-free counter is added to every page.
 4. **Stripe** — account in the society's name; two Payment Links (student, associate) with a required custom field "Application reference"; paste them into *Settings* in the desk.
 5. **GoDaddy** — the domain registration. Keep auto-renew on and the card current; move the domain to the society account so it survives committee changes.
