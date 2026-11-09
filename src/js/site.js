@@ -154,6 +154,63 @@
   var STATUS = { undergraduate: 'Undergraduate', masters: "Taught postgraduate (Master's)", dphil: 'Research postgraduate (DPhil)', visiting: 'Visiting student or researcher', staff: 'University staff or researcher', alumni: 'Alumni', other: 'Other' };
   var VOL = { events: 'Events', media: 'Media & design', partnerships: 'Sponsorship & partnerships', welfare: 'Welfare & welcome', academic: 'Academic & careers' };
   var busy = false, last = null;
+  /* College / department: the suggestions are drawn by the page in the same style as the field (a browser's own
+     suggestion list cannot be styled). Typing filters them; an answer that is not on the list is still accepted. */
+  (function collegeCombo() {
+    var input = $('f-college'), data = $('colleges'); if (!input || !data) return;
+    var all = Array.prototype.map.call(data.querySelectorAll('option'), function (o) { return o.value; }).filter(Boolean);
+    if (!all.length) return;
+    input.removeAttribute('list'); // switch the browser's list off; ours replaces it
+    var wrap = document.createElement('div'); wrap.className = 'combo'; input.parentNode.insertBefore(wrap, input); wrap.appendChild(input);
+    var list = document.createElement('ul'); list.className = 'combo-list'; list.id = 'college-list'; list.hidden = true;
+    list.setAttribute('role', 'listbox'); list.setAttribute('aria-label', lang === 'ar' ? 'اقتراحات الكليات' : 'College suggestions');
+    wrap.appendChild(list);
+    input.setAttribute('role', 'combobox'); input.setAttribute('aria-autocomplete', 'list'); input.setAttribute('aria-controls', 'college-list'); input.setAttribute('aria-expanded', 'false');
+    var shown = [], active = -1, picking = false;
+    function norm(v) { return String(v || '').toLowerCase().replace(/[’']/g, "'").replace(/\s+/g, ' ').trim(); }
+    function matches(q) {
+      q = norm(q); if (!q) return all.slice();
+      var first = [], rest = [];
+      all.forEach(function (v) { var n = norm(v), i = n.indexOf(q); if (i === -1) return; if (i === 0 || /[\s(]/.test(n.charAt(i - 1))) first.push(v); else rest.push(v); }); // words that start with what was typed come first
+      return first.concat(rest);
+    }
+    function mark(v, q) { q = norm(q); var i = q ? v.toLowerCase().indexOf(q) : -1; return i < 0 ? esc(v) : esc(v.slice(0, i)) + '<b>' + esc(v.slice(i, i + q.length)) + '</b>' + esc(v.slice(i + q.length)); }
+    function setActive(i) {
+      active = i;
+      Array.prototype.forEach.call(list.children, function (li, k) { li.classList.toggle('on', k === i); li.setAttribute('aria-selected', k === i ? 'true' : 'false'); });
+      if (i < 0) { input.removeAttribute('aria-activedescendant'); return; }
+      input.setAttribute('aria-activedescendant', 'college-opt-' + i);
+      var li = list.children[i], top = li.offsetTop, bottom = top + li.offsetHeight;
+      if (top < list.scrollTop) list.scrollTop = top - 6; else if (bottom > list.scrollTop + list.clientHeight) list.scrollTop = bottom - list.clientHeight + 6;
+    }
+    function close() { list.hidden = true; wrap.classList.remove('open'); input.setAttribute('aria-expanded', 'false'); setActive(-1); }
+    function open() {
+      var q = input.value; shown = matches(q);
+      if (!shown.length || (shown.length === 1 && norm(shown[0]) === norm(q))) return close(); // nothing to suggest, or already chosen
+      list.innerHTML = shown.map(function (v, i) { return '<li role="option" id="college-opt-' + i + '" aria-selected="false" data-i="' + i + '">' + mark(v, q) + '</li>'; }).join('');
+      list.hidden = false; list.scrollTop = 0; wrap.classList.add('open'); input.setAttribute('aria-expanded', 'true'); setActive(-1);
+    }
+    function choose(i) {
+      if (i < 0 || i >= shown.length) return;
+      input.value = shown[i]; close();
+      picking = true; input.dispatchEvent(new Event('input', { bubbles: true })); input.dispatchEvent(new Event('change', { bubbles: true })); picking = false;
+    }
+    input.addEventListener('input', function () { if (!picking) open(); });
+    input.addEventListener('focus', open);
+    input.addEventListener('click', function () { if (list.hidden) open(); });
+    input.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        e.preventDefault(); if (list.hidden) { open(); if (list.hidden) return; }
+        var n = shown.length; setActive(e.key === 'ArrowDown' ? (active + 1) % n : (active <= 0 ? n - 1 : active - 1));
+      } else if (e.key === 'Enter') { if (!list.hidden && active >= 0) { e.preventDefault(); choose(active); } }
+      else if (e.key === 'Escape') { if (!list.hidden) { e.preventDefault(); close(); } }
+      else if (e.key === 'Tab') close();
+    });
+    list.addEventListener('mousedown', function (e) { e.preventDefault(); }); // keep the cursor in the field while a suggestion is picked
+    list.addEventListener('click', function (e) { var li = e.target.closest ? e.target.closest('li[data-i]') : null; if (li) { choose(+li.getAttribute('data-i')); input.focus(); } });
+    input.addEventListener('blur', function () { setTimeout(function () { if (document.activeElement !== input) close(); }, 150); });
+    document.addEventListener('pointerdown', function (e) { if (!wrap.contains(e.target)) close(); });
+  })();
   function tierOf(id) { for (var i = 0; i < TIERS.length; i++) if (TIERS[i].id === id) return TIERS[i]; return null; }
   function amountOf(tier) { return '£' + tier.price; }
   function amountHtml(tier) { var a = esc(amountOf(tier)); return '<bdi>' + (SITE.fees.confirmed ? a : '<span class="ph">[' + a + ']</span>') + '</bdi>'; }

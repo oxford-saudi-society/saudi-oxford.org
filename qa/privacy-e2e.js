@@ -25,7 +25,13 @@ const link = (to, kind) => { const m = lastMail(to, kind); const r = m && /https
   ok(j.nums.length === 3 && j.nums.every((c) => /counter\(step, arabic-indic\)/.test(c)), 'step numbers drawn once by CSS, in Arabic numerals ' + JSON.stringify(j.nums));
   ok(!/صندوق للمساعدة|بالبطاقة|شهادة تقدير|حق التصويت|إنستغرام/.test(j.text), 'no hardship fund, card payment, certificate, voting or Instagram claims');
   await phone.check('input[name=tier][value=saudi]', { force: true });
-  await phone.fill('#f-name', 'نورة العتيبي'); await phone.fill('#f-email', 'noura@example.org'); await phone.fill('#f-college', 'Hertford College'); await phone.locator('#statuses label', { has: phone.locator('input[value=masters]') }).click(); await phone.check('#f-consent', { force: true });
+  await phone.fill('#f-name', 'نورة العتيبي'); await phone.fill('#f-email', 'noura@example.org');
+  // college field: the suggestions are the page's own list, styled like the field (not the browser's built-in one)
+  await phone.tap('#f-college'); await phone.keyboard.type('hert'); await phone.waitForTimeout(200);
+  const cb = await phone.evaluate(() => { const l = document.getElementById('college-list'), i = document.getElementById('f-college'), ls = getComputedStyle(l), is = getComputedStyle(i); return { native: i.hasAttribute('list'), open: !l.hidden, items: Array.from(l.children).map((x) => x.textContent), sameRadius: ls.borderRadius === is.borderRadius, sameFont: ls.fontSize === is.fontSize && ls.fontFamily === is.fontFamily, dark: ls.backgroundColor, sameWidth: Math.abs(l.getBoundingClientRect().width - i.getBoundingClientRect().width) < 1 }; });
+  ok(!cb.native && cb.open && cb.items.length === 1 && cb.items[0] === 'Hertford College' && cb.sameRadius && cb.sameFont && cb.sameWidth && /rgba?\(6, 22, 46/.test(cb.dark), 'college suggestions use the field\'s own style ' + JSON.stringify(cb));
+  await phone.keyboard.press('ArrowDown'); await phone.keyboard.press('Enter'); await phone.waitForTimeout(150);
+  ok(await phone.evaluate(() => document.getElementById('f-college').value === 'Hertford College' && document.getElementById('college-list').hidden && !document.getElementById('join-form').hidden), 'a suggestion can be chosen from the keyboard without sending the form'); await phone.locator('#statuses label', { has: phone.locator('input[value=masters]') }).click(); await phone.check('#f-consent', { force: true });
   await phone.click('#submit-btn'); await phone.waitForTimeout(1500);
   j = await phone.evaluate(() => ({ no: (document.getElementById('mno') || {}).textContent, text: document.getElementById('join-done').innerText, track: Array.from(document.querySelectorAll('.track .tk')).map((k) => k.textContent + getComputedStyle(k, '::before').content) }));
   ok(/^OSS-\d{4}-0001$/.test(j.no), 'application received with a number ' + j.no);
