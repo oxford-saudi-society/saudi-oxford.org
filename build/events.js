@@ -231,7 +231,7 @@ function icsFor(e, base) {
   const fold = (s) => s.replace(/(.{70})/g, '$1\r\n ');
   const escT = (s) => String(s).replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\n/g, '\\n');
   const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Oxford Saudi Society//Events//EN', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH', 'BEGIN:VEVENT',
-    `UID:${e.id}@saudi-oxford.org`, `DTSTAMP:${T.icsUtc(new Date())}`, `DTSTART:${T.icsUtc(e.start)}`, `DTEND:${T.icsUtc(e.end)}`, `SEQUENCE:${e.version || 1}`, `STATUS:${status}`,
+    `UID:${e.id}@ousss.org`, `DTSTAMP:${T.icsUtc(new Date())}`, `DTSTART:${T.icsUtc(e.start)}`, `DTEND:${T.icsUtc(e.end)}`, `SEQUENCE:${e.version || 1}`, `STATUS:${status}`,
     fold(`SUMMARY:${escT(title)}`), fold(`DESCRIPTION:${escT(L(e.description, 'en') + (e.eventStatus === 'proposed' ? '\nDate and venue are proposed and not yet confirmed.' : '') + '\n' + base + '/events/' + e.slug + '/')}`),
     fold(`LOCATION:${escT(e.venue ? L(e.venue.name, 'en') + (e.eventStatus === 'proposed' ? ' (proposed)' : '') : 'To be announced')}`), `URL:${base}/events/${e.slug}/`, 'END:VEVENT', 'END:VCALENDAR'];
   return lines.join('\r\n') + '\r\n';

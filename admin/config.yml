@@ -1,4 +1,4 @@
-# Decap CMS — the committee's editing desk at https://saudi-oxford.org/admin/
+# Decap CMS — the committee's editing desk at https://ousss.org/admin/
 # Sign-in uses GitHub through Netlify's OAuth provider (see README → "Committee desk").
 backend:
   name: github
@@ -12,9 +12,9 @@ backend:
     uploadMedia: "Upload “{{path}}”"
     deleteMedia: "Delete “{{path}}”"
 
-site_url: https://saudi-oxford.org
-display_url: https://saudi-oxford.org
-logo_url: https://saudi-oxford.org/assets/seal-880.webp
+site_url: https://ousss.org
+display_url: https://ousss.org
+logo_url: https://ousss.org/assets/seal-880.webp
 media_folder: "src/assets/people"
 public_folder: "/assets/people"
 slug:
@@ -30,10 +30,10 @@ collections:
         label: "Society settings"
         file: "src/content/settings.json"
         fields:
-          - { label: "Society email (shown on the site)", name: "email", widget: "string", required: false, hint: "e.g. hello@saudi-oxford.org" }
-          - { label: "Treasurer email (hardship fund, bank-transfer queries)", name: "treasurerEmail", widget: "string", required: false, hint: "e.g. treasurer@saudi-oxford.org" }
-          - { label: "Membership email (applications, proof of nationality)", name: "membershipEmail", widget: "string", required: false, hint: "e.g. membership@saudi-oxford.org" }
-          - { label: "President email", name: "presidentEmail", widget: "string", required: false, hint: "e.g. president@saudi-oxford.org" }
+          - { label: "Society email (shown on the site)", name: "email", widget: "string", required: false, hint: "e.g. hello@ousss.org" }
+          - { label: "Treasurer email (hardship fund, bank-transfer queries)", name: "treasurerEmail", widget: "string", required: false, hint: "e.g. treasurer@ousss.org" }
+          - { label: "Membership email (applications, proof of nationality)", name: "membershipEmail", widget: "string", required: false, hint: "e.g. membership@ousss.org" }
+          - { label: "President email", name: "presidentEmail", widget: "string", required: false, hint: "e.g. president@ousss.org" }
           - { label: "Founded (year)", name: "founded", widget: "string", required: false }
           - label: "Membership fees"
             name: "fees"
@@ -85,7 +85,7 @@ collections:
           - { label: "Show the Supporters section", name: "showSupporters", widget: "boolean", default: false }
           - { label: "Site name", name: "siteName", widget: "object", fields: [ { label: "English", name: "en", widget: "string" }, { label: "Arabic", name: "ar", widget: "string" } ] }
           - { label: "Subtitle under the name (header and home page)", name: "subtitle", widget: "object", fields: [ { label: "English", name: "en", widget: "string", default: "University of Oxford" }, { label: "Arabic", name: "ar", widget: "string", default: "جامعة أكسفورد" } ] }
-          - { label: "Domain", name: "domain", widget: "hidden", default: "https://saudi-oxford.org" }
+          - { label: "Domain", name: "domain", widget: "hidden", default: "https://ousss.org" }
 
   - name: "events"
     label: "Events"

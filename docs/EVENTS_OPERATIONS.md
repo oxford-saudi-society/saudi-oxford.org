@@ -52,7 +52,7 @@ See `.env.example`. Required for the API to work at all: `DATABASE_URL` (or Netl
 
 **Scheduled job** (`netlify/functions/jobs.mjs`, every 10 minutes): sends queued mail, expires waitlist offers, sends 7-day and 1-day reminders for confirmed events, marks finished events completed, applies retention.
 
-**Build-time truth**: set `SITE_API_URL=https://saudi-oxford.org` so each build reads the live event state and the static HTML matches the desk without waiting for JavaScript. Optional `NETLIFY_BUILD_HOOK` enables the *Publish site* button.
+**Build-time truth**: set `SITE_API_URL=https://ousss.org` so each build reads the live event state and the static HTML matches the desk without waiting for JavaScript. Optional `NETLIFY_BUILD_HOOK` enables the *Publish site* button.
 
 ## Running locally / tests
 

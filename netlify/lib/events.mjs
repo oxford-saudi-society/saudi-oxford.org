@@ -251,7 +251,7 @@ export function icsFor(ev, site) {
   const escT = (s) => String(s).replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\n/g, '\\n');
   const url = `${site}/events/${ev.slug}/`;
   const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Oxford Saudi Society//Events//EN', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH', 'BEGIN:VEVENT',
-    `UID:${ev.id}@saudi-oxford.org`, `DTSTAMP:${T.icsUtc(new Date())}`, `DTSTART:${T.icsUtc(ev.start_utc)}`, `DTEND:${T.icsUtc(ev.end_utc)}`, `SEQUENCE:${ev.version}`, `STATUS:${status}`,
+    `UID:${ev.id}@ousss.org`, `DTSTAMP:${T.icsUtc(new Date())}`, `DTSTART:${T.icsUtc(ev.start_utc)}`, `DTEND:${T.icsUtc(ev.end_utc)}`, `SEQUENCE:${ev.version}`, `STATUS:${status}`,
     fold(`SUMMARY:${escT(title)}`), fold(`DESCRIPTION:${escT(L(ev.content.description, 'en') + (ev.event_status === 'proposed' ? '\nDate and venue are proposed and not yet confirmed.' : '') + '\n' + url)}`),
     fold(`LOCATION:${escT(venueName(ev, 'en') + (ev.event_status === 'proposed' ? ' (proposed)' : ''))}`), `URL:${url}`, 'END:VEVENT', 'END:VCALENDAR'];
   return lines.join('\r\n') + '\r\n';

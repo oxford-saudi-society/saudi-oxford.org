@@ -6,7 +6,7 @@ import { randomUUID } from 'node:crypto';
 export async function setupDb() {
   process.env.AUTH_SECRET = process.env.AUTH_SECRET || 'test-secret-test-secret-test-secret-0001';
   process.env.MAIL_PROVIDER = 'capture';
-  process.env.SITE_URL = 'https://test.saudi-oxford.org';
+  process.env.SITE_URL = 'https://test.ousss.org';
   process.env.ADMIN_BOOTSTRAP_EMAILS = 'root@example.org';
   process.env.PG_POOL_MAX = '12';
   const base = process.env.TEST_DATABASE_URL;
