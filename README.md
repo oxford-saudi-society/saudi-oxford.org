@@ -2,8 +2,8 @@
 
 This folder **is** the website. Every page, name, event and setting lives here, in plain files, with a full history of changes. Nothing about the site depends on any one person or any one computer.
 
-- Live site: https://saudi-oxford.netlify.app (English) · https://saudi-oxford.netlify.app/ar/ (Arabic)
-- Committee desk (editing): https://saudi-oxford.netlify.app/admin/ · membership & events: https://saudi-oxford.netlify.app/admin/events/
+- Live site: https://oxsss.org (English) · https://oxsss.org/ar/ (Arabic) (also https://saudi-oxford.netlify.app; ousss.org forwards here)
+- Committee desk (editing): https://oxsss.org/admin/ · membership & events: https://oxsss.org/admin/events/
 - Hosting: Netlify · Content storage: GitHub · Email & DNS: Cloudflare · Payments: Stripe
 
 ## How it works, in one paragraph
@@ -41,7 +41,7 @@ netlify.toml                   tells Netlify how to build
 
 ## Editing content (committee)
 
-Go to **https://saudi-oxford.netlify.app/admin/** and sign in with GitHub. You see four sections:
+Go to **https://oxsss.org/admin/** and sign in with GitHub. You see four sections:
 
 | Section | What it changes | Typical job |
 |---|---|---|

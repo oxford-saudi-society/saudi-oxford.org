@@ -45,7 +45,7 @@ export async function makeClient() {
     let body;
     if (opts.body !== undefined) { body = typeof opts.body === 'string' ? opts.body : JSON.stringify(opts.body); if (!headers.has('content-type')) headers.set('content-type', 'application/json'); }
     const waits = [];
-    const res = await api(new Request(site + path, { method, headers, body, redirect: 'manual' }), { ip: opts.ip || '10.0.0.' + (opts.sameIp ? 1 : (++ipCounter % 250) + 1), waitUntil: (p) => waits.push(p) });
+    const res = await api(new Request((opts.base || site) + path, { method, headers, body, redirect: 'manual' }), { ip: opts.ip || '10.0.0.' + (opts.sameIp ? 1 : (++ipCounter % 250) + 1), waitUntil: (p) => waits.push(p) });
     await Promise.allSettled(waits);
     const ct = res.headers.get('content-type') || '';
     const text = await res.text();

@@ -50,8 +50,11 @@ export function siteUrl(req) {
    which already defeats classic CSRF; this is the belt to those braces. */
 export function assertSameOrigin(req) {
   const origin = req.headers.get('origin');
-  const site = siteUrl(req);
-  if (origin && origin !== site && !isLocalDev(origin)) fail(403, 'bad_origin');
+  // Accept the configured site URL and the exact host this request was sent to (the site answers on its primary
+  // domain and the netlify.app address); any other page's origin is refused.
+  const u = new URL(req.url);
+  const allowed = new Set([siteUrl(req), `${u.protocol}//${u.host}`]);
+  if (origin && !allowed.has(origin) && !isLocalDev(origin)) fail(403, 'bad_origin');
   const sfs = req.headers.get('sec-fetch-site');
   if (sfs && sfs !== 'same-origin' && sfs !== 'none' && !isLocalDev(origin || '')) fail(403, 'bad_origin');
 }

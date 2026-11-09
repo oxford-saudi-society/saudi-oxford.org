@@ -1,4 +1,4 @@
-# Decap CMS — the committee's editing desk at https://saudi-oxford.netlify.app/admin/
+# Decap CMS — the committee's editing desk at https://oxsss.org/admin/
 # Sign-in uses GitHub through Netlify's OAuth provider (see README → "Committee desk").
 backend:
   name: github
@@ -12,9 +12,9 @@ backend:
     uploadMedia: "Upload “{{path}}”"
     deleteMedia: "Delete “{{path}}”"
 
-site_url: https://saudi-oxford.netlify.app
-display_url: https://saudi-oxford.netlify.app
-logo_url: https://saudi-oxford.netlify.app/assets/seal-880.webp
+site_url: https://oxsss.org
+display_url: https://oxsss.org
+logo_url: https://oxsss.org/assets/seal-880.webp
 media_folder: "src/assets/people"
 public_folder: "/assets/people"
 slug:
@@ -87,7 +87,7 @@ collections:
           - { label: "Show the Supporters section", name: "showSupporters", widget: "boolean", default: false }
           - { label: "Site name", name: "siteName", widget: "object", fields: [ { label: "English", name: "en", widget: "string" }, { label: "Arabic", name: "ar", widget: "string" } ] }
           - { label: "Subtitle under the name (header and home page)", name: "subtitle", widget: "object", fields: [ { label: "English", name: "en", widget: "string", default: "University of Oxford" }, { label: "Arabic", name: "ar", widget: "string", default: "جامعة أكسفورد" } ] }
-          - { label: "Domain", name: "domain", widget: "hidden", default: "https://saudi-oxford.netlify.app" }
+          - { label: "Domain", name: "domain", widget: "hidden", default: "https://oxsss.org" }
 
   - name: "events"
     label: "Events"

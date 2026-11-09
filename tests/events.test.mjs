@@ -69,6 +69,11 @@ test('C19 input: validation, JSON only, honeypot, bad origin, rate limit per ema
   assert.equal(hp.status, 200); assert.equal((await q(db, 'SELECT count(*)::int AS n FROM oss_pending'))[0].n, before, 'honeypot creates nothing');
   const xo = await interest('michaelmas-term-welcome', { name: 'Evil', email: 'evil@example.org' }, { headers: { origin: 'https://evil.example' } });
   assert.equal(xo.status, 403); assert.equal(xo.body.error, 'bad_origin');
+  // the same site on another of its domains (primary custom domain vs netlify.app) is same-origin; others are not
+  const alt = await C.call('POST', '/api/membership/apply', { base: 'https://oxsss.example', headers: { origin: 'https://oxsss.example' }, body: { name: '' } });
+  assert.equal(alt.status, 400, 'own host accepted (fails validation, not origin)');
+  const altEvil = await C.call('POST', '/api/membership/apply', { base: 'https://oxsss.example', headers: { origin: 'https://evil.example' }, body: { name: '' } });
+  assert.equal(altEvil.status, 403); assert.equal(altEvil.body.error, 'bad_origin');
   let last;
   for (let i = 0; i < 7; i++) last = await interest('hilary-term-welcome-gathering', { name: 'Rate Limit', email: 'rl@example.org' });
   assert.equal(last.status, 429);
