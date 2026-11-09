@@ -403,3 +403,36 @@ test('C20c mail via Gmail: sender is the society Gmail, attachments survive, out
     srv.close();
   }
 });
+
+test('C20d daily allowance: urgent mail first, reminders only above a 25% reserve, nothing past the cap', async () => {
+  const { processOutbox, enqueue } = await import('../netlify/lib/mail.mjs');
+  const saved = process.env.MAIL_DAILY_LIMIT;
+  process.env.MAIL_PROVIDER = 'capture';
+  await db.query("UPDATE oss_mail_outbox SET status = 'sent', sent_at = now() - interval '2 days' WHERE status <> 'sent' OR sent_at > now() - interval '24 hours'");
+  try {
+    process.env.MAIL_DAILY_LIMIT = '8';
+    // 6 sent today already → 2 left, which is within the reserve (ceil(8*0.25)=2): reminders must wait
+    for (let i = 0; i < 6; i++) await db.tx((q) => enqueue(q, { kind: 'login_link', to: `old${i}@example.org`, lang: 'en', vars: { link: 'x' } }));
+    await processOutbox(db, 50);
+    for (let i = 0; i < 3; i++) await db.tx((q) => enqueue(q, { kind: 'reminder', to: `rem${i}@example.org`, lang: 'en', dedupeKey: `t-rem-${i}`, vars: { name: 'A', ev: { title: 'E', start_utc: new Date(Date.now() + 864e5).toISOString(), end_utc: new Date(Date.now() + 9e7).toISOString(), timezone: 'Europe/London' }, venue: 'V', inWords: 'tomorrow', ticketUrl: 'x', accountUrl: 'y' } }));
+    await db.tx((q) => enqueue(q, { kind: 'login_link', to: 'urgent@example.org', lang: 'en', vars: { link: 'x' } }));
+    const r = await processOutbox(db, 50);
+    assert.equal(r.sent, 1);
+    const st = Object.fromEntries((await q(db, "SELECT to_email, status FROM oss_mail_outbox WHERE to_email LIKE 'rem%' OR to_email = 'urgent@example.org'")).map((x) => [x.to_email, x.status]));
+    assert.equal(st['urgent@example.org'], 'sent');
+    assert.equal(st['rem0@example.org'], 'queued');
+    // cap reached → nothing more goes out, and nothing is burned
+    await db.tx((q) => enqueue(q, { kind: 'login_link', to: 'late@example.org', lang: 'en', vars: { link: 'x' } }));
+    await processOutbox(db, 50); // 7 used → 1 left: urgent goes
+    const r2 = await processOutbox(db, 50);
+    assert.equal(r2.waiting, 'daily_limit');
+    const rem = (await q(db, "SELECT status, attempts FROM oss_mail_outbox WHERE to_email = 'rem1@example.org'"))[0];
+    assert.equal(rem.status, 'queued'); assert.equal(rem.attempts, 0);
+    // a fresh day: reminders flow
+    await db.query("UPDATE oss_mail_outbox SET sent_at = now() - interval '2 days' WHERE status = 'sent'");
+    const r3 = await processOutbox(db, 50);
+    assert.equal(r3.sent, 3);
+  } finally {
+    if (saved === undefined) delete process.env.MAIL_DAILY_LIMIT; else process.env.MAIL_DAILY_LIMIT = saved;
+  }
+});

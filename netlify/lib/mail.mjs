@@ -159,6 +159,12 @@ async function deliver(msg) {
 }
 
 const BACKOFF_MIN = [2, 10, 30, 120, 360, 720];
+const BULK_KINDS = ['reminder'];
+/* Messages per rolling 24h the provider allows: Resend free 100, Gmail ~500 (kept a little under). MAIL_DAILY_LIMIT overrides; 0 = no cap. */
+export function dailyLimit() {
+  if (process.env.MAIL_DAILY_LIMIT !== undefined && process.env.MAIL_DAILY_LIMIT !== '') return Number(process.env.MAIL_DAILY_LIMIT) || 0;
+  return ({ resend: 100, gmail: 450 })[providerName()] || 0;
+}
 /* Send what is due. Called after each request that queued mail and by the scheduled job. */
 export async function processOutbox(db, limit = 20) {
   // No provider configured yet: leave everything queued untouched, so nothing burns its retries or goes dead
@@ -167,8 +173,21 @@ export async function processOutbox(db, limit = 20) {
   // Messages that died only because no provider existed get a fresh start now that one does.
   await db.query(`UPDATE oss_mail_outbox SET status = 'queued', attempts = 0, next_attempt_at = now(), last_error = NULL
     WHERE status IN ('dead','failed') AND last_error = 'no_mail_provider'`);
+  // Daily allowance (free plans cap sends per day): urgent mail (sign-in links, confirmations, decisions) always goes
+  // first; bulk reminders only use what is left above a reserve, so a big event never blocks sign-in for the day.
+  const cap = dailyLimit();
+  let budget = limit, allowBulk = true;
+  if (cap) {
+    const used = Number((await db.query(`SELECT count(*)::int AS n FROM oss_mail_outbox WHERE status = 'sent' AND sent_at > now() - interval '24 hours'`)).rows[0].n);
+    const left = cap - used;
+    if (left <= 0) return { sent: 0, failed: 0, dead: 0, waiting: 'daily_limit' };
+    budget = Math.min(limit, left);
+    allowBulk = left > Math.ceil(cap * 0.25);
+  }
   const claimed = await db.tx(async (q) => {
-    const r = await q.query(`SELECT id FROM oss_mail_outbox WHERE status IN ('queued','failed') AND next_attempt_at <= now() ORDER BY created_at LIMIT $1 FOR UPDATE SKIP LOCKED`, [limit]);
+    const r = await q.query(`SELECT id FROM oss_mail_outbox WHERE status IN ('queued','failed') AND next_attempt_at <= now()
+      AND ($2::boolean OR kind <> ALL($3::text[]))
+      ORDER BY CASE WHEN kind = ANY($3::text[]) THEN 1 ELSE 0 END, created_at LIMIT $1 FOR UPDATE SKIP LOCKED`, [budget, allowBulk, BULK_KINDS]);
     const ids = r.rows.map((x) => x.id);
     if (ids.length) await q.query(`UPDATE oss_mail_outbox SET status = 'sending', attempts = attempts + 1 WHERE id = ANY($1::uuid[])`, [ids]);
     return ids;
@@ -181,6 +200,11 @@ export async function processOutbox(db, limit = 20) {
       await db.query(`UPDATE oss_mail_outbox SET status = 'sent', sent_at = now(), provider = $2, provider_id = $3, last_error = NULL WHERE id = $1`, [id, res.provider, res.id]);
       out.sent++;
     } catch (e) {
+      if (/^resend_429|Daily user sending (quota|limit)|5\.4\.5/i.test(String(e.message || e))) {
+        // provider's own daily cap: wait an hour without using up a retry
+        await db.query(`UPDATE oss_mail_outbox SET status = 'failed', attempts = attempts - 1, last_error = $2, next_attempt_at = now() + interval '60 minutes' WHERE id = $1`, [id, String(e.message || e).slice(0, 500)]);
+        out.failed++; continue;
+      }
       const dead = msg.attempts >= BACKOFF_MIN.length;
       const mins = BACKOFF_MIN[Math.min(msg.attempts - 1, BACKOFF_MIN.length - 1)];
       await db.query(`UPDATE oss_mail_outbox SET status = $2, last_error = $3, next_attempt_at = now() + make_interval(mins => $4) WHERE id = $1`, [id, dead ? 'dead' : 'failed', String(e.message || e).slice(0, 500), mins]);
