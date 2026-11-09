@@ -98,20 +98,34 @@ export async function roster(q, staff, id, params) {
   if (qs) { args.push('%' + qs.replace(/[%_]/g, '\\$&') + '%'); where.push(`(lower(name) LIKE $${args.length} OR email LIKE $${args.length})`); }
   const total = (await q.query(`SELECT count(*)::int AS n FROM oss_registrations WHERE ${where.join(' AND ')}`, args)).rows[0].n;
   args.push(per, (page - 1) * per);
-  const rows = (await q.query(`SELECT id, name, email, kind, status, lang, member_at_booking, marketing_opt_in, consent_privacy_version, created_at, confirmed_at, checked_in_at, cancelled_at, offered_at, claim_expires_at, waitlist_seq FROM oss_registrations WHERE ${where.join(' AND ')} ORDER BY created_at DESC LIMIT $${args.length - 1} OFFSET $${args.length}`, args)).rows;
+  const rows = (await q.query(`SELECT id, name, email, kind, status, lang, member_at_booking, marketing_opt_in, consent_privacy_version, created_at, confirmed_at, checked_in_at, cancelled_at, offered_at, claim_expires_at, waitlist_seq, requirements FROM oss_registrations WHERE ${where.join(' AND ')} ORDER BY created_at DESC LIMIT $${args.length - 1} OFFSET $${args.length}`, args)).rows;
   const full = staff.role !== 'checkin_staff';
-  return { event: { id: ev.id, slug: ev.slug, title: ev.content.title }, total, page, per, registrations: rows.map((r) => Object.assign({}, r, { email: full ? r.email : maskEmail(r.email), name: full ? r.name : displayName(r.name) })) };
+  return { event: { id: ev.id, slug: ev.slug, title: ev.content.title }, total, page, per, registrations: rows.map((r) => Object.assign({}, r, { email: full ? r.email : maskEmail(r.email), name: full ? r.name : displayName(r.name), requirements: full ? r.requirements : null })) };
 }
 
 const csvCell = (v) => { let s = v == null ? '' : String(v); if (/^[=+\-@\t\r]/.test(s)) s = "'" + s; if (/[",\n\r]/.test(s)) s = '"' + s.replace(/"/g, '""') + '"'; return s; };
+/* People who asked for Society news (their consent): current members and applicants who ticked the box, plus event
+   attendees whose opt-in was carried over when their registration was deleted. Withdrawals are removed by hand on request. */
+export async function subscribersCsv(q, staff) {
+  requireRole(staff, 'events_admin');
+  await rateLimit(q, 'export', staff.email, 20, 3600);
+  const rows = (await q.query(`SELECT email, name, lang, consent_at, source FROM oss_subscribers
+    UNION SELECT email, name, lang, COALESCE(applied_at, created_at), 'membership' FROM oss_members WHERE consent_news AND status IN ('pending','info_requested','approved')
+    UNION SELECT DISTINCT ON (email) email, name, lang, COALESCE(marketing_opt_in_at, consent_at), 'event' FROM oss_registrations WHERE marketing_opt_in AND status IN ('interested','confirmed','checked_in','waitlisted','offered')
+    ORDER BY 1`)).rows;
+  const seen = new Set(); const uniq = rows.filter((r) => (seen.has(r.email) ? false : (seen.add(r.email), true)));
+  await audit(q, staff.email, 'subscribers.exported', null, { rows: uniq.length });
+  const lines = ['email,name,language,consented_at,source'].concat(uniq.map((r) => [r.email, r.name, r.lang, r.consent_at, r.source].map((v) => csvCell(v instanceof Date ? v.toISOString() : v)).join(',')));
+  return { filename: 'news-subscribers.csv', csv: '\ufeff' + lines.join('\r\n') + '\r\n' };
+}
 export async function rosterCsv(q, staff, id) {
   requireRole(staff, 'events_admin', id);
   await rateLimit(q, 'export', staff.email, 20, 3600);
   const ev = await getEvent(q, id); if (!ev) fail(404, 'not_found');
-  const rows = (await q.query(`SELECT name, email, kind, status, lang, member_at_booking, marketing_opt_in, consent_privacy_version, created_at, confirmed_at, checked_in_at, cancelled_at FROM oss_registrations WHERE event_id = $1 ORDER BY created_at`, [ev.id])).rows;
+  const rows = (await q.query(`SELECT name, email, kind, status, lang, member_at_booking, marketing_opt_in, consent_privacy_version, created_at, confirmed_at, checked_in_at, cancelled_at, requirements FROM oss_registrations WHERE event_id = $1 ORDER BY created_at`, [ev.id])).rows;
   await audit(q, staff.email, 'roster.exported', 'event:' + ev.id, { rows: rows.length });
-  const head = ['name', 'email', 'kind', 'status', 'language', 'member_at_booking', 'marketing_opt_in', 'privacy_notice_version', 'registered_at', 'confirmed_at', 'checked_in_at', 'cancelled_at'];
-  const lines = [head.join(',')].concat(rows.map((r) => [r.name, r.email, r.kind, r.status, r.lang, r.member_at_booking ? 'yes' : 'no', r.marketing_opt_in ? 'yes' : 'no', r.consent_privacy_version, r.created_at, r.confirmed_at, r.checked_in_at, r.cancelled_at].map((v) => csvCell(v instanceof Date ? v.toISOString() : v)).join(',')));
+  const head = ['name', 'email', 'kind', 'status', 'language', 'member_at_booking', 'marketing_opt_in', 'privacy_notice_version', 'registered_at', 'confirmed_at', 'checked_in_at', 'cancelled_at', 'dietary_or_access_requirements'];
+  const lines = [head.join(',')].concat(rows.map((r) => [r.name, r.email, r.kind, r.status, r.lang, r.member_at_booking ? 'yes' : 'no', r.marketing_opt_in ? 'yes' : 'no', r.consent_privacy_version, r.created_at, r.confirmed_at, r.checked_in_at, r.cancelled_at, r.requirements].map((v) => csvCell(v instanceof Date ? v.toISOString() : v)).join(',')));
   return { filename: `${ev.slug}-registrations.csv`, csv: '﻿' + lines.join('\r\n') + '\r\n' };
 }
 

@@ -1,58 +1,57 @@
 {
-  "id": "oss-001",
-  "slug": "winter-welcome-first-society-meeting",
-  "order": 1,
-  "title": {
-    "en": "Winter Welcome: The First Society Meeting",
-    "ar": "الترحيب الشتوي — الاجتماع الأول للجمعية السعودية"
+ "id": "oss-001",
+ "slug": "winter-welcome-first-society-meeting",
+ "order": 1,
+ "title": {
+  "en": "Winter Welcome: The First Society Meeting",
+  "ar": "اللقاء التعريفي الأول للجمعية السعودية"
+ },
+ "description": {
+  "en": "Our first winter welcome meeting: meet fellow members, get to know the society and take part in the launch of our shared activities.",
+  "ar": "اللقاء التعريفي الأول للجمعية السعودية في أجواء شتوية؛ للتعارف بين الأعضاء، والتعريف بالجمعية وأنشطتها المقبلة."
+ },
+ "agenda": {
+  "en": [
+   "Welcome and introductions",
+   "society priorities",
+   "community conversation."
+  ],
+  "ar": [
+   "الترحيب والتعارف",
+   "التعريف بخطة الجمعية",
+   "لقاء مفتوح بين الأعضاء."
+  ]
+ },
+ "category": "community",
+ "startLocal": "2026-12-01T18:00:00",
+ "endLocal": "2026-12-01T21:00:00",
+ "timezone": "Europe/London",
+ "venueKey": "noa-annexe",
+ "audience": "members",
+ "price": {
+  "status": "free",
+  "currency": "GBP",
+  "amountMinor": 0
+ },
+ "bookingRequired": true,
+ "registrationMode": "interest_only",
+ "eventStatus": "proposed",
+ "visibility": "published_as_proposal",
+ "capacity": null,
+ "waitlistEnabled": false,
+ "dateNotice": {
+  "en": "Date and venue are provisional and not yet confirmed.",
+  "ar": "التاريخ والمكان مبدئيان ولم يُؤكَّدا بعد."
+ },
+ "image": {
+  "web": "/assets/events/web/event-01-winter-welcome-first-society-meeting.webp",
+  "thumb": "/assets/events/thumbs/event-01-winter-welcome-first-society-meeting.webp",
+  "alt": {
+   "en": "Abstract brand-colour graphic for a community gathering.",
+   "ar": "تصميم تجريدي بألوان الجمعية للقاء مجتمعي."
   },
-  "description": {
-    "en": "Our first winter welcome meeting: meet fellow members, get to know the society and take part in the launch of our shared activities.",
-    "ar": "الاجتماع الأول للجمعية السعودية في أجواء شتوية؛ للتعارف بين الأعضاء، والتعريف بالجمعية وأنشطتها المقبلة."
-  },
-  "agenda": {
-    "en": [
-      "Welcome and introductions",
-      "society priorities",
-      "community conversation."
-    ],
-    "ar": [
-      "الترحيب والتعارف",
-      "التعريف بخطة الجمعية",
-      "لقاء مفتوح بين الأعضاء."
-    ]
-  },
-  "category": "community",
-  "startLocal": "2026-12-01T18:00:00",
-  "endLocal": "2026-12-01T21:00:00",
-  "timezone": "Europe/London",
-  "venueKey": "noa-annexe",
-  "audience": "members",
-  "price": {
-    "status": "free",
-    "currency": "GBP",
-    "amountMinor": 0
-  },
-  "bookingRequired": true,
-  "registrationMode": "interest_only",
-  "eventStatus": "proposed",
-  "visibility": "published_as_proposal",
-  "capacity": null,
-  "waitlistEnabled": false,
-  "dateNotice": {
-    "en": "Date and venue are proposed and not confirmed.",
-    "ar": "التاريخ والمكان مقترحان ولم يُؤكّدا بعد."
-  },
-  "image": {
-    "web": "/assets/events/web/event-01-winter-welcome-first-society-meeting.webp",
-    "thumb": "/assets/events/thumbs/event-01-winter-welcome-first-society-meeting.webp",
-    "alt": {
-      "en": "Illustrated concept artwork for Winter Welcome: The First Society Meeting, Oxford Saudi Society.",
-      "ar": "تصميم توضيحي لفعالية الترحيب الشتوي — الاجتماع الأول للجمعية السعودية للجمعية السعودية بجامعة أكسفورد."
-    },
-    "credit": "AI-generated concept artwork supplied through the society planning conversation.",
-    "reviewNote": "AI-generated illustrative image, not a photograph of an actual event; inspect logos/flags for authenticity.",
-    "approved": false
-  },
-  "published": true
+  "credit": "Neutral event graphic in the Society brand colours (no photograph, text or emblem). Replace with approved artwork when available.",
+  "approved": true
+ },
+ "published": true
 }

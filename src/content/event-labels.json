@@ -24,7 +24,11 @@
     "ar": "الرسوم تُعلن لاحقًا"
   },
   "proposed": {
-    "en": "Proposed · Not Confirmed",
-    "ar": "مقترح · غير مؤكد"
+    "en": "Proposed — Not Confirmed",
+    "ar": "مبدئي — بانتظار التأكيد"
+  },
+  "booking_later": {
+    "en": "Registration opens after confirmation",
+    "ar": "يُفتح التسجيل بعد تأكيد الفعالية"
   }
 }

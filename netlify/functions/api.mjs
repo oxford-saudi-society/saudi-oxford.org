@@ -99,12 +99,12 @@ async function route(req, context, db) {
         if (!memberFlag) fail(403, 'member_required');
       }
       if (signedIn) {
-        const r = await E.assignSeat(q, { ev, email, name, lang, marketing: !!body.marketing_opt_in, privacyVersion, site, memberFlag, source: 'web_signed_in' });
+        const r = await E.assignSeat(q, { ev, email, name, lang, marketing: !!body.marketing_opt_in, privacyVersion, site, memberFlag, source: 'web_signed_in', requirements: body.requirements });
         if (r.result === 'not_open') fail(400, 'not_open');
         if (r.result === 'member_required') fail(403, 'member_required');
         return { status: 200, body: { status: r.result === 'already' ? 'already' : r.result, registrationId: r.registration ? r.registration.id : undefined } };
       }
-      return { status: 200, body: await E.requestBooking(q, { ev, email, name, lang, marketing: !!body.marketing_opt_in, privacyVersion, site, wantWaitlist: !!body.waitlist }) };
+      return { status: 200, body: await E.requestBooking(q, { ev, email, name, lang, marketing: !!body.marketing_opt_in, privacyVersion, site, wantWaitlist: !!body.waitlist, requirements: body.requirements }) };
     }));
     return json(result.body, result.status || 200);
   }
@@ -129,6 +129,16 @@ async function route(req, context, db) {
     await rateLimit(db, 'respond', session.email, 10, 3600);
     const body = await readJson(req);
     return json({ member: await db.tx((q) => M.respond(q, session.email, body, site)) });
+  }
+
+  /* proof of nationality: uploaded by the signed-in applicant; never emailed */
+  if (a === 'membership' && b === 'evidence' && (m === 'POST' || m === 'DELETE')) {
+    assertSameOrigin(req);
+    if (!session) fail(401, 'sign_in_required');
+    await rateLimit(db, 'evidence', session.email, 8, 3600);
+    if (m === 'DELETE') return json({ member: await db.tx((q) => M.removeOwnEvidence(q, session.email)) });
+    const body = await readJson(req, Math.ceil(M.EVIDENCE_MAX_BYTES * 1.4) + 4096);
+    return json({ member: await db.tx((q) => M.uploadEvidence(q, session.email, body, site)) });
   }
 
   /* ── email links ──────────────────────────────────────────────── */
@@ -157,7 +167,7 @@ async function route(req, context, db) {
         return { to: back + (r.result === 'not_open' ? 'not_open' : r.result === 'already' ? 'already' : 'interest'), cookie: sessionCookie(pending.email, req) };
       }
       if (pending.kind === 'booking' || pending.kind === 'waitlist') {
-        const r = await E.assignSeat(q, { ev, email: pending.email, name: p.name || '', lang, marketing: !!p.marketing, privacyVersion: p.privacyVersion || PRIVACY_FALLBACK, site, memberFlag, source: 'web_verified' });
+        const r = await E.assignSeat(q, { ev, email: pending.email, name: p.name || '', lang, marketing: !!p.marketing, privacyVersion: p.privacyVersion || PRIVACY_FALLBACK, site, memberFlag, source: 'web_verified', requirements: p.requirements });
         const key = r.result === 'confirmed' ? 'confirmed' : r.result === 'waitlisted' ? 'waitlisted' : r.result === 'full' ? 'full' : r.result === 'already' ? 'already' : r.result === 'member_required' ? 'member_required' : 'not_open';
         if (r.result === 'full') { const u = E.urls(site, lang, ev); await enqueue(q, { kind: 'booking_full', to: pending.email, lang, eventId: ev.id, vars: Object.assign({ name: p.name || '', ev: E.titled(ev, lang), waitlist: ev.waitlist_enabled }, u) }); }
         return { to: back + key, cookie: sessionCookie(pending.email, req) };
@@ -257,6 +267,12 @@ async function route(req, context, db) {
     const staff = await staffFor(db, session.email);
     if (!staff) fail(403, 'staff_required');
     if (m !== 'GET') assertSameOrigin(req);
+    if (b === 'membership' && c && d === 'evidence' && m === 'GET') { // the document itself: shown inline, never cached, every opening audited
+      const f = await db.tx((q) => M.viewEvidence(q, staff, decodeURIComponent(c)));
+      const h = { 'Content-Type': f.mime, 'Content-Disposition': 'inline', 'Cache-Control': 'no-store, private', 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'no-referrer', 'X-Robots-Tag': 'noindex' };
+      if (f.mime !== 'application/pdf') h['Content-Security-Policy'] = "default-src 'none'; img-src 'self' data:; style-src 'unsafe-inline'; sandbox"; // the browser's PDF viewer does not run inside a sandbox
+      return new Response(f.buffer, { status: 200, headers: h });
+    }
     const body = m === 'GET' ? null : await readJson(req);
     const P = url.searchParams;
     if (b === 'me' && m === 'GET') return json({ email: staff.email, role: staff.role, eventIds: staff.event_ids, name: staff.name, membershipEmail: E.SETTINGS.membershipEmail || E.SETTINGS.email || '' });
@@ -270,6 +286,7 @@ async function route(req, context, db) {
     if (b === 'events' && c && d === 'notify' && m === 'POST') return json(await db.tx((q) => A.notify(q, staff, c, body, site)));
     if (b === 'registrations' && c && d === 'cancel' && m === 'POST') return json(await db.tx((q) => A.cancelByAdmin(q, staff, c, body, site)));
     if (b === 'registrations' && c && d === 'resend-ticket' && m === 'POST') return json(await db.tx((q) => A.resendTicket(q, staff, c, site)));
+    if (b === 'subscribers.csv' && m === 'GET') { const r = await db.tx((q) => A.subscribersCsv(q, staff)); return new Response(r.csv, { status: 200, headers: { 'Content-Type': 'text/csv; charset=utf-8', 'Content-Disposition': `attachment; filename="${r.filename}"`, 'Cache-Control': 'no-store' } }); }
     if (b === 'mail' && !c && m === 'GET') return json(await A.mailQueue(db, staff, P));
     if (b === 'mail' && c && d === 'retry' && m === 'POST') return json(await A.mailRetry(db, staff, c));
     if (b === 'mail' && c === 'process' && m === 'POST') { requireRole(staff, 'events_admin'); return json(await processOutbox(db, 50)); }
@@ -282,7 +299,7 @@ async function route(req, context, db) {
     if (b === 'membership' && !c && m === 'GET') return json(await M.list(db, staff, P));
     if (b === 'membership' && c && !d && m === 'GET') return json(await M.detail(db, staff, decodeURIComponent(c)));
     if (b === 'membership' && c && ['approve', 'request-info', 'decline', 'revoke'].includes(d) && m === 'POST') return json(await db.tx((q) => M.decide(q, staff, decodeURIComponent(c), d, body, site)));
-    if (b === 'membership' && c && d === 'update' && m === 'POST') return json(await db.tx((q) => M.update(q, staff, decodeURIComponent(c), body)));
+    if (b === 'membership' && c && d === 'update' && m === 'POST') return json(await db.tx((q) => M.update(q, staff, decodeURIComponent(c), body, site)));
     if (b === 'publish' && m === 'POST') return json(await A.triggerPublish(db, staff));
     fail(404, 'not_found');
   }

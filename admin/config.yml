@@ -31,7 +31,7 @@ collections:
         file: "src/content/settings.json"
         fields:
           - { label: "Society email (shown on the site)", name: "email", widget: "string", required: false, hint: "e.g. hello@oxsss.org" }
-          - { label: "Treasurer email (hardship fund, bank-transfer queries)", name: "treasurerEmail", widget: "string", required: false, hint: "e.g. treasurer@oxsss.org" }
+          - { label: "Treasurer email (membership fee queries)", name: "treasurerEmail", widget: "string", required: false, hint: "e.g. treasurer@oxsss.org" }
           - { label: "Membership email (applications, proof of nationality)", name: "membershipEmail", widget: "string", required: false, hint: "e.g. membership@oxsss.org" }
           - { label: "President email", name: "presidentEmail", widget: "string", required: false, hint: "e.g. president@oxsss.org" }
           - { label: "Where new membership applications are announced (committee inbox)", name: "committeeNotifyEmail", widget: "string", required: false }
@@ -64,29 +64,25 @@ collections:
               - { label: "X (full link)", name: "x", widget: "string", required: false }
               - { label: "Facebook (full link)", name: "facebook", widget: "string", required: false }
               - { label: "LinkedIn (full link)", name: "linkedin", widget: "string", required: false }
-              - { label: "Instagram handle", name: "instagram", widget: "string", required: false }
           - label: "Privacy notice"
             name: "privacy"
             widget: "object"
             fields:
-              - { label: "Retention period (e.g. 'two years')", name: "retention", widget: "string", required: false }
-              - { label: "Hosting provider named in the notice", name: "hosting", widget: "string", required: false }
               - { label: "Privacy notice version (date of the last change, e.g. 2026-11-08)", name: "version", widget: "string", required: false, hint: "Stored with every event registration so the committee knows which notice the person accepted" }
           - label: "Ideas board (Canny)"
             name: "ideas"
             widget: "object"
             fields:
               - { label: "Canny board token (Canny → Settings → Widget)", name: "cannyBoardToken", widget: "string", required: false, hint: "Embeds the board on the Ideas page" }
-              - { label: "Hosted board link (e.g. https://oxford-saudi.canny.io/ideas)", name: "url", widget: "string", required: false, hint: "Shown as 'Open in a new tab'" }
+              - { label: "Hosted board link (e.g. https://oxford-saudi.canny.io/ideas)", name: "url", widget: "string", required: false, hint: "The 'Open the ideas board' button opens this link" }
               - { label: "Other provider embed link (optional)", name: "embedUrl", widget: "string", required: false, hint: "Any embeddable board page; used only if no Canny token" }
           - label: "Visitor analytics (Cloudflare Web Analytics)"
             name: "analytics"
             widget: "object"
             fields:
               - { label: "Site token (Cloudflare → Web Analytics → Manage site → JS snippet)", name: "cloudflareToken", widget: "string", required: false, hint: "Leave empty to collect nothing" }
-          - { label: "Show the Supporters section", name: "showSupporters", widget: "boolean", default: false }
           - { label: "Site name", name: "siteName", widget: "object", fields: [ { label: "English", name: "en", widget: "string" }, { label: "Arabic", name: "ar", widget: "string" } ] }
-          - { label: "Subtitle under the name (header and home page)", name: "subtitle", widget: "object", fields: [ { label: "English", name: "en", widget: "string", default: "University of Oxford" }, { label: "Arabic", name: "ar", widget: "string", default: "جامعة أكسفورد" } ] }
+          - { label: "Subtitle under the name (header and home page)", name: "subtitle", widget: "object", fields: [ { label: "English", name: "en", widget: "string", default: "A student community in Oxford" }, { label: "Arabic", name: "ar", widget: "string", default: "مجتمع طلابي في أكسفورد" } ] }
           - { label: "Domain", name: "domain", widget: "hidden", default: "https://stemmania.ai" }
 
   - name: "events"
@@ -165,7 +161,7 @@ collections:
                   - { label: "Question id (letters, digits, dashes — the link people share)", name: "id", widget: "string", pattern: ["^[a-z0-9-]+$", "lower-case letters, digits and dashes only"] }
                   - { label: "Question", name: "q", widget: "object", fields: [ { label: "English", name: "en", widget: "string" }, { label: "Arabic", name: "ar", widget: "string" } ] }
                   - { label: "Answer", name: "a", widget: "object", hint: "Plain text. A link is written as [words](https://…) or [words](#ideas) for a site page.", fields: [ { label: "English", name: "en", widget: "text" }, { label: "Arabic", name: "ar", widget: "text" } ] }
-                  - { label: "Official references", name: "refs", widget: "list", required: false, summary: "{{fields.label}}", fields: [ { label: "Label (e.g. SACB: financial guarantees)", name: "label", widget: "string" }, { label: "Link (https://…)", name: "url", widget: "string", pattern: ["^https://", "must start with https://"] } ] }
+                  - { label: "Official references", name: "refs", widget: "list", required: false, summary: "{{fields.label}}", fields: [ { label: "Label (e.g. SACB: financial guarantees)", name: "label", widget: "string" }, { label: "Label in Arabic (keep official names as they are)", name: "labelAr", widget: "string", required: false }, { label: "Link (https://…)", name: "url", widget: "string", pattern: ["^https://", "must start with https://"] } ] }
 
   - name: "venues"
     label: "Venues"

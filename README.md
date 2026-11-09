@@ -4,7 +4,7 @@ This folder **is** the website. Every page, name, event and setting lives here, 
 
 - Live site: https://stemmania.ai (English) · https://stemmania.ai/ar/ (Arabic) (also https://saudi-oxford.netlify.app; oxsss.org and ousss.org forward here while oxsss.org is too new for university network filters). Society email stays on @oxsss.org.
 - Committee desk (editing): https://stemmania.ai/admin/ · membership & events: https://stemmania.ai/admin/events/
-- Hosting: Netlify · Content storage: GitHub · Email & DNS: Cloudflare · Payments: Stripe
+- Hosting, functions and database: Netlify · Content storage: GitHub · Email sending: Resend · Mailboxes: Google Workspace · Ideas board: Canny
 
 ## How it works, in one paragraph
 
@@ -19,7 +19,7 @@ src/content/venues.json        the venues events can use
 src/content/faq.json           the FAQ: sections → questions (EN + AR) with official reference links; edited in the desk under FAQ
 src/assets/events/             event artwork (web 1080px + thumbs 440px)
 netlify/functions/api.mjs      the events API (/api/*): interest, bookings, tickets, check-in, committee desk
-netlify/functions/jobs.mjs     every 10 minutes: send queued email, expire waitlist offers, reminders, retention
+netlify/functions/jobs.mjs     every 10 minutes: send queued email, expire waitlist offers, reminders, data-retention deletions
 netlify/lib/                   the API's code (database, auth, mail templates, events logic, desk operations)
 shared/time.cjs                Oxford-time helpers used by both the build and the API
 src/apps/                      the account page (/account/), tickets (/t/…) and the committee desk (/admin/events/)
@@ -45,7 +45,7 @@ Go to **https://oxsss.org/admin/** and sign in with GitHub. You see four section
 
 | Section | What it changes | Typical job |
 |---|---|---|
-| **Settings** | fees, Stripe links, bank details, society email, social handles, founded year, privacy wording | "Fees are confirmed" → tick *Fees confirmed* and the [brackets] disappear |
+| **Settings** | fees, Stripe links, bank details, society email, social links, founded year, privacy notice date | "Fees are confirmed" → tick *Fees confirmed* and the [brackets] disappear |
 | **Events** | the Events page and the "Next event" box on the home page | each term: add the programme, set *Order*, untick *Published* when it's over |
 | **Community directory** | public profiles | add a person **only with their consent** (tick the consent box); upload a square photo |
 | **Committees** | the About page grid and the Committees history page | each new year: *New committee year* → term `2027–28` → tick *This is the current committee* → add names |
@@ -108,4 +108,4 @@ Open `dist/index.html` through a local web server (for example `python3 -m http.
 
 For the events system: create the database (Netlify DB → Neon, or any PostgreSQL), set `DATABASE_URL`, `AUTH_SECRET`, `ADMIN_BOOTSTRAP_EMAILS`, `RESEND_API_KEY`, `MAIL_FROM` and `SITE_URL` in Netlify, verify the sending domain in Resend, then sign in at `/admin/events/` and add the committee under *Staff*. Full list in `.env.example`.
 
-Placeholders show on the site with a dotted gold underline until filled in the desk: fees (tick *confirmed*), society email, Stripe links, bank details, committee names, this term's events, Instagram handle, privacy retention period, and the ideas board token (see above). Review the privacy notice and terms once with someone who reads such things for a living.
+Placeholders show on the site with a dotted gold underline until filled in the desk: fees (tick *confirmed*), society email, Stripe links, bank details, committee names and this term's events. Event pictures are neutral brand graphics made by `python3 build/event-art.py`; replace a file in `src/assets/events/` with approved artwork of the same name when the committee has it. The supporters section and the Instagram link were removed until verified supporters and an official account exist. Review the privacy notice and terms once with someone who reads such things for a living.

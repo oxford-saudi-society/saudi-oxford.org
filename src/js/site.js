@@ -8,48 +8,22 @@
 
   var T = {
     en: {
-      sumPaid: 'Then pay <b>{amount}</b> by card or bank transfer', sumFree: 'Nothing to pay',
-      sumVerify: 'Free — we’ll email you for proof of nationality', sumNone: 'Choose a membership type above',
-      sending: 'Sending…', eyebrowSaved: 'Application received', eyebrowSend: 'One more step', thanks: 'Thank you, {name}.',
-      savedBody: 'Your application is with the committee. We will confirm your membership by email at <b>{email}</b>.',
-      savedBodyFree: 'You are on the list. Event news and invitations will reach you at <b>{email}</b>.',
-      sendBody: 'We could not send your application automatically. Please send it to the committee — the button opens an email with everything filled in, or copy the text and paste it into any message.',
-      stateSaved: 'Received', stateSend: 'Not sent yet', refLabel: 'Your reference', openMail: 'Open email app', copyApp: 'Copy application',
-      copied: 'Copied — paste it into an email or message to the committee.', copyFail: 'Copying is blocked here. Select the text below and copy it yourself.', orWrite: 'or write to',
-      payEyebrow: 'Step 3 · Payment', payTitle: 'Pay {amount} to activate your membership',
-      payBody: 'Pay by card, or by bank transfer quoting your reference. Membership starts once the payment is matched — usually within two working days.',
-      cardTitle: 'Pay by card', cardBtn: 'Pay {amount} by card', cardSoon: 'Card payments open soon',
+      sumPaid: 'Fee: <b>{amount}</b> — payment details follow after you apply', sumFree: 'Nothing to pay',
+      sumVerify: 'Free — you upload proof of nationality securely after you apply', sumNone: 'Choose a membership type above',
+      sending: 'Sending…',
+      cardTitle: 'Pay by card', cardBtn: 'Pay {amount} by card',
       cardNote: 'Secure checkout opens in a new tab, handled by the payment provider. The Society never sees your card details.',
       bankTitle: 'Pay by bank transfer', acctName: 'Account name', sortCode: 'Sort code', acctNo: 'Account number', refK: 'Reference',
-      bankNote: 'Please use the reference exactly as shown — it is how the treasurer matches your payment to your application.',
-      hardship: 'Hardship fund: email the treasurer in confidence and the fee is waived, no questions asked.', again: 'Submit another application',
-      verifyEyebrow: 'Step 3 · Verification', verifyTitle: 'One last thing: proof of nationality',
-      verifyBodySaved: 'Within a few days we will email you at <b>{email}</b> asking for a photo of your Saudi passport or national ID (or your Cultural Bureau scholarship confirmation). Once checked, your membership is confirmed and the image is deleted — nothing is kept.',
-      verifyBodySend: 'Attach a photo of your Saudi passport or national ID (or your Cultural Bureau scholarship confirmation) to the email you send us. Once checked, your membership is confirmed and the image is deleted — nothing is kept.',
-      verifyNow: 'Prefer to send it now? Email it to {email} quoting your reference.',
-      dirNoMatch: 'No one matches that search.', dirEmpty: 'Profiles are being added — check back soon.'
+      dirNoMatch: 'No one matches that search.'
     },
     ar: {
-      sumPaid: 'ثم ادفع <b>{amount}</b> بالبطاقة أو بالتحويل البنكي', sumFree: 'لا توجد رسوم',
-      sumVerify: 'مجاناً — سنراسلك لطلب إثبات الجنسية', sumNone: 'اختر نوع العضوية أعلاه',
-      sending: 'جارٍ الإرسال…', eyebrowSaved: 'تم استلام الطلب', eyebrowSend: 'خطوة أخيرة', thanks: 'شكراً لك يا {name}.',
-      savedBody: 'وصل طلبك إلى اللجنة. سنؤكد عضويتك عبر البريد الإلكتروني على <b>{email}</b>.',
-      savedBodyFree: 'أصبحت على القائمة. ستصلك أخبار الفعاليات والدعوات على <b>{email}</b>.',
-      sendBody: 'تعذّر إرسال طلبك تلقائياً. أرسله إلى اللجنة من فضلك — يفتح الزر رسالة بريد معبّأة بكل البيانات، أو انسخ النص وألصقه في أي رسالة.',
-      stateSaved: 'تم الاستلام', stateSend: 'لم يُرسل بعد', refLabel: 'رقمك المرجعي', openMail: 'فتح تطبيق البريد', copyApp: 'نسخ الطلب',
-      copied: 'تم النسخ — ألصقه في رسالة بريد أو رسالة نصية إلى اللجنة.', copyFail: 'النسخ محجوب هنا. حدّد النص أدناه وانسخه بنفسك.', orWrite: 'أو راسلنا على',
-      payEyebrow: 'الخطوة ٣ · الدفع', payTitle: 'ادفع {amount} لتفعيل عضويتك',
-      payBody: 'ادفع بالبطاقة، أو بالتحويل البنكي مع ذكر رقمك المرجعي. تبدأ العضوية بمجرد مطابقة الدفعة — عادةً خلال يومي عمل.',
-      cardTitle: 'الدفع بالبطاقة', cardBtn: 'ادفع {amount} بالبطاقة', cardSoon: 'الدفع بالبطاقة يُتاح قريباً',
+      sumPaid: 'الرسوم: <b>{amount}</b> — تصلك تفاصيل الدفع بعد التقديم', sumFree: 'لا توجد رسوم',
+      sumVerify: 'مجاناً — ترفع إثبات الجنسية بأمان بعد التقديم', sumNone: 'اختر نوع العضوية أعلاه',
+      sending: 'جارٍ الإرسال…',
+      cardTitle: 'الدفع بالبطاقة', cardBtn: 'ادفع {amount} بالبطاقة',
       cardNote: 'تُفتح صفحة دفع آمنة في تبويب جديد عبر مزوّد الدفع. لا تطّلع الجمعية على بيانات بطاقتك أبداً.',
       bankTitle: 'الدفع بالتحويل البنكي', acctName: 'اسم الحساب', sortCode: 'رمز الفرع (Sort code)', acctNo: 'رقم الحساب', refK: 'المرجع',
-      bankNote: 'يرجى كتابة المرجع كما هو تماماً — فهو ما يستخدمه أمين الصندوق لمطابقة دفعتك بطلبك.',
-      hardship: 'يوجد صندوق للمساعدة: راسل أمين الصندوق بسرّية وسنعفيك من الرسوم دون أسئلة.', again: 'إرسال طلب آخر',
-      verifyEyebrow: 'الخطوة ٣ · إثبات الجنسية', verifyTitle: 'أمر أخير: إثبات الجنسية',
-      verifyBodySaved: 'خلال أيام قليلة سنراسلك على <b>{email}</b> لطلب صورة من جواز سفرك السعودي أو هويتك الوطنية (أو تأكيد الابتعاث من الملحقية الثقافية). بعد التحقق تُؤكَّد عضويتك وتُحذف الصورة — لا نحتفظ بشيء.',
-      verifyBodySend: 'أرفق صورة من جواز سفرك السعودي أو هويتك الوطنية (أو تأكيد الابتعاث من الملحقية الثقافية) بالرسالة التي سترسلها إلينا. بعد التحقق تُؤكَّد عضويتك وتُحذف الصورة — لا نحتفظ بشيء.',
-      verifyNow: 'تفضّل إرساله الآن؟ أرسله إلى {email} مع ذكر رقمك المرجعي.',
-      dirNoMatch: 'لا نتائج لهذا البحث.', dirEmpty: 'تجري إضافة الملفات — عد قريباً.'
+      dirNoMatch: 'لا نتائج لهذا البحث.'
     }
   };
   function t(key, vars) { var s = (T[lang] && T[lang][key] !== undefined) ? T[lang][key] : T.en[key]; if (vars) Object.keys(vars).forEach(function (k) { s = s.split('{' + k + '}').join(vars[k]); }); return s; }
@@ -58,25 +32,36 @@
   /* ── ideas board (Canny, or any embeddable board) ─────────────── */
   (function ideasBoard() {
     var board = $('ideas-board'); if (!board) return;
-    var cfg = SITE.ideas || {}, openLink = $('ideas-open'), pending = $('ideas-pending'), linkCard = $('ideas-link'), mainLink = $('ideas-open-main'), mail = $('ideas-pending-mail');
-    if (cfg.url) {
-      if (openLink) { openLink.href = cfg.url; openLink.hidden = false; }
-      if (mainLink) mainLink.href = cfg.url;
-      if (!cfg.cannyBoardToken && !cfg.embedUrl && linkCard) { linkCard.hidden = false; pending.hidden = true; }
-    }
-    if (mail) mail.innerHTML = (lang === 'ar' ? 'حتى ذلك الحين أرسل أفكارك إلى ' : 'Until then, send ideas to ') +
-      (SITE.email ? '<a href="mailto:' + esc(SITE.email) + '">' + esc(SITE.email) + '</a>' : '<span class="ph">[hello@address]</span>') +
-      (lang === 'ar' ? ' — وستُنقل إلى اللوحة عند فتحها.' : ' — they will be moved onto the board when it opens.');
+    var cfg = SITE.ideas || {}, linkCard = $('ideas-link'), mainLink = $('ideas-open-main');
+    if (mainLink && cfg.url) mainLink.href = cfg.url;
+    if (linkCard && !cfg.url) linkCard.hidden = true;
     if (cfg.cannyBoardToken) {
-      pending.hidden = true; if (linkCard) linkCard.hidden = true;
       /* Canny's loader, as published at developers.canny.io/install/widget/web */
       (function (w, d, i, s) { function l() { if (!d.getElementById(i)) { var f = d.getElementsByTagName(s)[0], e = d.createElement(s); e.type = 'text/javascript'; e.async = true; e.src = 'https://sdk.canny.io/sdk.js'; f.parentNode.insertBefore(e, f); } } if (typeof w.Canny !== 'function') { var c = function () { c.q.push(arguments); }; c.q = []; w.Canny = c; if (d.readyState === 'complete') l(); else w.addEventListener('load', l, false); } })(window, document, 'canny-jssdk', 'script');
       window.Canny('render', { boardToken: cfg.cannyBoardToken, basePath: location.pathname.replace(/\/$/, ''), ssoToken: null, theme: 'light' });
     } else if (cfg.embedUrl) {
-      pending.hidden = true; if (linkCard) linkCard.hidden = true;
       var fr = document.createElement('iframe'); fr.src = cfg.embedUrl; fr.title = lang === 'ar' ? 'لوحة الأفكار' : 'Ideas board'; fr.loading = 'lazy'; fr.setAttribute('allow', 'clipboard-write');
       board.appendChild(fr);
     }
+  })();
+
+  (function langSwitch() {
+    function target(to) {
+      var p = location.pathname, isAr = /^\/ar(\/|$)/.test(p);
+      if (to === 'ar') return (isAr ? p : '/ar' + p) + location.search + location.hash;
+      return (isAr ? (p.replace(/^\/ar/, '') || '/') : p) + location.search + location.hash;
+    }
+    ['en', 'ar'].forEach(function (id) {
+      var a = $(id); if (!a) return;
+      var known = a.getAttribute('href') || '';
+      // only step in where the built link does not already name this exact page
+      a.addEventListener('click', function (e) {
+        if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button) return;
+        var want = target(id), base = want.split('?')[0].split('#')[0];
+        if (known === base && !location.search && !location.hash) return;
+        e.preventDefault(); location.href = want;
+      });
+    });
   })();
 
   /* ── header: compact capsule once the page scrolls ───────────── */
@@ -166,7 +151,6 @@
     { id: 'associate', price: SITE.fees.associate != null ? SITE.fees.associate : 15, en: 'Associate membership', ar: 'العضوية المنتسبة' },
     { id: 'friend', price: 0, en: 'Mailing list & volunteering', ar: 'القائمة البريدية والتطوّع' }
   ];
-  var STEP3 = { pay: ['Payment', 'الدفع'], verify: ['Verification', 'إثبات الجنسية'], none: ['All set', 'اكتمل'] };
   var STATUS = { undergraduate: 'Undergraduate', masters: "Taught postgraduate (Master's)", dphil: 'Research postgraduate (DPhil)', visiting: 'Visiting student or researcher', staff: 'University staff or researcher', alumni: 'Alumni', other: 'Other' };
   var VOL = { events: 'Events', media: 'Media & design', partnerships: 'Sponsorship & partnerships', welfare: 'Welfare & welcome', academic: 'Academic & careers' };
   var busy = false, last = null;
@@ -174,13 +158,11 @@
   function amountOf(tier) { return '£' + tier.price; }
   function amountHtml(tier) { var a = esc(amountOf(tier)); return '<bdi>' + (SITE.fees.confirmed ? a : '<span class="ph">[' + a + ']</span>') + '</bdi>'; }
   function selectedTier() { var r = form.querySelector('input[name="tier"]:checked'); return r ? tierOf(r.value) : null; }
-  function step3Kind(tier) { return !tier ? 'pay' : tier.price ? 'pay' : tier.verify ? 'verify' : 'none'; }
   function syncTier() {
     var tier = selectedTier();
     document.querySelectorAll('#tiers .tier').forEach(function (l) { l.classList.toggle('sel', l.querySelector('input').checked); });
     $('email-hint').hidden = !(tier && (tier.id === 'student' || tier.id === 'saudi'));
     $('sum').innerHTML = !tier ? t('sumNone') : tier.price ? t('sumPaid', { amount: amountHtml(tier) }) : tier.verify ? t('sumVerify') : t('sumFree');
-    $('step3-label').textContent = STEP3[step3Kind(tier)][lang === 'ar' ? 1 : 0];
     if (tier) { $('tier-msg').style.display = 'none'; $('tiers').classList.remove('err'); }
   }
   form.addEventListener('change', function (e) { if (e.target.name === 'tier') syncTier(); if (e.target.name === 'status') syncStatus(true); });
@@ -218,15 +200,15 @@
     en: {
       eyebrowNew: 'Application received', eyebrowAgain: 'You have already applied', eyebrowMember: 'You are already a member',
       thanks: 'Thank you, {name}.', welcomeBack: 'Welcome back, {name}.',
-      ledeNew: 'Your application is with the committee. Keep your membership number: you will use it for payments, members-only events and anything you send us.',
+      ledeNew: 'Your application is with the committee. Keep your membership number: quote it in anything you send us.',
       ledeAgain: 'We already have your application, so nothing new was submitted. Here is where it stands.',
       ledeMember: 'This email address already belongs to an active membership.',
       org: 'Oxford Saudi Society', noLabel: 'Membership number', nameL: 'Name', typeL: 'Membership', appliedL: 'Applied', copy: 'Copy number', copied: 'Copied',
       st: { pending: 'Pending review', info_requested: 'Question from the committee', approved: 'Active member', declined: 'Not approved', revoked: 'Ended', expired: 'Expired' },
       qL: 'Your place in the review queue', qP: 'The committee reviews applications in the order they arrive. You will get an email as soon as yours is decided.',
       t1: 'Application received', t2: 'Committee review', t3pay: 'Payment of {amount}', t3verify: 'Proof of Saudi nationality', t4: 'Membership active',
-      payH: 'Pay {amount} to complete your membership', payP: 'Use your membership number as the payment reference so the treasurer can match it. Membership is approved once the payment is matched.',
-      verifyH: 'Proof of Saudi nationality', verifyP: 'The committee will email you to check Saudi nationality (passport, national ID or Cultural Bureau scholarship confirmation). Please do not send any document until we ask. It is checked and then deleted.',
+      payH: 'Membership fee: {amount}', payP: 'Use your membership number as the payment reference so the treasurer can match it. Membership is approved once the payment is confirmed.', payLater: 'The treasurer will email you how to pay. Use your membership number as the payment reference; membership is approved once the payment is confirmed.',
+      verifyH: 'Proof of Saudi nationality', verifyP: 'Sign in to your membership page and upload one proof of Saudi nationality: the photo page of your passport, your national ID or your Cultural Bureau scholarship confirmation. It is deleted as soon as the committee has checked it. Please do not email identity documents.', verifyBtn: 'Upload proof securely',
       mailNote: 'We have sent a confirmation to <b dir="ltr">{email}</b>. Its link lets you follow your application and answer any question from the committee.',
       track: 'Track my application', print: 'Save or print', again: 'Submit another application',
       failH: 'Your application was not submitted', fail: 'We could not reach the membership system just now. Your answers are still in the form: please press Submit again in a minute.', failMail: 'If it keeps failing, email {email}.',
@@ -235,15 +217,15 @@
     ar: {
       eyebrowNew: 'تم استلام الطلب', eyebrowAgain: 'لقد تقدّمت بطلب من قبل', eyebrowMember: 'أنت عضو بالفعل',
       thanks: 'شكرًا لك يا {name}.', welcomeBack: 'أهلًا بعودتك يا {name}.',
-      ledeNew: 'طلبك الآن لدى اللجنة. احتفظ برقم عضويتك؛ ستستخدمه في الدفع وحجز فعاليات الأعضاء وفي أي مراسلة معنا.',
+      ledeNew: 'طلبك الآن لدى اللجنة. احتفظ برقم عضويتك واذكره في أي مراسلة معنا.',
       ledeAgain: 'طلبك موجود لدينا، فلم يُرسل طلب جديد. هذا وضع طلبك الآن.',
       ledeMember: 'هذا البريد مرتبط بعضوية فعّالة.',
       org: 'الجمعية السعودية في أكسفورد', noLabel: 'رقم العضوية', nameL: 'الاسم', typeL: 'العضوية', appliedL: 'تاريخ الطلب', copy: 'نسخ الرقم', copied: 'تم النسخ',
       st: { pending: 'قيد المراجعة', info_requested: 'سؤال من اللجنة', approved: 'عضو فعّال', declined: 'لم تتم الموافقة', revoked: 'منتهية', expired: 'منتهية الصلاحية' },
       qL: 'ترتيبك في قائمة المراجعة', qP: 'تراجع اللجنة الطلبات بحسب ترتيب وصولها، وستصلك رسالة بالبريد فور البت في طلبك.',
       t1: 'تم استلام الطلب', t2: 'مراجعة اللجنة', t3pay: 'دفع {amount}', t3verify: 'إثبات الجنسية السعودية', t4: 'تفعيل العضوية',
-      payH: 'ادفع {amount} لإتمام عضويتك', payP: 'اكتب رقم عضويتك مرجعًا للدفع ليتمكن أمين الصندوق من مطابقته. تُعتمد العضوية بعد مطابقة الدفعة.',
-      verifyH: 'إثبات الجنسية السعودية', verifyP: 'ستراسلك اللجنة للتحقق من الجنسية السعودية (جواز السفر أو الهوية الوطنية أو تأكيد الابتعاث من الملحقية). يرجى عدم إرسال أي وثيقة قبل أن نطلبها، وتُحذف بعد التحقق.',
+      payH: 'رسوم العضوية: {amount}', payP: 'اكتب رقم عضويتك مرجعًا للدفع ليتمكن أمين الصندوق من مطابقته. تُعتمد العضوية بعد تأكيد الدفعة.', payLater: 'سيراسلك أمين الصندوق بطريقة الدفع. اكتب رقم عضويتك مرجعًا للدفع، وتُعتمد العضوية بعد تأكيد الدفعة.',
+      verifyH: 'إثبات الجنسية السعودية', verifyP: 'سجّل الدخول إلى صفحة عضويتك وارفع مستندًا واحدًا يثبت الجنسية السعودية: صفحة الصورة في جواز السفر، أو الهوية الوطنية، أو تأكيد الابتعاث من الملحقية الثقافية. يُحذف المستند فور تحقق اللجنة منه. يرجى عدم إرسال وثائق الهوية بالبريد الإلكتروني.', verifyBtn: 'ارفع الإثبات بأمان',
       mailNote: 'أرسلنا تأكيدًا إلى <b dir="ltr">{email}</b>، ويتيح لك الرابط فيه متابعة طلبك والإجابة عن أي سؤال من اللجنة.',
       track: 'تابع طلبي', print: 'حفظ أو طباعة', again: 'تقديم طلب آخر',
       failH: 'لم يُرسل طلبك', fail: 'تعذّر الوصول إلى نظام العضوية الآن. إجاباتك ما زالت في النموذج؛ اضغط «إرسال الطلب» مرة أخرى بعد دقيقة.', failMail: 'إن تكرر الخطأ فراسلنا على {email}.',
@@ -295,7 +277,7 @@
     var f = $('join-fail'); if (f) f.hidden = true;
     last = { app: app, result: res.data.result, member: res.data.member }; renderDone();
   });
-  function setSteps(stage) { document.querySelectorAll('#steps li').forEach(function (li) { var n = +li.getAttribute('data-step'); li.classList.remove('on', 'done'); if (stage === 'form') { if (n < 4) li.classList.add('on'); } else if (stage === 'pay') li.classList.add(n < 4 ? 'done' : 'on'); else li.classList.add('done'); }); }
+  function setSteps(stage) { document.querySelectorAll('#steps li').forEach(function (li) { li.classList.remove('on', 'done'); li.classList.add(stage === 'form' ? 'on' : 'done'); }); }
   function renderDone() {
     var app = last.app, mem = last.member, kind = last.result, tier = tierOf(mem.tier) || selectedTier() || TIERS[0];
     var first = esc((app.name || mem.name || '').split(/\s+/)[0]);
@@ -315,24 +297,25 @@
       var steps = [[m('t1'), 'done', fmtDay(mem.appliedAt)], [m('t2'), 'now', '']];
       if (third) steps.push([third, paid && mem.paymentStatus === 'received' ? 'done' : '', '']);
       steps.push([m('t4'), '', '']);
-      h += '<ol class="track">' + steps.map(function (s, i) { return '<li class="' + s[1] + '"><span class="tk">' + (s[1] === 'done' ? '✓' : num(i + 1)) + '</span><span class="tt">' + esc(s[0]) + (s[2] ? '<small>' + esc(s[2]) + '</small>' : '') + '</span></li>'; }).join('') + '</ol>';
+      h += '<ol class="track">' + steps.map(function (s, i) { return '<li class="' + s[1] + '"><span class="tk" aria-hidden="true">' + (s[1] === 'done' ? '✓' : '') + '</span><span class="tt">' + esc(s[0]) + (s[2] ? '<small>' + esc(s[2]) + '</small>' : '') + '</span></li>'; }).join('') + '</ol>';
     }
     if (!isMember && paid) {
-      var link = SITE.payLinks[tier.id] || '';
-      h += '<div class="nextpanel"><h3 class="disp">' + esc(m('payH', { amount: amount })) + '</h3><p>' + esc(m('payP')) + '</p><div class="paygrid">';
-      h += '<div class="card tinted"><h3>' + esc(t('cardTitle')) + '</h3><p class="big">' + amountHtml(tier) + '</p>' + (link ? '<a class="btn btn-p" href="' + esc(link) + '" target="_blank" rel="noopener">' + t('cardBtn', { amount: esc(amount) }) + '</a>' : '<span class="btn btn-p is-off ph" aria-disabled="true">' + esc(t('cardSoon')) + '</span>') + '<p style="margin-top:14px;font-size:13.5px">' + esc(t('cardNote')) + '</p></div>';
-      h += '<div class="card"><h3>' + esc(t('bankTitle')) + '</h3><dl class="kv"><dt>' + esc(t('acctName')) + '</dt><dd><span class="' + (SITE.bank.sortCode ? '' : 'ph') + '">' + esc(SITE.bank.accountName || 'Oxford Saudi Society') + '</span></dd>';
-      h += '<dt>' + esc(t('sortCode')) + '</dt><dd>' + phOr(SITE.bank.sortCode, '[00-00-00]') + '</dd><dt>' + esc(t('acctNo')) + '</dt><dd>' + phOr(SITE.bank.accountNumber, '[00000000]') + '</dd>';
-      h += '<dt>' + esc(t('refK')) + '</dt><dd><b dir="ltr">' + esc(mem.memberNo) + '</b></dd></dl></div></div>';
-      var tm = SITE.treasurerEmail || SITE.email || '';
-      h += '<p class="muted" style="font-size:13px;margin-top:14px">' + esc(t('hardship')) + (tm ? ' <a href="mailto:' + esc(tm) + '">' + esc(tm) + '</a>' : '') + '</p></div>';
+      var link = (SITE.payLinks || {})[tier.id] || '', bank = SITE.bank || {}, hasBank = !!(bank.sortCode && bank.accountNumber);
+      h += '<div class="nextpanel"><h3 class="disp">' + esc(m('payH', { amount: amount })) + '</h3><p>' + esc(m(link || hasBank ? 'payP' : 'payLater')) + '</p>';
+      if (link || hasBank) {
+        h += '<div class="paygrid">';
+        if (link) h += '<div class="card tinted"><h3>' + esc(t('cardTitle')) + '</h3><p class="big">' + amountHtml(tier) + '</p><a class="btn btn-p" href="' + esc(link) + '" target="_blank" rel="noopener">' + t('cardBtn', { amount: esc(amount) }) + '</a><p style="margin-top:14px;font-size:13.5px">' + esc(t('cardNote')) + '</p></div>';
+        if (hasBank) h += '<div class="card"><h3>' + esc(t('bankTitle')) + '</h3><dl class="kv"><dt>' + esc(t('acctName')) + '</dt><dd>' + esc(bank.accountName || 'Oxford Saudi Society') + '</dd><dt>' + esc(t('sortCode')) + '</dt><dd dir="ltr">' + esc(bank.sortCode) + '</dd><dt>' + esc(t('acctNo')) + '</dt><dd dir="ltr">' + esc(bank.accountNumber) + '</dd><dt>' + esc(t('refK')) + '</dt><dd><b dir="ltr">' + esc(mem.memberNo) + '</b></dd></dl></div>';
+        h += '</div>';
+      }
+      h += '</div>';
     } else if (!isMember && verify && mem.nationalityStatus !== 'verified') {
-      h += '<div class="nextpanel"><h3 class="disp">' + esc(m('verifyH')) + '</h3><p>' + esc(m('verifyP')) + '</p></div>';
+      h += '<div class="nextpanel"><h3 class="disp">' + esc(m('verifyH')) + '</h3><p>' + esc(m('verifyP')) + '</p><p class="cta-row"><a class="btn btn-p" href="' + (lang === 'ar' ? '/ar' : '') + '/account/">' + esc(m('verifyBtn')) + '</a></p></div>';
     }
     h += '<p class="muted done-mail">' + m('mailNote', { email: esc(app.email) }) + '</p>';
     h += '<div class="done-actions"><a class="btn btn-p" href="' + (lang === 'ar' ? '/ar' : '') + '/account/">' + esc(m('track')) + '</a><button type="button" class="btn btn-s" id="done-print">' + esc(m('print')) + '</button></div>';
     h += '<p class="again"><a href="#join-form-band" id="again">' + esc(m('again')) + '</a></p>';
-    done.innerHTML = h; done.hidden = false; form.hidden = true; setSteps(isMember ? 'all' : (paid || verify) ? 'pay' : 'all');
+    done.innerHTML = h; done.hidden = false; form.hidden = true; setSteps('all');
     $('mcopy').addEventListener('click', function () { var b = this; var p = (navigator.clipboard && navigator.clipboard.writeText) ? navigator.clipboard.writeText(mem.memberNo) : Promise.reject(); p.then(function () { b.textContent = m('copied'); setTimeout(function () { b.textContent = m('copy'); }, 2000); }, function () { var r = document.createRange(); r.selectNodeContents($('mno')); var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r); }); });
     $('done-print').addEventListener('click', function () { window.print(); });
     $('again').addEventListener('click', function (ev) { ev.preventDefault(); last = null; form.reset(); syncStatus(false); done.hidden = true; form.hidden = false; $('err-sum').classList.remove('on'); form.querySelectorAll('.f.err').forEach(function (f) { f.classList.remove('err'); }); syncTier(); setSteps('form'); $('join-form-band').scrollIntoView({ behavior: 'smooth' }); });

@@ -1,58 +1,57 @@
 {
-  "id": "oss-002",
-  "slug": "hilary-term-welcome-gathering",
-  "order": 2,
-  "title": {
-    "en": "Hilary Term Welcome Gathering",
-    "ar": "الاجتماع الترحيبي ببداية فصل هيلاري"
+ "id": "oss-002",
+ "slug": "hilary-term-welcome-gathering",
+ "order": 2,
+ "title": {
+  "en": "Hilary Term Welcome Gathering",
+  "ar": "اللقاء الترحيبي ببداية فصل هيلاري"
+ },
+ "description": {
+  "en": "A friendly start to Hilary Term, connecting current students and new friends and introducing the society’s term activities.",
+  "ar": "لقاء تعارفي بمناسبة بداية فصل هيلاري، يجمع الطلبة والأصدقاء ويستعرض أبرز أنشطة الجمعية لهذا الفصل."
+ },
+ "agenda": {
+  "en": [
+   "Meet and greet",
+   "term preview",
+   "informal networking."
+  ],
+  "ar": [
+   "التعارف",
+   "استعراض فعاليات الفصل",
+   "تواصل بين الحضور."
+  ]
+ },
+ "category": "community",
+ "startLocal": "2027-01-20T18:30:00",
+ "endLocal": "2027-01-20T20:30:00",
+ "timezone": "Europe/London",
+ "venueKey": "noa-annexe",
+ "audience": "public",
+ "price": {
+  "status": "free",
+  "currency": "GBP",
+  "amountMinor": 0
+ },
+ "bookingRequired": true,
+ "registrationMode": "interest_only",
+ "eventStatus": "proposed",
+ "visibility": "published_as_proposal",
+ "capacity": null,
+ "waitlistEnabled": false,
+ "dateNotice": {
+  "en": "Date and venue are provisional and not yet confirmed.",
+  "ar": "التاريخ والمكان مبدئيان ولم يُؤكَّدا بعد."
+ },
+ "image": {
+  "web": "/assets/events/web/event-02-hilary-term-welcome-gathering.webp",
+  "thumb": "/assets/events/thumbs/event-02-hilary-term-welcome-gathering.webp",
+  "alt": {
+   "en": "Abstract brand-colour graphic for a community gathering.",
+   "ar": "تصميم تجريدي بألوان الجمعية للقاء مجتمعي."
   },
-  "description": {
-    "en": "A friendly start to Hilary Term, connecting current students and new friends and introducing the society’s term activities.",
-    "ar": "لقاء تعارفي بمناسبة بداية فصل هيلاري، يجمع الطلبة والأصدقاء ويستعرض أبرز أنشطة الجمعية لهذا الفصل."
-  },
-  "agenda": {
-    "en": [
-      "Meet and greet",
-      "term preview",
-      "informal networking."
-    ],
-    "ar": [
-      "التعارف",
-      "استعراض فعاليات الفصل",
-      "تواصل بين الحضور."
-    ]
-  },
-  "category": "community",
-  "startLocal": "2027-01-20T18:30:00",
-  "endLocal": "2027-01-20T20:30:00",
-  "timezone": "Europe/London",
-  "venueKey": "noa-annexe",
-  "audience": "public",
-  "price": {
-    "status": "free",
-    "currency": "GBP",
-    "amountMinor": 0
-  },
-  "bookingRequired": true,
-  "registrationMode": "interest_only",
-  "eventStatus": "proposed",
-  "visibility": "published_as_proposal",
-  "capacity": null,
-  "waitlistEnabled": false,
-  "dateNotice": {
-    "en": "Date and venue are proposed and not confirmed.",
-    "ar": "التاريخ والمكان مقترحان ولم يُؤكّدا بعد."
-  },
-  "image": {
-    "web": "/assets/events/web/event-02-hilary-term-welcome-gathering.webp",
-    "thumb": "/assets/events/thumbs/event-02-hilary-term-welcome-gathering.webp",
-    "alt": {
-      "en": "Illustrated concept artwork for Hilary Term Welcome Gathering, Oxford Saudi Society.",
-      "ar": "تصميم توضيحي لفعالية الاجتماع الترحيبي ببداية فصل هيلاري للجمعية السعودية بجامعة أكسفورد."
-    },
-    "credit": "AI-generated concept artwork supplied through the society planning conversation.",
-    "reviewNote": "AI-generated illustrative image, not a photograph of an actual event; inspect logos/flags for authenticity.",
-    "approved": false
-  },
-  "published": true
+  "credit": "Neutral event graphic in the Society brand colours (no photograph, text or emblem). Replace with approved artwork when available.",
+  "approved": true
+ },
+ "published": true
 }

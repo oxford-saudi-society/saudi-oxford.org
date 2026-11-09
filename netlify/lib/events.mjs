@@ -94,18 +94,19 @@ export async function recordInterest(q, { ev, email, name, lang, marketing, priv
 }
 
 /* ── bookings ───────────────────────────────────────────────────── */
-export async function requestBooking(q, { ev, email, name, lang, marketing, privacyVersion, site, wantWaitlist }) {
+export const cleanRequirements = (v) => String(v || '').replace(/[\u0000-\u0008\u000b-\u001f\u007f]/g, '').replace(/\s+/g, ' ').trim().slice(0, 500);
+export async function requestBooking(q, { ev, email, name, lang, marketing, privacyVersion, site, wantWaitlist, requirements }) {
   const st = stateOf(ev, await counts(q, ev.id));
   if (!(st === 'book' || st === 'waitlist')) fail(400, 'not_open');
   if (ev.audience === 'members') fail(403, 'member_required'); // members must be signed in; verified by the caller before reaching here
   const kind = st === 'waitlist' || wantWaitlist ? 'waitlist' : 'booking';
-  const token = await createPending(q, { kind, email, eventId: ev.id, lang, ttlMin: 60, payload: { name, marketing: !!marketing, privacyVersion } });
+  const token = await createPending(q, { kind, email, eventId: ev.id, lang, ttlMin: 60, payload: { name, marketing: !!marketing, privacyVersion, requirements: cleanRequirements(requirements) || undefined } });
   await enqueue(q, { kind: kind === 'waitlist' ? 'verify_waitlist' : 'verify_booking', to: email, lang, eventId: ev.id, vars: { name, ev: titled(ev, lang), link: `${site}/api/verify?t=${token}`, siteUrl: site } });
   return { status: 'pending_verification' };
 }
 
 /* The seat decision. Caller must hold the event row lock (getEvent with lock) inside a transaction. */
-export async function assignSeat(q, { ev, email, name, lang, marketing, privacyVersion, site, memberFlag, source }) {
+export async function assignSeat(q, { ev, email, name, lang, marketing, privacyVersion, site, memberFlag, source, requirements }) {
   const c = await counts(q, ev.id);
   const st = stateOf(ev, c);
   if (!(st === 'book' || st === 'waitlist' || st === 'full')) return { result: 'not_open', state: st };
@@ -128,6 +129,8 @@ export async function assignSeat(q, { ev, email, name, lang, marketing, privacyV
       VALUES ($1,$2,$3,'booking',$4,$5,$6,$7,$8, CASE WHEN $8 THEN now() ELSE NULL END, CASE WHEN $4 = 'confirmed' THEN now() ELSE NULL END, $9, $10) RETURNING *`,
       [ev.id, email, name, status, lang, !!memberFlag, privacyVersion, !!marketing, ev.version, source || 'web'])).rows[0];
   }
+  const note = cleanRequirements(requirements);
+  if (note) { await q.query('UPDATE oss_registrations SET requirements = $2 WHERE id = $1', [reg.id, note]); reg.requirements = note; }
   const u = urls(site, lang, ev);
   if (status === 'confirmed') {
     const ticket = await issueTicket(q, reg.id);

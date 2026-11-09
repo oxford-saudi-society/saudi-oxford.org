@@ -1,58 +1,57 @@
 {
-  "id": "oss-009",
-  "slug": "saudi-national-day-97",
-  "order": 9,
-  "title": {
-    "en": "97th Saudi National Day Celebration",
-    "ar": "دارنا عزّنا — احتفال اليوم الوطني السعودي الـ٩٧"
+ "id": "oss-009",
+ "slug": "saudi-national-day-97",
+ "order": 9,
+ "title": {
+  "en": "97th Saudi National Day Celebration",
+  "ar": "دارنا عزّنا — احتفال اليوم الوطني السعودي الـ٩٧"
+ },
+ "description": {
+  "en": "Celebrate the 97th Saudi National Day in Oxford through national heritage, community stories and a social gathering.",
+  "ar": "نحتفي باليوم الوطني السعودي الـ٩٧ في أكسفورد، ونستحضر مسيرة الوطن وموروثه وسط أبناء وبنات المملكة وأصدقائهم."
+ },
+ "agenda": {
+  "en": [
+   "National Day reflections",
+   "culture",
+   "networking."
+  ],
+  "ar": [
+   "مناسبة وطنية",
+   "فقرات ثقافية",
+   "لقاء اجتماعي."
+  ]
+ },
+ "category": "culture",
+ "startLocal": "2027-09-23T18:00:00",
+ "endLocal": "2027-09-23T21:00:00",
+ "timezone": "Europe/London",
+ "venueKey": "noa-main-hall",
+ "audience": "public",
+ "price": {
+  "status": "free",
+  "currency": "GBP",
+  "amountMinor": 0
+ },
+ "bookingRequired": true,
+ "registrationMode": "interest_only",
+ "eventStatus": "proposed",
+ "visibility": "published_as_proposal",
+ "capacity": null,
+ "waitlistEnabled": false,
+ "dateNotice": {
+  "en": "Date and venue are provisional and not yet confirmed.",
+  "ar": "التاريخ والمكان مبدئيان ولم يُؤكَّدا بعد."
+ },
+ "image": {
+  "web": "/assets/events/web/event-09-saudi-national-day-97.webp",
+  "thumb": "/assets/events/thumbs/event-09-saudi-national-day-97.webp",
+  "alt": {
+   "en": "Abstract brand-colour graphic for a cultural event.",
+   "ar": "تصميم تجريدي بألوان الجمعية لفعالية ثقافية."
   },
-  "description": {
-    "en": "Celebrate the 97th Saudi National Day in Oxford through national heritage, community stories and a social gathering.",
-    "ar": "نحتفي باليوم الوطني السعودي الـ٩٧ في أكسفورد، ونستحضر مسيرة الوطن وموروثه وسط أبناء وبنات المملكة وأصدقائهم."
-  },
-  "agenda": {
-    "en": [
-      "National Day reflections",
-      "culture",
-      "networking."
-    ],
-    "ar": [
-      "مناسبة وطنية",
-      "فقرات ثقافية",
-      "لقاء اجتماعي."
-    ]
-  },
-  "category": "culture",
-  "startLocal": "2027-09-23T18:00:00",
-  "endLocal": "2027-09-23T21:00:00",
-  "timezone": "Europe/London",
-  "venueKey": "noa-main-hall",
-  "audience": "public",
-  "price": {
-    "status": "free",
-    "currency": "GBP",
-    "amountMinor": 0
-  },
-  "bookingRequired": true,
-  "registrationMode": "interest_only",
-  "eventStatus": "proposed",
-  "visibility": "published_as_proposal",
-  "capacity": null,
-  "waitlistEnabled": false,
-  "dateNotice": {
-    "en": "Date and venue are proposed and not confirmed.",
-    "ar": "التاريخ والمكان مقترحان ولم يُؤكّدا بعد."
-  },
-  "image": {
-    "web": "/assets/events/web/event-09-saudi-national-day-97.webp",
-    "thumb": "/assets/events/thumbs/event-09-saudi-national-day-97.webp",
-    "alt": {
-      "en": "Illustrated concept artwork for 97th Saudi National Day Celebration, Oxford Saudi Society.",
-      "ar": "تصميم توضيحي لفعالية دارنا عزّنا — احتفال اليوم الوطني السعودي الـ٩٧ للجمعية السعودية بجامعة أكسفورد."
-    },
-    "credit": "AI-generated concept artwork supplied through the society planning conversation.",
-    "reviewNote": "AI-generated illustrative image, not a photograph of an actual event; inspect logos/flags for authenticity.",
-    "approved": false
-  },
-  "published": true
+  "credit": "Neutral event graphic in the Society brand colours (no photograph, text or emblem). Replace with approved artwork when available.",
+  "approved": true
+ },
+ "published": true
 }

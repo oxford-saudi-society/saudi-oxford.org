@@ -1,58 +1,57 @@
 {
-  "id": "oss-005",
-  "slug": "oxford-spring-gathering",
-  "order": 5,
-  "title": {
-    "en": "Oxford Spring Gathering",
-    "ar": "اجتماع الربيع في أكسفورد"
+ "id": "oss-005",
+ "slug": "oxford-spring-gathering",
+ "order": 5,
+ "title": {
+  "en": "Oxford Spring Gathering",
+  "ar": "اللقاء الربيعي في أكسفورد"
+ },
+ "description": {
+  "en": "A relaxed spring gathering outdoors in Oxford, with opportunities to meet new friends and enjoy the season together.",
+  "ar": "لقاء ربيعي في حدائق أكسفورد، وفرصة للتعارف وقضاء وقت ممتع في الهواء الطلق."
+ },
+ "agenda": {
+  "en": [
+   "Welcome",
+   "outdoor conversation",
+   "social activities."
+  ],
+  "ar": [
+   "تعارف",
+   "جلسة في الهواء الطلق",
+   "أنشطة اجتماعية خفيفة."
+  ]
+ },
+ "category": "community",
+ "startLocal": "2027-04-25T14:00:00",
+ "endLocal": "2027-04-25T17:00:00",
+ "timezone": "Europe/London",
+ "venueKey": "university-parks",
+ "audience": "public",
+ "price": {
+  "status": "free",
+  "currency": "GBP",
+  "amountMinor": 0
+ },
+ "bookingRequired": false,
+ "registrationMode": "none",
+ "eventStatus": "proposed",
+ "visibility": "published_as_proposal",
+ "capacity": null,
+ "waitlistEnabled": false,
+ "dateNotice": {
+  "en": "Date and venue are provisional and not yet confirmed.",
+  "ar": "التاريخ والمكان مبدئيان ولم يُؤكَّدا بعد."
+ },
+ "image": {
+  "web": "/assets/events/web/event-05-oxford-spring-gathering.webp",
+  "thumb": "/assets/events/thumbs/event-05-oxford-spring-gathering.webp",
+  "alt": {
+   "en": "Abstract brand-colour graphic for a community gathering.",
+   "ar": "تصميم تجريدي بألوان الجمعية للقاء مجتمعي."
   },
-  "description": {
-    "en": "A relaxed spring gathering outdoors in Oxford, with opportunities to meet new friends and enjoy the season together.",
-    "ar": "اجتماع ربيعي في حدائق أكسفورد، وفرصة للتعارف وقضاء وقت ممتع في الهواء الطلق."
-  },
-  "agenda": {
-    "en": [
-      "Welcome",
-      "outdoor conversation",
-      "social activities."
-    ],
-    "ar": [
-      "تعارف",
-      "جلسة في الهواء الطلق",
-      "أنشطة اجتماعية خفيفة."
-    ]
-  },
-  "category": "community",
-  "startLocal": "2027-04-25T14:00:00",
-  "endLocal": "2027-04-25T17:00:00",
-  "timezone": "Europe/London",
-  "venueKey": "university-parks",
-  "audience": "public",
-  "price": {
-    "status": "free",
-    "currency": "GBP",
-    "amountMinor": 0
-  },
-  "bookingRequired": false,
-  "registrationMode": "none",
-  "eventStatus": "proposed",
-  "visibility": "published_as_proposal",
-  "capacity": null,
-  "waitlistEnabled": false,
-  "dateNotice": {
-    "en": "Date and venue are proposed and not confirmed.",
-    "ar": "التاريخ والمكان مقترحان ولم يُؤكّدا بعد."
-  },
-  "image": {
-    "web": "/assets/events/web/event-05-oxford-spring-gathering.webp",
-    "thumb": "/assets/events/thumbs/event-05-oxford-spring-gathering.webp",
-    "alt": {
-      "en": "Illustrated concept artwork for Oxford Spring Gathering, Oxford Saudi Society.",
-      "ar": "تصميم توضيحي لفعالية اجتماع الربيع في أكسفورد للجمعية السعودية بجامعة أكسفورد."
-    },
-    "credit": "AI-generated concept artwork supplied through the society planning conversation.",
-    "reviewNote": "AI-generated illustrative image, not a photograph of an actual event; inspect logos/flags for authenticity.",
-    "approved": false
-  },
-  "published": true
+  "credit": "Neutral event graphic in the Society brand colours (no photograph, text or emblem). Replace with approved artwork when available.",
+  "approved": true
+ },
+ "published": true
 }

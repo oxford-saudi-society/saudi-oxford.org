@@ -55,7 +55,11 @@ for (const page of pages) {
     c($('.ev-detail').length === 1 && $('.ev-art img[alt]').length === 1, 'event page needs one detail block with alt text');
     c($('#reg-cta').length === 1 && $('#reg-dialog').length === 1, 'event page needs the registration control and dialog');
     c(!/Your seat is confirmed|seat is confirmed/i.test(text), 'event page must not claim a confirmed seat');
-    if ($('.ev-detail').attr('data-status') === 'proposed') c(/Proposed|مقترح/.test($('#reg-panel').text() + $('.status').text()), 'proposed event must say so');
+    if ($('.ev-detail').attr('data-status') === 'proposed') { const all = $('#event-detail').text(); const n = (all.match(/Proposed — Not Confirmed|مبدئي — بانتظار التأكيد/g) || []).length;
+      c(/Proposed — Not Confirmed|مبدئي — بانتظار التأكيد/.test($('#ev-banner').text()), 'proposed event must say so in its banner');
+      c(n === 1, 'the proposed notice appears once per event page, not ' + n + ' times');
+      c($('#event-detail .etags li[data-k="booking"]').length === 0, 'an unconfirmed event must not say booking is required');
+      c(!/Concept artwork|صورة تصوّرية/.test(all), 'no concept-artwork label'); }
     c($('a[href$="/event.ics"]').length === 1 && exists($('a[href$="/event.ics"]').attr('href')), 'event page needs its .ics file');
   }
   if (route === 'events' && !isEventPage) {

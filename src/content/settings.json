@@ -24,15 +24,11 @@
   "social": {
     "x": "https://x.com/SaudisOxford",
     "facebook": "https://www.facebook.com/p/Saudi-Student-Club-in-Oxford-100079995280324/",
-    "linkedin": "https://www.linkedin.com/in/saudi-students-club-in-oxford-336458233/",
-    "instagram": ""
+    "linkedin": "https://www.linkedin.com/in/saudi-students-club-in-oxford-336458233/"
   },
   "privacy": {
-    "retention": "",
-    "hosting": "Netlify (hosting) and GitHub (content storage)",
-    "version": "2026-11-08"
+    "version": "2026-11-09"
   },
-  "showSupporters": false,
   "ideas": {
     "cannyBoardToken": "",
     "url": "https://oxford-saudi-society.canny.io/ideas-or-events-suggestions",
@@ -42,8 +38,8 @@
     "cloudflareToken": ""
   },
   "subtitle": {
-    "en": "University of Oxford",
-    "ar": "جامعة أكسفورد"
+    "en": "A student community in Oxford",
+    "ar": "مجتمع طلابي في أكسفورد"
   },
   "membershipEmail": "membership@oxsss.org",
   "presidentEmail": "president@oxsss.org",

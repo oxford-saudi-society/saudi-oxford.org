@@ -30,16 +30,16 @@ const BASE = (settings.domain || 'https://oxsss.org').replace(/\/$/, '');
 const ROUTES = [
   { id: 'home', path: '', title: { en: 'Oxford Saudi Society', ar: 'الجمعية السعودية في أكسفورد' },
     desc: { en: 'A home for Saudi culture in the heart of Oxford. Events, membership, volunteering and community for Saudi students, researchers, alumni and friends at the University of Oxford.',
-            ar: 'بيت للثقافة السعودية في قلب أكسفورد. فعاليات وعضوية وتطوّع ومجتمع للطلبة والباحثين والخريجين والأصدقاء السعوديين في جامعة أكسفورد.' } },
+            ar: 'ملتقى السعوديين وأصدقاء المملكة في أكسفورد. فعاليات وعضوية وتطوّع ومجتمع للطلبة والباحثين والخريجين والأصدقاء السعوديين في جامعة أكسفورد.' } },
   { id: 'about', path: 'about', title: { en: 'About', ar: 'عن الجمعية' }, desc: { en: 'Who we are, what we stand for and the committee behind the Oxford Saudi Society.', ar: 'من نحن وما نؤمن به واللجنة التي تقف خلف الجمعية السعودية في أكسفورد.' } },
-  { id: 'events', path: 'events', title: { en: 'Events & Gatherings', ar: 'فعاليات واجتماعات الجمعية' }, desc: { en: 'The Oxford Saudi Society programme for 2026–27: celebrations, community gatherings, research conversations and shared traditions in Oxford. Dates and venues are proposed until confirmed.', ar: 'برنامج الجمعية السعودية في أكسفورد ٢٠٢٦–٢٠٢٧: احتفالات واجتماعات مجتمعية ولقاءات بحثية وتقاليد مشتركة. المواعيد والأماكن مقترحة حتى تأكيدها.' } },
+  { id: 'events', path: 'events', title: { en: 'Events & Gatherings', ar: 'فعاليات وأنشطة الجمعية' }, desc: { en: 'The Oxford Saudi Society programme for 2026–27: celebrations, community gatherings, research conversations and shared traditions in Oxford. Dates and venues are proposed until confirmed.', ar: 'برنامج الجمعية السعودية في أكسفورد ٢٠٢٦–٢٠٢٧: احتفالات ولقاءات مجتمعية وحوارات بحثية وتقاليد مشتركة. المواعيد والأماكن مقترحة حتى تأكيدها.' } },
   { id: 'community', path: 'community', title: { en: 'Community', ar: 'مجتمعنا' }, desc: { en: 'Students, alumni and friends of the Oxford Saudi Society — a public directory of people who have chosen to be listed.', ar: 'طلبة وخريجون وأصدقاء الجمعية السعودية في أكسفورد — دليل عام لمن اختار الظهور فيه.' } },
   { id: 'ideas', path: 'ideas', title: { en: 'Ideas', ar: 'أفكار' }, desc: { en: 'Suggest, vote on and discuss ideas for the Oxford Saudi Society — the committee reviews the board every term.', ar: 'اقترح أفكاراً للجمعية السعودية في أكسفورد وصوّت عليها وناقشها — تراجع اللجنة اللوحة كل فصل دراسي.' } },
   { id: 'join', path: 'join', title: { en: 'Join', ar: 'انضم إلينا' }, desc: { en: 'Become a member of the Oxford Saudi Society. Free for Saudi students; a small annual fee for everyone else.', ar: 'كن عضواً في الجمعية السعودية في أكسفورد. مجاناً للطلبة السعوديين ورسم سنوي بسيط لغيرهم.' } },
   { id: 'faq', path: 'faq', title: { en: 'FAQ — studying and living in Oxford', ar: 'الأسئلة الشائعة — الدراسة والحياة في أكسفورد' }, desc: { en: 'Practical answers for Saudi students in Oxford: Safir and the Cultural Bureau, arrival and transport, housing, University services, daily life, prayer and health, and the Society itself.', ar: 'إجابات عملية للطلبة السعوديين في أكسفورد: سفير والملحقية، الوصول والتنقل، السكن، الخدمات الجامعية، الحياة اليومية، الصلاة والصحة، والجمعية نفسها.' } },
   { id: 'privacy', path: 'privacy', title: { en: 'Privacy notice', ar: 'إشعار الخصوصية' }, desc: { en: 'How the Oxford Saudi Society handles your information.', ar: 'كيف تتعامل الجمعية السعودية في أكسفورد مع بياناتك.' } },
   { id: 'terms', path: 'terms', title: { en: 'Terms of use', ar: 'شروط الاستخدام' }, desc: { en: 'Terms of use for the Oxford Saudi Society website.', ar: 'شروط استخدام موقع الجمعية السعودية في أكسفورد.' } },
-  { id: 'past-committees', path: 'committees', title: { en: 'Committees', ar: 'اللجان' }, desc: { en: 'The people who have led the Oxford Saudi Society, year by year.', ar: 'من قاد الجمعية السعودية في أكسفورد عبر السنين.' } },
+  { id: 'past-committees', path: 'committees', title: { en: 'Committees', ar: 'مجالس إدارة الجمعية' }, desc: { en: 'The people who have served on the committees of the Oxford Saudi Society.', ar: 'من تولّى قيادة الجمعية السعودية في أكسفورد عبر الأعوام.' } },
 ];
 // one page per event, in both languages
 for (const e of events) {
@@ -60,13 +60,13 @@ const GROUPS = { student: ['Current student', 'طالب حالي'], alumni: ['Al
 const CATS = { exec: ['Executive', 'اللجنة التنفيذية'], events: ['Events', 'لجنة الفعاليات'], media: ['Media, PR & Outreach', 'الإعلام والعلاقات العامة'], other: ['Committee', 'اللجنة'] };
 const TAGS = { free: ['Free', 'مجاناً'], open: ['All welcome', 'الكل مرحّب به'], booking: ['Booking', 'التسجيل مطلوب'], members: ['Members', 'للأعضاء'] };
 const S = {
-  en: { namePh: '[Name]', curTerm: 'Current committee', nMembers: (n) => `${n} members`, tracing: 'Records being traced',
-        trace: (email) => `We have not yet traced this year’s committee. If you served on it, email ${email} and we will add you.`,
-        pastLink: 'See past committees →', dirEmpty: 'Profiles are being added — check back soon.', book: 'Book a place',
+  en: { namePh: '[Name]', termTitle: (t) => `<bdi dir="ltr">${esc(t)}</bdi> Committee`, nMembers: (n) => `${n} members`, archiveH: 'Historical archive',
+        archive: (email) => `We have not yet been able to document the committee members for earlier years. If you served on a past committee, or hold any of its records, email ${email} and we will add them.`,
+        pastLink: 'Committees page →', dirEmpty: 'The members’ directory will be available soon.', book: 'Book a place',
         weekPh: '[Week]', datePh: '[Date]', venuePh: '[Venue]', nextPh: '[Event name]', nextSubPh: '[Date and time] · [Venue]', emailPh: '[hello@address]' },
-  ar: { namePh: '[الاسم]', curTerm: 'اللجنة الحالية', nMembers: (n) => `${n} أعضاء`, tracing: 'السجلات قيد التتبع',
-        trace: (email) => `لم نتتبع لجنة هذه السنة بعد. إن كنت عضواً فيها، راسلنا على ${email} لنضيفك.`,
-        pastLink: 'اللجان السابقة ←', dirEmpty: 'تجري إضافة الملفات — عد قريباً.', book: 'احجز مقعداً',
+  ar: { namePh: '[الاسم]', termTitle: (t) => `لجنة <bdi dir="ltr">${esc(t)}</bdi>`, nMembers: (n) => `${n} أعضاء`, archiveH: 'الأرشيف التاريخي',
+        archive: (email) => `لم نتمكن بعد من توثيق أسماء أعضاء اللجان في الأعوام السابقة. إن كنت عضواً في لجنة سابقة أو لديك شيء من سجلاتها، راسلنا على ${email} لنضيفها.`,
+        pastLink: 'صفحة مجالس الإدارة ←', dirEmpty: 'سيُتاح دليل الأعضاء قريبًا.', book: 'احجز مقعداً',
         weekPh: '[الأسبوع]', datePh: '[التاريخ]', venuePh: '[المكان]', nextPh: '[اسم الفعالية]', nextSubPh: '[التاريخ والوقت] · [المكان]', emailPh: '[hello@address]' },
 };
 const roleOf = (id) => roles.find((r) => r.id === id) || null;
@@ -118,21 +118,19 @@ function committeeGrid(c, lang) {
 const currentTerm = () => committees.find((c) => c.current) || committees[0] || null;
 function committeesHtml(lang) {
   const cur = currentTerm(); const s = S[lang]; let h = '';
-  const founded = parseInt(settings.founded, 10) || 0;
   const startYear = (c) => { const m = /^(\d{4})/.exec(String(c.term || '')); return m ? +m[1] : 0; };
-  const termNo = (c) => { const y = startYear(c); return (y && founded && y >= founded) ? y - founded + 1 : 0; };
   const arDigits = (n) => String(n).replace(/\d/g, (d) => '٠١٢٣٤٥٦٧٨٩'[+d]);
-  const ordinalEn = (n) => { const sfx = ['th', 'st', 'nd', 'rd'], v = n % 100; return n + (sfx[(v - 20) % 10] || sfx[v] || sfx[0]); };
-  const noteOf = (c) => { const k = termNo(c); if (!k) return ''; return `<p class="term-note">${esc(lang === 'ar' ? 'اللجنة الإدارية رقم ' + arDigits(k) : ordinalEn(k) + ' committee')}</p>`; };
-  if (cur) h += `<div class="term current"><div class="cur-head"><h3 class="disp">${esc(cur.term)}</h3><span class="badge">${esc(s.curTerm)}</span></div>${noteOf(cur)}${committeeGrid(cur, lang)}</div>`;
+  // The most recent verified committee carries a neutral heading: no "current" badge and no ordinal number,
+  // because neither the current year's committee nor the historical sequence has been verified yet.
+  if (cur) h += `<div class="term current"><div class="cur-head"><h3 class="disp">${s.termTitle(cur.term)}</h3></div>${committeeGrid(cur, lang)}</div>`;
   let decade = null;
-  committees.filter((c) => c !== cur).forEach((c) => {
-    const n = (c.members || []).length, dec = Math.floor(startYear(c) / 10) * 10;
-    if (dec !== decade) { decade = dec; h += `<p class="lbl decade">${esc(lang === 'ar' ? arDigits(dec) + 'ات' : dec + 's')}</p>`; }
-    h += `<div class="term"><details><summary><span class="yrs">${esc(c.term)}</span><span class="n">${esc(n ? s.nMembers(n) : s.tracing)}</span></summary>`;
-    h += noteOf(c) + (n ? committeeGrid(c, lang) : `<p class="trace">${s.trace(emailHtml(lang))}</p>`);
-    h += '</details></div>';
+  committees.filter((c) => c !== cur && (c.members || []).length).forEach((c) => {
+    const n = c.members.length, dec = Math.floor(startYear(c) / 10) * 10;
+    if (dec !== decade) { decade = dec; h += `<p class="lbl decade">${esc(lang === 'ar' ? arDigits(dec) + '–' + arDigits(dec + 9) : dec + 's')}</p>`; }
+    h += `<div class="term"><details><summary><span class="yrs">${esc(c.term)}</span><span class="n">${esc(s.nMembers(n))}</span></summary>${committeeGrid(c, lang)}</details></div>`;
   });
+  // one consolidated notice instead of an empty entry for every undocumented year
+  h += `<div class="note archive-note"><b>${esc(s.archiveH)}:</b> <span>${s.archive(emailHtml(lang))}</span></div>`;
   return h;
 }
 /* ── page assembly ─────────────────────────────────────────────── */
@@ -146,9 +144,12 @@ function renderLang(lang) {
     $('[data-ar]').each((i, el) => { $(el).html($(el).attr('data-ar')); $(el).removeAttr('data-ar'); });
     $('[data-ar-ph]').each((i, el) => { $(el).attr('placeholder', $(el).attr('data-ar-ph')); $(el).removeAttr('data-ar-ph'); });
     $('[data-ar-aria]').each((i, el) => { $(el).attr('aria-label', $(el).attr('data-ar-aria')); $(el).removeAttr('data-ar-aria'); });
+    $('[data-ar-alt]').each((i, el) => { $(el).attr('alt', $(el).attr('data-ar-alt')); $(el).removeAttr('data-ar-alt'); });
+    $('[data-en-only]').remove();
     $('html').attr({ lang: 'ar', dir: 'rtl' });
   } else {
-    $('[data-ar]').removeAttr('data-ar'); $('[data-ar-ph]').removeAttr('data-ar-ph'); $('[data-ar-aria]').removeAttr('data-ar-aria');
+    $('[data-en-only]').removeAttr('data-en-only');
+    $('[data-ar]').removeAttr('data-ar'); $('[data-ar-ph]').removeAttr('data-ar-ph'); $('[data-ar-aria]').removeAttr('data-ar-aria'); $('[data-ar-alt]').removeAttr('data-ar-alt');
   }
   // data-driven regions
   $('#ev-index').html(EV.indexHtml(events, lang, urlFor, settings));
@@ -157,13 +158,12 @@ function renderLang(lang) {
   if (ne) { $('#next-title').html(`<a href="${urlFor('event:' + ne.e.slug, lang)}">${esc(ne.title)}</a>`); $('#next-sub').text(ne.sub); }
   else { $('#next-title').html(ph(s.nextPh)); $('#next-sub').html(ph(s.nextSubPh)); }
   const cur = currentTerm();
-  $('#about-committee').html((cur ? committeeGrid(cur, lang) : '') + `<p style="margin-top:6px"><a href="${urlFor('past-committees', lang)}">${esc(s.pastLink)}</a></p>`);
+  $('#about-committee').html((cur ? `<p class="lbl term-label">${s.termTitle(cur.term)}</p>` + committeeGrid(cur, lang) : '') + `<p style="margin-top:6px"><a href="${urlFor('past-committees', lang)}">${esc(s.pastLink)}</a></p>`);
   $('#committees-list').html(committeesHtml(lang));
   $('#dir-grid').html(people.map((p) => personCard(p, lang)).join(''));
-  if (!people.length) $('#dir-empty').removeAttr('hidden').text(s.dirEmpty); else $('#dir-empty').attr('hidden', '').text('');
+  if (!people.length) { $('#dir-empty').removeAttr('hidden').text(s.dirEmpty); $('#dir-tools').attr('hidden', ''); } else $('#dir-empty').attr('hidden', '').text('');
   const counts = { all: people.length }; Object.keys(GROUPS).forEach((g) => { counts[g] = people.filter((p) => p.group === g).length; });
   $('#dir-filters .cnt').each((i, el) => { const c = counts[$(el).attr('data-cnt')]; $(el).text(c ? String(c) : ''); });
-  if (settings.showSupporters) $('#supporters').removeAttr('hidden');
   // settings-driven placeholders
   $('[data-price]').each((i, el) => {
     const k = $(el).attr('data-price'); const v = settings.fees && settings.fees[k];
@@ -174,12 +174,6 @@ function renderLang(lang) {
   $('[data-setting="membership-link"]').each((i, el) => { const v = settings.membershipEmail || settings.email; if (v) $(el).removeClass('ph').attr('href', 'mailto:' + v).text(v); });
   $('[data-setting="founded"]').each((i, el) => { if (settings.founded) $(el).removeClass('ph').text(settings.founded); });
   $('[data-setting="subtitle"]').each((i, el) => { const v = settings.subtitle && settings.subtitle[lang]; if (v) $(el).text(v); });
-  $('[data-setting="retention"]').each((i, el) => { if (settings.privacy && settings.privacy.retention) $(el).removeClass('ph').text(settings.privacy.retention); });
-  $('[data-setting="hosting"]').each((i, el) => { if (settings.privacy && settings.privacy.hosting) $(el).removeClass('ph').text(settings.privacy.hosting); });
-  $('[data-setting="instagram"]').each((i, el) => {
-    const ig = settings.social && settings.social.instagram;
-    if (ig) { const handle = ig.replace(/^https?:\/\/(www\.)?instagram\.com\//, '').replace(/\/$/, '').replace(/^@/, ''); $(el).attr('href', 'https://instagram.com/' + handle).text('Instagram @' + handle); }
-  });
   // settings for the script
   const site = { lang, email: settings.email || '', treasurerEmail: settings.treasurerEmail || '', membershipEmail: settings.membershipEmail || settings.email || '', fees: settings.fees || {}, payLinks: settings.payLinks || {}, bank: settings.bank || {}, ideas: settings.ideas || {}, privacyVersion: (settings.privacy && settings.privacy.version) || '2026-11', apiBase: settings.apiBase || '/api' };
   $('#site-settings').text(JSON.stringify(site).replace(/</g, '\\u003c'));

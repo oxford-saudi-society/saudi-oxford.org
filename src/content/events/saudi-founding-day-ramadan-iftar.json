@@ -1,58 +1,57 @@
 {
-  "id": "oss-003",
-  "slug": "saudi-founding-day-ramadan-iftar",
-  "order": 3,
-  "title": {
-    "en": "Saudi Founding Day & Ramadan Iftar",
-    "ar": "يوم بدينا — إفطار يوم التأسيس"
+ "id": "oss-003",
+ "slug": "saudi-founding-day-ramadan-iftar",
+ "order": 3,
+ "title": {
+  "en": "Saudi Founding Day & Ramadan Iftar",
+  "ar": "يوم بدينا — إفطار يوم التأسيس"
+ },
+ "description": {
+  "en": "Celebrate Saudi Founding Day and the legacy of 1727 through heritage conversation and a shared Ramadan iftar. Iftar service follows the verified local sunset.",
+  "ar": "نحتفي بيوم التأسيس السعودي وإرث عام ١٧٢٧، ونجتمع على مائدة إفطار رمضانية. يُحدّد وقت الإفطار وفق أذان المغرب في أكسفورد."
+ },
+ "agenda": {
+  "en": [
+   "Saudi heritage",
+   "shared iftar",
+   "community gathering."
+  ],
+  "ar": [
+   "مظاهر من التراث السعودي",
+   "إفطار جماعي",
+   "لقاء اجتماعي."
+  ]
+ },
+ "category": "culture-religion",
+ "startLocal": "2027-02-22T17:00:00",
+ "endLocal": "2027-02-22T19:30:00",
+ "timezone": "Europe/London",
+ "venueKey": "noa-main-hall",
+ "audience": "public",
+ "price": {
+  "status": "free",
+  "currency": "GBP",
+  "amountMinor": 0
+ },
+ "bookingRequired": true,
+ "registrationMode": "interest_only",
+ "eventStatus": "proposed",
+ "visibility": "published_as_proposal",
+ "capacity": null,
+ "waitlistEnabled": false,
+ "dateNotice": {
+  "en": "Date and venue are provisional and not yet confirmed.",
+  "ar": "التاريخ والمكان مبدئيان ولم يُؤكَّدا بعد."
+ },
+ "image": {
+  "web": "/assets/events/web/event-03-saudi-founding-day-ramadan-iftar.webp",
+  "thumb": "/assets/events/thumbs/event-03-saudi-founding-day-ramadan-iftar.webp",
+  "alt": {
+   "en": "Abstract brand-colour graphic for a cultural and religious occasion.",
+   "ar": "تصميم تجريدي بألوان الجمعية لمناسبة ثقافية ودينية."
   },
-  "description": {
-    "en": "Celebrate Saudi Founding Day and the legacy of 1727 through heritage conversation and a shared Ramadan iftar. Iftar service follows the verified local sunset.",
-    "ar": "نحتفي بيوم التأسيس السعودي وإرث عام ١٧٢٧، ونجتمع على مائدة إفطار رمضانية. يُحدّد وقت الإفطار وفق أذان المغرب في أكسفورد."
-  },
-  "agenda": {
-    "en": [
-      "Saudi heritage",
-      "shared iftar",
-      "community gathering."
-    ],
-    "ar": [
-      "مظاهر من التراث السعودي",
-      "إفطار جماعي",
-      "لقاء اجتماعي."
-    ]
-  },
-  "category": "culture-religion",
-  "startLocal": "2027-02-22T17:00:00",
-  "endLocal": "2027-02-22T19:30:00",
-  "timezone": "Europe/London",
-  "venueKey": "noa-main-hall",
-  "audience": "public",
-  "price": {
-    "status": "free",
-    "currency": "GBP",
-    "amountMinor": 0
-  },
-  "bookingRequired": true,
-  "registrationMode": "interest_only",
-  "eventStatus": "proposed",
-  "visibility": "published_as_proposal",
-  "capacity": null,
-  "waitlistEnabled": false,
-  "dateNotice": {
-    "en": "Date and venue are proposed and not confirmed.",
-    "ar": "التاريخ والمكان مقترحان ولم يُؤكّدا بعد."
-  },
-  "image": {
-    "web": "/assets/events/web/event-03-saudi-founding-day-ramadan-iftar.webp",
-    "thumb": "/assets/events/thumbs/event-03-saudi-founding-day-ramadan-iftar.webp",
-    "alt": {
-      "en": "Illustrated concept artwork for Saudi Founding Day & Ramadan Iftar, Oxford Saudi Society.",
-      "ar": "تصميم توضيحي لفعالية يوم بدينا — إفطار يوم التأسيس للجمعية السعودية بجامعة أكسفورد."
-    },
-    "credit": "AI-generated concept artwork supplied through the society planning conversation.",
-    "reviewNote": "AI-generated art includes stylised historical imagery; do not imply it is an authentic historical portrait or an official founding-day logo.",
-    "approved": false
-  },
-  "published": true
+  "credit": "Neutral event graphic in the Society brand colours (no photograph, text or emblem). Replace with approved artwork when available.",
+  "approved": true
+ },
+ "published": true
 }

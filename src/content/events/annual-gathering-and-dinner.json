@@ -1,60 +1,59 @@
 {
-  "id": "oss-011",
-  "slug": "annual-gathering-and-dinner",
-  "order": 11,
-  "title": {
-    "en": "Oxford Saudi Society Annual Gathering & Dinner",
-    "ar": "ختامها مسك — الاجتماع السنوي والعشاء الختامي للجمعية"
+ "id": "oss-011",
+ "slug": "annual-gathering-and-dinner",
+ "order": 11,
+ "title": {
+  "en": "Oxford Saudi Society Annual Gathering & Dinner",
+  "ar": "ختامها مسك — الاجتماع السنوي والعشاء الختامي للجمعية"
+ },
+ "description": {
+  "en": "Close the society year with a members’ gathering, a review of activities, appreciation and a shared dinner. Ticket pricing, if any, has not been decided.",
+  "ar": "نختتم عام الجمعية بلقاء للأعضاء نستعرض فيه المنجزات، ونحتفي بالمساهمين، ونجتمع على العشاء الختامي. لم تُحدّد رسوم المشاركة بعد."
+ },
+ "agenda": {
+  "en": [
+   "Annual highlights",
+   "appreciation",
+   "dinner",
+   "next-year outlook."
+  ],
+  "ar": [
+   "استعراض منجزات العام",
+   "تكريم المساهمين",
+   "العشاء الختامي",
+   "نظرة للعام القادم."
+  ]
+ },
+ "category": "community",
+ "startLocal": "2027-12-02T18:00:00",
+ "endLocal": "2027-12-02T21:00:00",
+ "timezone": "Europe/London",
+ "venueKey": "noa-main-hall",
+ "audience": "members",
+ "price": {
+  "status": "tbd",
+  "currency": "GBP",
+  "amountMinor": null
+ },
+ "bookingRequired": true,
+ "registrationMode": "interest_only",
+ "eventStatus": "proposed",
+ "visibility": "published_as_proposal",
+ "capacity": null,
+ "waitlistEnabled": false,
+ "dateNotice": {
+  "en": "Date and venue are provisional and not yet confirmed.",
+  "ar": "التاريخ والمكان مبدئيان ولم يُؤكَّدا بعد."
+ },
+ "image": {
+  "web": "/assets/events/web/event-11-annual-gathering-and-dinner.webp",
+  "thumb": "/assets/events/thumbs/event-11-annual-gathering-and-dinner.webp",
+  "alt": {
+   "en": "Abstract brand-colour graphic for a community gathering.",
+   "ar": "تصميم تجريدي بألوان الجمعية للقاء مجتمعي."
   },
-  "description": {
-    "en": "Close the society year with a members’ gathering, a review of activities, appreciation and a shared dinner. Ticket pricing, if any, has not been decided.",
-    "ar": "نختتم عام الجمعية باجتماع للأعضاء نستعرض فيه المنجزات، ونحتفي بالمساهمين، ونجتمع على العشاء الختامي. لم تُحدّد رسوم المشاركة بعد."
-  },
-  "agenda": {
-    "en": [
-      "Annual highlights",
-      "appreciation",
-      "dinner",
-      "next-year outlook."
-    ],
-    "ar": [
-      "استعراض منجزات العام",
-      "تكريم المساهمين",
-      "العشاء الختامي",
-      "نظرة للعام القادم."
-    ]
-  },
-  "category": "community",
-  "startLocal": "2027-12-02T18:00:00",
-  "endLocal": "2027-12-02T21:00:00",
-  "timezone": "Europe/London",
-  "venueKey": "noa-main-hall",
-  "audience": "members",
-  "price": {
-    "status": "tbd",
-    "currency": "GBP",
-    "amountMinor": null
-  },
-  "bookingRequired": true,
-  "registrationMode": "interest_only",
-  "eventStatus": "proposed",
-  "visibility": "published_as_proposal",
-  "capacity": null,
-  "waitlistEnabled": false,
-  "dateNotice": {
-    "en": "Date and venue are proposed and not confirmed.",
-    "ar": "التاريخ والمكان مقترحان ولم يُؤكّدا بعد."
-  },
-  "image": {
-    "web": "/assets/events/web/event-11-annual-gathering-and-dinner.webp",
-    "thumb": "/assets/events/thumbs/event-11-annual-gathering-and-dinner.webp",
-    "alt": {
-      "en": "Illustrated concept artwork for Oxford Saudi Society Annual Gathering & Dinner, Oxford Saudi Society.",
-      "ar": "تصميم توضيحي لفعالية ختامها مسك — الاجتماع السنوي والعشاء الختامي للجمعية للجمعية السعودية بجامعة أكسفورد."
-    },
-    "credit": "AI-generated concept artwork supplied through the society planning conversation.",
-    "reviewNote": "The artwork has decorative word “Majlis”, which is NOT the event title. Replace/approve artwork before publishing if this label is confusing.",
-    "approved": false
-  },
-  "published": true
+  "credit": "Neutral event graphic in the Society brand colours (no photograph, text or emblem). Replace with approved artwork when available.",
+  "approved": true
+ },
+ "published": true
 }

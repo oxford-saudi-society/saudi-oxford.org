@@ -203,4 +203,31 @@ CREATE INDEX IF NOT EXISTS oss_members_queue ON oss_members (status, applied_at)
 ALTER TABLE oss_members ADD COLUMN IF NOT EXISTS uni_status_other text;
 `,
   },
+  {
+    /* Privacy notice 2026-11-09: proof of nationality is uploaded (never emailed), held apart from the membership
+       record and deleted the moment the check is recorded; dietary/access notes live with the registration and are
+       cleared 7 days after the event; anonymous totals survive the deletion of an event's registrations. */
+    id: '0004_privacy_retention',
+    sql: `
+CREATE TABLE IF NOT EXISTS oss_member_evidence (
+  email text PRIMARY KEY REFERENCES oss_members(email) ON DELETE CASCADE,
+  mime text NOT NULL,
+  bytes integer NOT NULL,
+  data text NOT NULL,
+  uploaded_at timestamptz NOT NULL DEFAULT now(),
+  viewed_at timestamptz,
+  viewed_by text
+);
+ALTER TABLE oss_registrations ADD COLUMN IF NOT EXISTS requirements text;
+ALTER TABLE oss_events ADD COLUMN IF NOT EXISTS final_counts jsonb;
+ALTER TABLE oss_members ADD COLUMN IF NOT EXISTS legal_hold boolean NOT NULL DEFAULT false;
+CREATE TABLE IF NOT EXISTS oss_subscribers (
+  email text PRIMARY KEY,
+  name text,
+  lang text NOT NULL DEFAULT 'en',
+  consent_at timestamptz NOT NULL DEFAULT now(),
+  source text NOT NULL DEFAULT 'event'
+);
+`,
+  },
 ];

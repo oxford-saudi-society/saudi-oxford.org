@@ -12,7 +12,7 @@ const DIST = path.join(ROOT, 'dist');
 const PORT = Number(process.argv[2] || process.env.PORT || 8788);
 process.env.SITE_URL = process.env.SITE_URL || `http://127.0.0.1:${PORT}`;
 const MIME = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 'text/javascript', '.mjs': 'text/javascript', '.json': 'application/json', '.webp': 'image/webp', '.png': 'image/png', '.svg': 'image/svg+xml', '.ics': 'text/calendar', '.woff2': 'font/woff2', '.ico': 'image/x-icon', '.txt': 'text/plain', '.xml': 'application/xml' };
-const SHELLS = [[/^\/(ar\/)?account(\/|$)/, 'account/index.html'], [/^\/(ar\/)?t\//, 't/index.html'], [/^\/(ar\/)?admin\/events(\/|$)/, 'admin/events/index.html'], [/^\/(ar\/)?ideas\//, 'ideas/index.html']];
+const SHELLS = [[/^\/(ar\/)?account(\/|$)/, 'account/index.html'], [/^\/(ar\/)?t\//, 't/index.html'], [/^\/(ar\/)?admin\/events(\/|$)/, 'admin/events/index.html'], [/^\/ar\/ideas\//, 'ar/ideas/index.html'], [/^\/ideas\//, 'ideas/index.html']];
 
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, process.env.SITE_URL);

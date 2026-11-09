@@ -10,15 +10,17 @@
       evStatus: { proposed: 'proposed', confirmed: '', postponed: 'postponed — date to be confirmed', cancelled: 'cancelled', completed: '' },
       mem: { h: 'Membership', no: 'Membership number', type: 'Membership', since: 'Applied', valid: 'Valid until', queue: 'Place in the review queue', none: 'You do not have a membership application yet.', join: 'Apply for membership',
         st: { pending: 'Pending review', info_requested: 'The committee has a question', approved: 'Active member', declined: 'Not approved', revoked: 'Ended', expired: 'Expired' },
-        qH: 'Question from the committee', reply: 'Your answer', send: 'Send answer', sent: 'Thank you — your answer is with the committee. Your application keeps its place.', yourAnswer: 'Your last answer', payDue: 'Fee due: {amount}. Use your membership number as the payment reference.', verify: 'The committee will email you to check Saudi nationality — please do not send documents until asked.', reason: 'Reason' } },
+        qH: 'Question from the committee', reply: 'Your answer', send: 'Send answer', sent: 'Thank you — your answer is with the committee. Your application keeps its place.', yourAnswer: 'Your last answer', payDue: 'Fee due: {amount}. Use your membership number as the payment reference.', reason: 'Reason',
+        ev: { h: 'Proof of Saudi nationality', p: 'Upload one document: the photo page of your passport, your national ID or your Cultural Bureau scholarship confirmation. It is sent over an encrypted connection, only authorised committee members can open it, and it is deleted as soon as it has been checked. Please do not send it by email.', again: 'The document you uploaded could not be accepted and has been deleted. Please upload a different one.', file: 'Photo or PDF (up to 3 MB)', agree: 'I agree to the committee viewing this document only to confirm that I am eligible for free membership.', send: 'Upload securely', sending: 'Uploading…', held: 'Document received on {when}. It will be deleted as soon as the committee has checked it.', remove: 'Remove my document', removeQ: 'Remove your document?', removeT: 'It is deleted now. Your application stays in the queue, but it cannot be approved as a free membership until a document has been checked.', removed: 'Your document has been deleted.', done: 'Thank you — your document has been received.', ok: 'Saudi nationality confirmed. Your document has been deleted.', eType: 'Please choose a JPEG, PNG or WebP photo, or a PDF.', eBig: 'That file is larger than 3 MB. Please choose a smaller photo or PDF.', eRead: 'That file could not be read. Please try another.', eNeed: 'Choose a file and tick the box first.' } } },
     ar: { title: 'تسجيلاتي', page: 'حسابي', sub: 'عضويتك وتسجيلاتك في الفعاليات وتذاكرك.', signinH: 'سجّل الدخول ببريدك الإلكتروني', signinP: 'أدخل البريد الذي سجّلت به وسنرسل لك رابط دخول. لا حاجة لكلمة مرور.', email: 'البريد الإلكتروني', send: 'أرسل لي رابط الدخول', sent: 'تحقّق من بريدك', sentP: 'إذا كان {email} مرتبطًا بتسجيلات أو عضوية فرابط الدخول في طريقه إليك. يعمل مرة واحدة وتنتهي صلاحيته خلال ٣٠ دقيقة.',
       signedInAs: 'مسجّل الدخول باسم', member: 'عضو معتمد', signout: 'تسجيل الخروج', upcoming: 'القادمة', past: 'السابقة', none: 'لا توجد تسجيلات بعد.', browse: 'تصفّح البرنامج', ticket: 'عرض التذكرة', cancel: 'إلغاء التسجيل', claim: 'تأكيد مقعدي', claimBy: 'أكّد قبل {t}', cancelQ: 'إلغاء هذا التسجيل؟', cancelT: 'سيذهب مقعدك إلى الشخص التالي وتتوقف أي تذكرة عن العمل.', yesCancel: 'نعم، ألغِ', cancelled: 'تم إلغاء التسجيل.', claimed: 'تم تأكيد مقعدك، وأُرسلت التذكرة إلى بريدك.', claimGone: 'عذرًا — حُجز المقعد أو انتهت مدة العرض.', ticketNote: 'فتح التذكرة هنا يستبدل أي رابط تذكرة سابق.', desk: 'مكتب اللجنة', err: 'حدث خطأ ما. حاول مجددًا.',
       status: { interested: 'تم تسجيل الاهتمام (ليس حجزًا)', confirmed: 'مؤكد', waitlisted: 'في قائمة الانتظار', offered: 'عُرض عليك مقعد — أكّده', checked_in: 'تم تسجيل الحضور', cancelled: 'ملغى', expired: 'انتهى العرض', declined: 'مرفوض' },
       banner: { signed_in: 'تم تسجيل دخولك.', invalid: 'هذا الرابط غير صالح.', expired: 'انتهت صلاحية الرابط. اطلب رابطًا جديدًا أدناه.', used: 'استُخدم هذا الرابط من قبل — اطلب رابطًا جديدًا إن لم تكن مسجّل الدخول.' },
-      evStatus: { proposed: 'مقترح', confirmed: '', postponed: 'مؤجل — التاريخ قيد التأكيد', cancelled: 'ملغاة', completed: '' },
+      evStatus: { proposed: 'مبدئي', confirmed: '', postponed: 'مؤجل — التاريخ قيد التأكيد', cancelled: 'ملغاة', completed: '' },
       mem: { h: 'العضوية', no: 'رقم العضوية', type: 'العضوية', since: 'تاريخ الطلب', valid: 'صالحة حتى', queue: 'ترتيبك في قائمة المراجعة', none: 'لا يوجد لديك طلب عضوية بعد.', join: 'تقدّم بطلب العضوية',
         st: { pending: 'قيد المراجعة', info_requested: 'لدى اللجنة سؤال', approved: 'عضو فعّال', declined: 'لم تتم الموافقة', revoked: 'منتهية', expired: 'منتهية الصلاحية' },
-        qH: 'سؤال من اللجنة', reply: 'إجابتك', send: 'إرسال الإجابة', sent: 'شكرًا لك — وصلت إجابتك إلى اللجنة، ويحتفظ طلبك بترتيبه.', yourAnswer: 'آخر إجابة منك', payDue: 'الرسوم المستحقة: {amount}. اكتب رقم عضويتك مرجعًا للدفع.', verify: 'ستراسلك اللجنة للتحقق من الجنسية السعودية — يرجى عدم إرسال وثائق قبل أن نطلبها.', reason: 'السبب' } }
+        qH: 'سؤال من اللجنة', reply: 'إجابتك', send: 'إرسال الإجابة', sent: 'شكرًا لك — وصلت إجابتك إلى اللجنة، ويحتفظ طلبك بترتيبه.', yourAnswer: 'آخر إجابة منك', payDue: 'الرسوم المستحقة: {amount}. اكتب رقم عضويتك مرجعًا للدفع.', reason: 'السبب',
+        ev: { h: 'إثبات الجنسية السعودية', p: 'ارفع مستندًا واحدًا: صفحة الصورة في جواز السفر، أو الهوية الوطنية، أو تأكيد الابتعاث من الملحقية الثقافية. يُرسل عبر اتصال مشفّر، ولا يستطيع فتحه سوى أعضاء اللجنة المخوّلين، ويُحذف فور التحقق منه. يرجى عدم إرساله بالبريد الإلكتروني.', again: 'لم يُقبل المستند الذي رفعته وقد حُذف. يرجى رفع مستند آخر.', file: 'صورة أو ملف PDF (حتى ٣ ميغابايت)', agree: 'أوافق على اطّلاع اللجنة على هذا المستند للتحقق من أهليتي للعضوية المجانية فقط.', send: 'ارفع بأمان', sending: 'جارٍ الرفع…', held: 'تم استلام المستند في {when}. سيُحذف فور تحقق اللجنة منه.', remove: 'احذف مستندي', removeQ: 'حذف مستندك؟', removeT: 'يُحذف الآن. يبقى طلبك في قائمة المراجعة، لكن لا يمكن اعتماده عضويةً مجانية قبل التحقق من مستند.', removed: 'تم حذف مستندك.', done: 'شكرًا لك — تم استلام مستندك.', ok: 'تم التحقق من الجنسية السعودية، وحُذف مستندك.', eType: 'يرجى اختيار صورة بصيغة JPEG أو PNG أو WebP، أو ملف PDF.', eBig: 'حجم الملف أكبر من ٣ ميغابايت. يرجى اختيار صورة أو ملف أصغر.', eRead: 'تعذّرت قراءة الملف. جرّب ملفًا آخر.', eNeed: 'اختر ملفًا وضع علامة في المربع أولًا.' } } }
   };
   var s = S[lang];
   document.body.insertAdjacentHTML('afterbegin', O.header('account'));
@@ -60,13 +62,36 @@
     h += '<div class="mcard-meta"><div><span class="mk">' + esc(t.type) + '</span><b>' + esc(O.L(mm.tierLabel)) + '</b></div><div><span class="mk">' + esc(mm.status === 'approved' && mm.validUntil ? t.valid : t.since) + '</span><b>' + esc(mm.status === 'approved' && mm.validUntil ? day(mm.validUntil) : day(mm.appliedAt)) + '</b></div>' + (mm.position ? '<div><span class="mk">' + esc(t.queue) + '</span><b>' + esc(O.num(mm.position)) + '</b></div>' : '') + '</div></div>';
     if (mm.reason) h += '<p class="alert warn">' + esc(t.reason) + ': ' + esc(mm.reason) + '</p>';
     if ((mm.status === 'pending' || mm.status === 'info_requested') && mm.paymentStatus === 'due') h += '<p class="alert">' + esc(t.payDue.replace('{amount}', '£' + mm.amountGbp)) + '</p>';
-    if (mm.status === 'pending' && mm.nationalityStatus === 'pending') h += '<p class="alert">' + esc(t.verify) + '</p>';
+    var openApp = mm.status === 'pending' || mm.status === 'info_requested', ns = mm.nationalityStatus, E = t.ev;
+    if (openApp && (ns === 'pending' || ns === 'rejected')) {
+      h += '<form class="pane mem-ev" id="mem-ev" novalidate><h3>' + esc(E.h) + '</h3>' + (ns === 'rejected' ? '<p class="alert warn">' + esc(E.again) + '</p>' : '') + '<p class="muted" style="margin:0">' + esc(E.p) + '</p>' +
+        '<div class="f"><label class="lbl" for="mem-ev-file">' + esc(E.file) + '</label><input id="mem-ev-file" type="file" accept="image/jpeg,image/png,image/webp,application/pdf"></div>' +
+        '<label class="chk-l need"><input type="checkbox" id="mem-ev-ok"><span>' + esc(E.agree) + '</span></label>' +
+        '<p class="alert bad" id="mem-ev-err" hidden></p><div class="form-foot"><button class="btn btn-p" type="submit" id="mem-ev-btn">' + esc(E.send) + '</button></div></form>';
+    } else if (openApp && ns === 'submitted') {
+      h += '<div class="pane mem-ev"><h3>' + esc(E.h) + '</h3><p class="alert ok">' + esc(E.held.replace('{when}', mm.evidence && mm.evidence.uploadedAt ? O.fmtShort(mm.evidence.uploadedAt) : '')) + '</p><div class="rowc"><button type="button" class="btn btn-s btn-sm" id="mem-ev-remove">' + esc(E.remove) + '</button></div></div>';
+    } else if (ns === 'verified' && openApp) {
+      h += '<p class="alert ok">' + esc(E.ok) + '</p>';
+    }
     if (mm.status === 'info_requested') {
       h += '<form class="pane mem-q" id="mem-q"><h3>' + esc(t.qH) + '</h3><p class="preview">' + esc(mm.infoRequest) + '</p><div class="f"><label class="lbl" for="mem-ans">' + esc(t.reply) + '</label><textarea id="mem-ans" maxlength="4000" required></textarea></div><div class="form-foot"><button class="btn btn-p" type="submit">' + esc(t.send) + '</button></div></form>';
     } else if (mm.infoResponse && (mm.status === 'pending')) {
       h += '<p class="muted" style="font-size:13.5px">' + esc(t.yourAnswer) + ': “' + esc(mm.infoResponse.slice(0, 300)) + '”</p>';
     }
     return h + '</section>';
+  }
+  function readAsDataUrl(blob) { return new Promise(function (res, rej) { var r = new FileReader(); r.onload = function () { res(String(r.result)); }; r.onerror = function () { rej('read'); }; r.readAsDataURL(blob); }); }
+  async function prepareEvidence(file) {
+    if (file.type === 'application/pdf') { var d = await readAsDataUrl(file); return { mime: 'application/pdf', data: d.slice(d.indexOf(',') + 1), bytes: file.size }; }
+    var url = URL.createObjectURL(file);
+    try {
+      var img = await new Promise(function (res, rej) { var i = new Image(); i.onload = function () { res(i); }; i.onerror = function () { rej('read'); }; i.src = url; });
+      var max = 2200, k = Math.min(1, max / Math.max(img.naturalWidth, img.naturalHeight));
+      var c = document.createElement('canvas'); c.width = Math.max(1, Math.round(img.naturalWidth * k)); c.height = Math.max(1, Math.round(img.naturalHeight * k));
+      var g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height); g.drawImage(img, 0, 0, c.width, c.height);
+      var out = c.toDataURL('image/jpeg', 0.86), b64 = out.slice(out.indexOf(',') + 1);
+      return { mime: 'image/jpeg', data: b64, bytes: Math.floor(b64.length * 3 / 4) };
+    } finally { URL.revokeObjectURL(url); }
   }
   async function load(note) {
     var me;
@@ -86,6 +111,31 @@
       mq.querySelector('button').disabled = true;
       try { await O.api('/membership/respond', { method: 'POST', body: { response: v } }); return load('<p class="alert ok">' + esc(s.mem.sent) + '</p>'); }
       catch (ex) { mq.querySelector('button').disabled = false; load('<p class="alert bad">' + esc(s.err) + '</p>'); }
+    });
+    var evf = $('mem-ev');
+    if (evf) evf.addEventListener('submit', async function (e) {
+      e.preventDefault(); var E = s.mem.ev, err = $('mem-ev-err'), btn = $('mem-ev-btn'), f = $('mem-ev-file').files[0];
+      var say = function (m) { err.textContent = m; err.hidden = false; };
+      err.hidden = true;
+      if (!f || !$('mem-ev-ok').checked) return say(E.eNeed);
+      if (['image/jpeg', 'image/png', 'image/webp', 'application/pdf'].indexOf(f.type) === -1) return say(E.eType);
+      btn.disabled = true; var keep = btn.textContent; btn.textContent = E.sending;
+      try {
+        var doc = await prepareEvidence(f);
+        if (doc.bytes > 3 * 1024 * 1024) { btn.disabled = false; btn.textContent = keep; return say(E.eBig); }
+        await O.api('/membership/evidence', { method: 'POST', body: { mime: doc.mime, data: doc.data } });
+        return load('<p class="alert ok">' + esc(E.done) + '</p>');
+      } catch (ex) {
+        btn.disabled = false; btn.textContent = keep;
+        var code = ex && ex.data && ex.data.error;
+        say(ex && ex.status === 413 || code === 'file_too_large' || code === 'body_too_large' ? E.eBig : code === 'bad_type' ? E.eType : code === 'bad_file' || ex === 'read' ? E.eRead : ex && ex.status === 429 ? (lang === 'ar' ? 'محاولات كثيرة. حاول بعد قليل.' : 'Too many attempts. Please try again shortly.') : s.err);
+      }
+    });
+    var evr = $('mem-ev-remove');
+    if (evr) evr.addEventListener('click', async function () {
+      var E = s.mem.ev; if (!(await O.confirm(E.removeQ, E.removeT, E.remove))) return;
+      evr.disabled = true;
+      try { await O.api('/membership/evidence', { method: 'DELETE' }); return load('<p class="alert ok">' + esc(E.removed) + '</p>'); } catch (ex) { evr.disabled = false; load('<p class="alert bad">' + esc(s.err) + '</p>'); }
     });
     $('signout').addEventListener('click', async function () { try { await O.api('/auth/logout', { method: 'POST' }); } catch (e) { /* ignore */ } location.reload(); });
     app.querySelectorAll('[data-act]').forEach(function (b) {

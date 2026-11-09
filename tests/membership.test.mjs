@@ -41,7 +41,7 @@ test('apply: permanent number, queue position, confirmation email, committee not
   assert.equal(r2.body.member.amountGbp, 10); assert.equal(r2.body.member.paymentStatus, 'due');
   assert.notEqual(r1.body.member.memberNo, r2.body.member.memberNo);
   const mail = C.lastMail('one@example.org', 'membership_received');
-  assert.ok(mail.body_text.includes(m1.memberNo)); assert.match(mail.body_text, /Place in the review queue: 1/); assert.match(mail.body_text, /do not send any identity document/);
+  assert.ok(mail.body_text.includes(m1.memberNo)); assert.match(mail.body_text, /Place in the review queue: 1/); assert.match(mail.body_text, /do not send identity documents by email/);
   const arMail = C.lastMail('two@example.org', 'membership_received');
   assert.match(arMail.subject, /تم استلام طلب العضوية/); assert.match(arMail.body_text, /£10/); assert.ok(arMail.body_text.includes(r2.body.member.memberNo));
   assert.ok(C.lastMail(COMMITTEE, 'membership_committee'), 'committee is told about new applications');

@@ -319,10 +319,6 @@ details p{margin-top:12px;margin-inline-start:44px;color:var(--ink-2);font-size:
 .strip .ph{border-bottom-color:#8a6a1c;color:var(--navy)}
 
 /* ── supporters ──────────────────────────────────────────────────── */
-.sup{display:flex;flex-wrap:wrap;gap:16px}
-.sup div{flex:1 1 180px;height:96px;border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;color:var(--ink-3);font-size:12.5px;letter-spacing:.14em;
-  text-transform:uppercase;font-weight:600;text-align:center;padding:10px;background:rgba(255,255,255,.05);border:1px dashed rgba(255,255,255,.26)}
-html[dir="rtl"] .sup div{letter-spacing:0}
 
 /* ── notes ───────────────────────────────────────────────────────── */
 .note{padding:16px 20px;font-size:13.5px;color:var(--ink-2);margin-top:26px;border-radius:var(--r-sm);background:rgba(227,182,92,.12)}
@@ -633,7 +629,9 @@ html[dir="rtl"] .badge{letter-spacing:0;font-size:12px}
 .term.current .cm-grid{margin-top:22px}
 .term details{padding:16px 22px}
 .term summary{font-size:22px}
-.term summary .yrs,.cur-head h3{font-family:var(--display);direction:ltr;unicode-bidi:isolate}
+.term summary .yrs{font-family:var(--display);direction:ltr;unicode-bidi:isolate}
+.cur-head h3{font-family:var(--display)}
+html[dir="rtl"] .cur-head h3{font-family:var(--arabic)}
 .term summary .n{font-family:var(--sans);font-size:12.5px;color:var(--ink-3);font-weight:400;margin-inline-start:auto;text-align:end}
 html[dir="rtl"] .term summary .n{font-family:var(--arabic)}
 .cm-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:18px}
@@ -744,3 +742,38 @@ html[dir="rtl"] .mno{text-align:right}
 .mcard-top{flex-wrap:wrap}
 .mstate{white-space:normal;text-align:center;max-width:100%}
 @media (max-width:620px){.mcard-top{flex-direction:column;align-items:flex-start;gap:8px}}
+
+/* ── 2026-11 review fixes ─────────────────────────────────────── */
+/* step numbers are drawn by CSS, so the list is never numbered twice */
+ol.steps{counter-reset:step}
+ol.steps li{counter-increment:step}
+ol.steps li .k::before{content:counter(step)}
+html[dir="rtl"] ol.steps li .k::before{content:counter(step,arabic-indic)}
+.track{counter-reset:tk}
+.track li{counter-increment:tk}
+.track .tk:empty::before{content:counter(tk)}
+html[dir="rtl"] .track .tk:empty::before{content:counter(tk,arabic-indic)}
+/* header: the longer subtitle stays on one tidy line, and the language buttons never leave the screen */
+.brand .bs{letter-spacing:.12em;white-space:nowrap}
+.brand > span{min-width:0}
+@media (max-width:420px){
+  header.site .bar{gap:8px}
+  .brand{flex:0 1 auto;gap:9px}
+  .brand img{width:38px;height:38px}
+  .brand .bn{font-size:16.5px;display:block;overflow:hidden;text-overflow:ellipsis}
+  html[dir="rtl"] .brand .bn{font-size:15.5px}
+  .lang a,.lang button{padding:7px 10px}
+}
+.board-hint{margin:12px 0 0;font-size:13px;color:rgba(0,33,71,.7);text-align:center}
+.archive-note{margin-top:30px}
+.archive-note a{color:var(--gold-lt)}
+.lbl.term-label{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-lt);margin:0 0 14px}
+html[dir="rtl"] .lbl.term-label{letter-spacing:0;font-size:14px}
+/* small laptops and tablets: the full menu, the brand and both language buttons all fit on one line */
+nav.main a{white-space:nowrap}
+@media (min-width:861px) and (max-width:1060px){
+  header.site .bar{gap:10px}
+  .brand .bs{display:none}
+  nav.main{gap:1px}
+  nav.main a{padding:9px 8px;font-size:13.5px}
+}

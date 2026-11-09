@@ -25,7 +25,7 @@ const searchText = (it) => (L(it.q, 'en') + ' ' + L(it.q, 'ar') + ' ' + L(it.a, 
 
 const UI = {
   en: { eyebrow: 'Help & guidance', h1: 'Frequently asked questions', alt: 'الأسئلة الشائعة', search: 'Search the questions', ph: 'Search, e.g. Safir, housing, GP…', topics: 'Topics', expand: 'Expand all', collapse: 'Collapse all', count: (n) => `${n} question${n === 1 ? '' : 's'}`, refs: 'Official references', none: 'No questions match your search.', clear: 'Clear search', reviewed: 'Last reviewed', note: 'Procedures change; the linked providers are the authority. Tell us if something is out of date.', askH: 'Still have a question?', askP: 'Email the committee or raise it on the ideas board; useful answers are added here.', email: 'Email the committee', ideas: 'Ideas board', copy: 'Copy link', copied: 'Copied' },
-  ar: { eyebrow: 'المساعدة والإرشاد', h1: 'الأسئلة الشائعة', alt: 'Frequently asked questions', search: 'ابحث في الأسئلة', ph: 'ابحث: سفير، السكن، طبيب الأسرة…', topics: 'الموضوعات', expand: 'فتح الكل', collapse: 'طيّ الكل', count: (n) => `${new Intl.NumberFormat('ar-SA-u-nu-arab').format(n)} ${n === 1 ? 'سؤال' : n === 2 ? 'سؤالان' : n <= 10 ? 'أسئلة' : 'سؤالًا'}`, refs: 'روابط رسمية', none: 'لا توجد أسئلة مطابقة لبحثك.', clear: 'مسح البحث', reviewed: 'آخر مراجعة', note: 'تتغيّر الإجراءات؛ والمرجع هو المواقع الرسمية المرتبطة. أخبرنا إن وجدت معلومة قديمة.', askH: 'لديك سؤال آخر؟', askP: 'راسل اللجنة أو اطرحه في لوحة الأفكار، وتُضاف الإجابات المفيدة هنا.', email: 'راسل اللجنة', ideas: 'لوحة الأفكار', copy: 'نسخ الرابط', copied: 'تم النسخ' },
+  ar: { eyebrow: 'المساعدة والإرشاد', h1: 'الأسئلة الشائعة', search: 'ابحث في الأسئلة', ph: 'ابحث مثلًا: سفير، السكن، طبيب الأسرة…', topics: 'الموضوعات', expand: 'فتح الكل', collapse: 'طيّ الكل', count: (n) => `${new Intl.NumberFormat('ar-SA-u-nu-arab').format(n)} ${n === 1 ? 'سؤال' : n === 2 ? 'سؤالان' : n <= 10 ? 'أسئلة' : 'سؤالًا'}`, refs: 'مراجع رسمية', none: 'لا توجد أسئلة مطابقة لبحثك.', clear: 'مسح البحث', reviewed: 'آخر مراجعة', note: 'تتغيّر الإجراءات؛ والمرجع هو المواقع الرسمية المرتبطة. أخبرنا إن وجدت معلومة قديمة.', askH: 'لديك سؤال آخر؟', askP: 'راسل اللجنة أو اطرحه في لوحة الأفكار، وتُضاف الإجابات المفيدة هنا.', email: 'راسل اللجنة', ideas: 'لوحة الأفكار', copy: 'نسخ الرابط', copied: 'تم النسخ' },
 };
 
 function pageHtml(data, lang, urlFor, settings) {
@@ -39,7 +39,7 @@ function pageHtml(data, lang, urlFor, settings) {
       <div class="sec-head">
         <p class="eyebrow">${esc(u.eyebrow)}</p>
         <h2>${esc(u.h1)}</h2>
-        <p class="h1-alt" lang="${lang === 'ar' ? 'en' : 'ar'}" dir="${lang === 'ar' ? 'ltr' : 'rtl'}">${esc(u.alt)}</p>
+        ${lang === 'ar' ? '' : `<p class="h1-alt" lang="ar" dir="rtl">${esc(u.alt)}</p>`}
         <hr class="gold-rule">
         <p class="lede">${esc(L(data.intro, lang))}</p>
       </div>
@@ -61,7 +61,7 @@ function pageHtml(data, lang, urlFor, settings) {
           ${s.items.map((it) => `
           <details class="faq-item" id="${esc(it.id)}" data-search="${esc(searchText(it))}">
             <summary><span class="faq-qt">${esc(L(it.q, lang))}</span></summary>
-            <div class="faq-a">${inline(L(it.a, lang))}${it.refs && it.refs.length ? `<p class="faq-refs"><span class="faq-refs-l">${esc(u.refs)}:</span> ${it.refs.map((r) => `<a href="${esc(r.url)}" target="_blank" rel="noopener" dir="ltr">${esc(r.label)}</a>`).join(' <span class="dot">·</span> ')}</p>` : ''}<button type="button" class="lnk faq-copy" data-copied="${esc(u.copied)}">${esc(u.copy)}</button></div>
+            <div class="faq-a">${inline(L(it.a, lang))}${it.refs && it.refs.length ? `<p class="faq-refs"><span class="faq-refs-l">${esc(u.refs)}:</span> ${it.refs.map((r) => `<a href="${esc(r.url)}" target="_blank" rel="noopener" dir="${lang === 'ar' && r.labelAr ? 'rtl' : 'ltr'}">${esc(lang === 'ar' && r.labelAr ? r.labelAr : r.label)}</a>`).join(' <span class="dot">·</span> ')}</p>` : ''}<button type="button" class="lnk faq-copy" data-copied="${esc(u.copied)}">${esc(u.copy)}</button></div>
           </details>`).join('')}
         </div>
       </section>`).join('')}

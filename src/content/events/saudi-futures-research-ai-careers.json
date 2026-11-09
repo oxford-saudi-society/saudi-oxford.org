@@ -1,58 +1,57 @@
 {
-  "id": "oss-006",
-  "slug": "saudi-futures-research-ai-careers",
-  "order": 6,
-  "title": {
-    "en": "Saudi Futures: Research, AI & Careers Gathering",
-    "ar": "آفاق سعودية — اجتماع البحث والابتكار وفرص المستقبل"
+ "id": "oss-006",
+ "slug": "saudi-futures-research-ai-careers",
+ "order": 6,
+ "title": {
+  "en": "Saudi Futures: Research, AI & Careers Gathering",
+  "ar": "آفاق سعودية: لقاء البحث والذكاء الاصطناعي والمسارات المهنية"
+ },
+ "description": {
+  "en": "A student-led exchange on research, artificial intelligence, innovation and professional opportunities between Oxford and Saudi Arabia; external speakers are not assumed.",
+  "ar": "لقاء حواري حول البحث العلمي والذكاء الاصطناعي والابتكار والفرص المهنية المرتبطة بأكسفورد والمملكة، بمشاركة أعضاء الجمعية."
+ },
+ "agenda": {
+  "en": [
+   "Member research highlights",
+   "AI discussion",
+   "career exchange."
+  ],
+  "ar": [
+   "عرض تجارب بحثية",
+   "نقاش عن الذكاء الاصطناعي",
+   "تبادل الخبرات المهنية."
+  ]
+ },
+ "category": "academic-careers",
+ "startLocal": "2027-05-13T18:00:00",
+ "endLocal": "2027-05-13T20:30:00",
+ "timezone": "Europe/London",
+ "venueKey": "noa-annexe",
+ "audience": "public",
+ "price": {
+  "status": "free",
+  "currency": "GBP",
+  "amountMinor": 0
+ },
+ "bookingRequired": true,
+ "registrationMode": "interest_only",
+ "eventStatus": "proposed",
+ "visibility": "published_as_proposal",
+ "capacity": null,
+ "waitlistEnabled": false,
+ "dateNotice": {
+  "en": "Date and venue are provisional and not yet confirmed.",
+  "ar": "التاريخ والمكان مبدئيان ولم يُؤكَّدا بعد."
+ },
+ "image": {
+  "web": "/assets/events/web/event-06-saudi-futures-research-ai-careers.webp",
+  "thumb": "/assets/events/thumbs/event-06-saudi-futures-research-ai-careers.webp",
+  "alt": {
+   "en": "Abstract brand-colour graphic for an academic and careers event.",
+   "ar": "تصميم تجريدي بألوان الجمعية لفعالية أكاديمية ومهنية."
   },
-  "description": {
-    "en": "A student-led exchange on research, artificial intelligence, innovation and professional opportunities between Oxford and Saudi Arabia; external speakers are not assumed.",
-    "ar": "اجتماع حواري حول البحث العلمي والذكاء الاصطناعي والابتكار والفرص المهنية المرتبطة بأكسفورد والمملكة، بمشاركة أعضاء الجمعية."
-  },
-  "agenda": {
-    "en": [
-      "Member research highlights",
-      "AI discussion",
-      "career exchange."
-    ],
-    "ar": [
-      "عرض تجارب بحثية",
-      "نقاش عن الذكاء الاصطناعي",
-      "تبادل الخبرات المهنية."
-    ]
-  },
-  "category": "academic-careers",
-  "startLocal": "2027-05-13T18:00:00",
-  "endLocal": "2027-05-13T20:30:00",
-  "timezone": "Europe/London",
-  "venueKey": "noa-annexe",
-  "audience": "public",
-  "price": {
-    "status": "free",
-    "currency": "GBP",
-    "amountMinor": 0
-  },
-  "bookingRequired": true,
-  "registrationMode": "interest_only",
-  "eventStatus": "proposed",
-  "visibility": "published_as_proposal",
-  "capacity": null,
-  "waitlistEnabled": false,
-  "dateNotice": {
-    "en": "Date and venue are proposed and not confirmed.",
-    "ar": "التاريخ والمكان مقترحان ولم يُؤكّدا بعد."
-  },
-  "image": {
-    "web": "/assets/events/web/event-06-saudi-futures-research-ai-careers.webp",
-    "thumb": "/assets/events/thumbs/event-06-saudi-futures-research-ai-careers.webp",
-    "alt": {
-      "en": "Illustrated concept artwork for Saudi Futures: Research, AI & Careers Gathering, Oxford Saudi Society.",
-      "ar": "تصميم توضيحي لفعالية آفاق سعودية — اجتماع البحث والابتكار وفرص المستقبل للجمعية السعودية بجامعة أكسفورد."
-    },
-    "credit": "AI-generated concept artwork supplied through the society planning conversation.",
-    "reviewNote": "AI-generated illustrative image, not a photograph of an actual event; inspect logos/flags for authenticity.",
-    "approved": false
-  },
-  "published": true
+  "credit": "Neutral event graphic in the Society brand colours (no photograph, text or emblem). Replace with approved artwork when available.",
+  "approved": true
+ },
+ "published": true
 }

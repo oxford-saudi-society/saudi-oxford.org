@@ -1,8 +1,9 @@
 /* Scheduled housekeeping (every 10 minutes): deliver queued mail, expire waitlist offers and
-   verification links, send reminders for confirmed events, mark finished events, apply retention. */
+   verification links, send reminders for confirmed events, mark finished events, apply the retention periods published in the privacy notice. */
 import { ready } from '../lib/db.mjs';
 import { processOutbox, enqueue } from '../lib/mail.mjs';
 import * as E from '../lib/events.mjs';
+import * as M from '../lib/membership.mjs';
 
 export const config = { schedule: '*/10 * * * *' };
 
@@ -50,12 +51,75 @@ async function sendReminders(db, site, now) {
   return n;
 }
 
-/* Retention (proposal from the package, owner-configurable): anonymise ordinary event PII N days after the event. */
-async function applyRetention(db, now) {
-  if ((process.env.RETENTION_ENABLED || '').toLowerCase() !== 'true') return { enabled: false };
-  const days = Math.max(30, Number(process.env.RETENTION_DAYS || 90));
-  const r = await db.query(`UPDATE oss_registrations r SET name = 'anonymised', email = 'anon-' || substr(md5(r.id::text), 1, 12) || '@anonymised.invalid', updated_at = now()
-    FROM oss_events e WHERE e.id = r.event_id AND e.end_utc < $1 AND r.email NOT LIKE 'anon-%@anonymised.invalid' AND NOT (r.marketing_opt_in AND r.status IN ('confirmed','checked_in'))`, [new Date(now.getTime() - days * 86400000)]);
-  const m = await db.query(`DELETE FROM oss_mail_outbox WHERE created_at < $1`, [new Date(now.getTime() - days * 86400000)]);
-  return { enabled: true, days, anonymised: r.rowCount || 0, mailPurged: m.rowCount || 0 };
+/* Retention, exactly as published in the privacy notice (2026-11-09). It is always on.
+   RETENTION_PAUSED=true stops every deletion (a legal hold on everything); oss_members.legal_hold protects one record.
+   · dietary / accessibility notes ........ cleared 7 days after the event ends
+   · event registration records ........... deleted 30 days after the event ends (anonymous totals stay on the event)
+   · membership records ................... deleted 12 months after the membership ends (or an application lapses)
+   · proof-of-nationality documents ....... deleted when the result is recorded; never kept beyond 30 days unchecked
+   · delivered email ...................... the outbox is a delivery queue, not an archive: cleared after 30 days
+   Financial transaction records are not held by this system (the treasurer keeps them, for six years where required). */
+export const RETENTION = { requirementsDays: 7, registrationDays: 30, membershipMonths: 12, mailDays: 30 };
+const ago = (now, days) => new Date(now.getTime() - days * 86400000);
+const monthsAgo = (now, months) => { const d = new Date(now.getTime()); d.setUTCMonth(d.getUTCMonth() - months); return d; };
+
+export async function applyRetention(db, now = new Date()) {
+  if ((process.env.RETENTION_PAUSED || '').toLowerCase() === 'true') return { paused: true };
+  const out = { paused: false };
+
+  // 1 · dietary and accessibility information: within 7 days after the event
+  out.requirementsCleared = (await db.query(`UPDATE oss_registrations r SET requirements = NULL, updated_at = now() FROM oss_events e
+    WHERE e.id = r.event_id AND r.requirements IS NOT NULL AND e.end_utc < $1`, [ago(now, RETENTION.requirementsDays)])).rowCount || 0;
+  out.pendingNotesCleared = (await db.query(`UPDATE oss_pending p SET payload = p.payload - 'requirements' FROM oss_events e
+    WHERE e.id = p.event_id AND p.payload ? 'requirements' AND e.end_utc < $1`, [ago(now, RETENTION.requirementsDays)])).rowCount || 0;
+
+  // 2 · event registration records: 30 days after the event
+  out.registrationsDeleted = 0; out.subscribersKept = 0;
+  const due = (await db.query(`SELECT e.id FROM oss_events e WHERE e.end_utc < $1 AND EXISTS (SELECT 1 FROM oss_registrations r WHERE r.event_id = e.id)`, [ago(now, RETENTION.registrationDays)])).rows;
+  for (const ev of due) {
+    await db.tx(async (q) => {
+      const counts = Object.fromEntries((await q.query('SELECT status, count(*)::int AS n FROM oss_registrations WHERE event_id = $1 GROUP BY status', [ev.id])).rows.map((x) => [x.status, x.n]));
+      await q.query('UPDATE oss_events SET final_counts = $2 WHERE id = $1', [ev.id, JSON.stringify(Object.assign({ deletedAt: now.toISOString() }, counts))]);
+      // people who asked for Society news keep that one subscription (their consent), without the registration
+      out.subscribersKept += (await q.query(`INSERT INTO oss_subscribers (email, name, lang, consent_at, source)
+        SELECT DISTINCT ON (email) email, name, lang, COALESCE(marketing_opt_in_at, consent_at), 'event' FROM oss_registrations
+        WHERE event_id = $1 AND marketing_opt_in AND status IN ('interested','confirmed','checked_in','waitlisted','offered') ORDER BY email, created_at DESC
+        ON CONFLICT (email) DO NOTHING`, [ev.id])).rowCount || 0;
+      const sub = 'SELECT id FROM oss_registrations WHERE event_id = $1';
+      await q.query(`DELETE FROM oss_reminders WHERE registration_id IN (${sub})`, [ev.id]);
+      await q.query(`DELETE FROM oss_checkins WHERE event_id = $1 OR registration_id IN (${sub})`, [ev.id]);
+      await q.query(`DELETE FROM oss_ticket_tokens WHERE registration_id IN (${sub})`, [ev.id]);
+      await q.query(`DELETE FROM oss_mail_outbox WHERE event_id = $1 OR registration_id IN (${sub})`, [ev.id]);
+      await q.query(`DELETE FROM oss_pending WHERE event_id = $1 OR registration_id IN (${sub})`, [ev.id]);
+      await q.query(`DELETE FROM oss_audit WHERE resource IN (SELECT 'registration:' || id::text FROM oss_registrations WHERE event_id = $1)`, [ev.id]);
+      out.registrationsDeleted += (await q.query('DELETE FROM oss_registrations WHERE event_id = $1', [ev.id])).rowCount || 0;
+      await q.query(`INSERT INTO oss_audit (actor, action, resource, meta) VALUES ('system', 'retention.registrations_deleted', $1, $2)`, ['event:' + ev.id, JSON.stringify(counts)]);
+    });
+  }
+
+  // 3 · membership: a lapsed membership is marked expired, and the record goes 12 months after it ended
+  out.membershipsExpired = (await db.query(`UPDATE oss_members SET status = 'expired', updated_at = now() WHERE status = 'approved' AND valid_until IS NOT NULL AND valid_until < $1::date`, [now])).rowCount || 0;
+  const cut = monthsAgo(now, RETENTION.membershipMonths);
+  const gone = (await db.query(`SELECT email, member_no, status FROM oss_members WHERE NOT legal_hold AND (
+      (status IN ('declined','revoked') AND COALESCE(decided_at, updated_at) < $1)
+      OR (status = 'expired' AND COALESCE(valid_until::timestamptz, decided_at, updated_at) < $1)
+      OR (status IN ('pending','info_requested') AND GREATEST(COALESCE(applied_at, created_at), COALESCE(info_requested_at, created_at), COALESCE(info_response_at, created_at)) < $1))`, [cut])).rows;
+  out.membersDeleted = 0;
+  for (const m of gone) {
+    await db.tx(async (q) => {
+      await q.query('DELETE FROM oss_pending WHERE email = $1 AND event_id IS NULL', [m.email]);
+      await q.query(`DELETE FROM oss_mail_outbox WHERE to_email = $1 AND kind LIKE 'membership%'`, [m.email]);
+      await q.query('DELETE FROM oss_audit WHERE resource = $1', ['member:' + m.member_no]);
+      await q.query('DELETE FROM oss_subscribers WHERE email = $1 AND source = $2', [m.email, 'membership']);
+      out.membersDeleted += (await q.query('DELETE FROM oss_members WHERE email = $1', [m.email])).rowCount || 0; // the uploaded document, if any, goes with it (cascade)
+      await q.query(`INSERT INTO oss_audit (actor, action, resource, meta) VALUES ('system', 'retention.member_deleted', NULL, $1)`, [JSON.stringify({ was: m.status })]);
+    });
+  }
+
+  // 4 · proof-of-nationality documents nobody has checked
+  out.evidenceExpired = await db.tx((q) => M.expireEvidence(q));
+
+  // 5 · delivered (or abandoned) email
+  out.mailPurged = (await db.query(`DELETE FROM oss_mail_outbox WHERE status IN ('sent','dead') AND created_at < $1`, [ago(now, RETENTION.mailDays)])).rowCount || 0;
+  return out;
 }

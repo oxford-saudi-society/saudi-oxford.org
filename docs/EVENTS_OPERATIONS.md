@@ -33,7 +33,7 @@ Static pages (`/events/`, `/events/<slug>/`, Arabic under `/ar/`) are built from
 * Postponing, cancelling or moving a confirmed event asks for a **preview → confirm**, bumps the calendar version (ICS `SEQUENCE`) and queues notices to everyone registered. Cancelling revokes tickets.
 * Emails go through a durable **outbox**: a message is marked *sent* only after the provider accepted it; failures retry with back-off (2 min → 12 h) and then dead-letter, visible in **Email queue** with a *Retry* button.
 * Everything staff do is in the **Audit log** (no attendee emails in the metadata). CSV exports are logged and formula-safe.
-* Privacy: the form asks for name and email only, records the privacy-notice version accepted and keeps the *news* opt-in separate and unticked by default. Optional retention job anonymises attendee data `RETENTION_DAYS` after each event (`RETENTION_ENABLED=true`).
+* Privacy: the form asks for name and email only, records the privacy-notice version accepted and keeps the *news* opt-in separate and unticked by default. A booking can carry an optional dietary/access note. Deletion follows the published privacy notice automatically (see *Data retention* below).
 
 ## Roles
 
@@ -52,7 +52,7 @@ Staff sign in at `/admin/events/` with an **email link** (no passwords). The fir
 3. Set **Registration mode = Open** → the public button becomes *Book now*. (Interested people are *not* auto-booked; tell them with **Notices → Registered interest**.)
 4. Bookings arrive; **Bookings** tab shows the roster; **Download CSV** for the door list if needed.
 5. On the day: **Check-in** → choose the event → *Start camera* (phone) or paste codes / search names. The tally updates live.
-6. Afterwards the event becomes *completed* automatically; retention (if enabled) anonymises data later.
+6. Afterwards the event becomes *completed* automatically. Dietary/access notes are cleared 7 days after the event and every registration is deleted 30 days after it (anonymous totals stay on the event). Export the attendee CSV within those 30 days if the committee needs it.
 
 ## Configuration (Netlify → Site configuration → Environment variables)
 
@@ -60,7 +60,23 @@ See `.env.example`. Required for the API to work at all: `DATABASE_URL` (or Netl
 
 **Database**: Netlify DB (Neon) via *Extensions → Neon* or `netlify db init`; or any PostgreSQL 14+. Tables are created automatically on first request (`oss_*`); the 11 events are seeded once from the content and never reset by a deploy. Back up with `pg_dump` (Neon also keeps point-in-time history); restore into an empty database and point `DATABASE_URL` at it.
 
-**Scheduled job** (`netlify/functions/jobs.mjs`, every 10 minutes): sends queued mail, expires waitlist offers, sends 7-day and 1-day reminders for confirmed events, marks finished events completed, applies retention.
+**Scheduled job** (`netlify/functions/jobs.mjs`, every 10 minutes): sends queued mail, expires waitlist offers, sends 7-day and 1-day reminders for confirmed events, marks finished events completed, and applies the retention periods.
+
+**Data retention** (always on; the same periods as the privacy notice — change both together):
+
+| What | When it is deleted |
+|---|---|
+| Dietary / accessibility notes | 7 days after the event ends |
+| Event registrations, tickets, check-ins, their emails and audit lines | 30 days after the event ends (totals by status are kept on the event; people who asked for news stay on the news list) |
+| Membership records | 12 months after the membership ends: declined/ended by the committee, or the *valid until* date has passed (the record is first marked *expired*). Applications left unfinished for 12 months go too |
+| Proof-of-nationality documents | The moment *Verified* or *Not accepted* is recorded, or the application is decided; never kept beyond 30 days unchecked |
+| Delivered email in the outbox | 30 days |
+
+Set `RETENTION_PAUSED=true` in Netlify to stop all deletion (for example during a legal claim); `oss_members.legal_hold = true` protects one record. Financial transaction records are not held by the website — the treasurer keeps them (six years where the law requires).
+
+**Proof of nationality** is uploaded by the applicant on their membership page (`/account/`), never emailed. It is stored in `oss_member_evidence`, opened only from the desk (*Membership → the applicant → Proof of nationality → Open the document*; every opening is logged), and deleted when the result is recorded. Do not download or forward it.
+
+**News subscribers**: *Membership → News subscribers (CSV)* lists everyone who ticked the news box.
 
 **Build-time truth**: set `SITE_API_URL=https://oxsss.org` so each build reads the live event state and the static HTML matches the desk without waiting for JavaScript. Optional `NETLIFY_BUILD_HOOK` enables the *Publish site* button.
 

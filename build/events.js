@@ -14,45 +14,45 @@ const L = (obj, lang) => (obj && typeof obj === 'object') ? (obj[lang] || obj.en
 const venues = fs.existsSync(path.join(SRC, 'content/venues.json')) ? readJson(path.join(SRC, 'content/venues.json')) : {};
 const labels = fs.existsSync(path.join(SRC, 'content/event-labels.json')) ? readJson(path.join(SRC, 'content/event-labels.json')) : {};
 const CATEGORY = {
-  community: { en: 'Community', ar: 'مجتمع' }, culture: { en: 'Culture', ar: 'ثقافة' }, 'culture-religion': { en: 'Culture & religion', ar: 'ثقافة ودين' },
-  religion: { en: 'Religion', ar: 'مناسبة دينية' }, 'academic-careers': { en: 'Academic & careers', ar: 'أكاديمي ومهني' }, sports: { en: 'Sports', ar: 'رياضة' },
+  community: { en: 'Community', ar: 'فعاليات مجتمعية' }, culture: { en: 'Culture', ar: 'فعاليات ثقافية' }, 'culture-religion': { en: 'Culture & religion', ar: 'فعاليات ثقافية ودينية' },
+  religion: { en: 'Religion', ar: 'مناسبات دينية' }, 'academic-careers': { en: 'Academic & careers', ar: 'فعاليات أكاديمية ومهنية' }, sports: { en: 'Sports', ar: 'أنشطة رياضية' },
 };
 const UI = {
   en: {
-    eyebrow: 'Oxford Saudi Society · 2026—2027', h1: 'Events & Gatherings', h1sub: 'فعاليات واجتماعات الجمعية',
+    eyebrow: 'Oxford Saudi Society · 2026—2027', h1: 'Events & Gatherings', h1sub: 'فعاليات وأنشطة الجمعية',
     lede: 'Student-led celebrations, community gatherings, research conversations and shared traditions in Oxford.',
-    range: 'December 2026 – December 2027', notice: 'All dates and venues are proposed until confirmed. Registration opens only once an event is confirmed.',
-    programme: 'Our programme', nEvents: (n) => `${n} event${n === 1 ? '' : 's'}`, search: 'Search events', searchPh: 'Search events / ابحث في الفعاليات',
+    range: 'December 2026 – December 2027', notice: 'All dates and venues are provisional until confirmed. Registration opens only after an event is confirmed; until then you can register your interest.',
+    programme: 'Our programme', nEvents: (n) => `${n} event${n === 1 ? '' : 's'}`, search: 'Search events', searchPh: 'Search by event or venue',
     month: 'Any month', category: 'All categories', clear: 'Clear filters', grid: 'Cards', list: 'List', view: 'View', upcoming: 'Upcoming', past: 'Past events',
     none: 'No events match', change: 'Change filters', details: 'View details', featured: 'Featured', next: 'Next on the programme',
-    time: 'Time', date: 'Date', location: 'Location', about: 'About this event', agenda: 'Programme', venue: 'Venue', organiser: 'Organiser & contact',
+    time: 'Time', date: 'Date', location: 'Location', about: 'About this event', agenda: 'Programme', agendaDraft: 'Draft programme', venue: 'Venue', organiser: 'Organiser & contact',
     access: 'Accessibility & questions', share: 'Share', copy: 'Copy link', copied: 'Link copied', ics: 'Add to calendar (.ics)', crumbHome: 'Home', crumbEvents: 'Events',
-    proposedLong: 'Proposed — venue and date not yet confirmed', proposedMsg: 'This event is a proposed date and venue. Registration is not yet confirmed.',
+    proposedNote: 'The date and venue are provisional until the committee confirms them.',
     eid: 'Lunar-calendar observances may differ by a day; the committee will confirm any change.', dinner: 'Price and booking conditions to be announced.',
-    venueUnconfirmed: 'Venue hire has not been confirmed. The exact address and directions will be published once the booking is in place.',
+    venueUnconfirmed: 'The exact address and directions will be published here once the venue is confirmed.',
     venueOutdoor: 'An outdoor gathering; details of the meeting point follow once the plan is confirmed.',
-    organiserText: 'Organised by the Oxford Saudi Society committee.', contact: 'Questions:', accessText: 'Tell us about any access needs when you register or by email; we will do what the venue allows. Prayer arrangements and family-friendly timings are considered for every gathering.',
-    privacyLine: 'Registration asks only for your name and email. See our', privacyLink: 'privacy notice', ticketNote: 'Tickets are issued only for confirmed events with open registration.',
-    cta: { soon: 'Registration opening soon', interest: 'Register interest', book: 'Book now', waitlist: 'Join waitlist', full: 'Fully booked', member: 'Sign in as a member', cancelled: 'Event cancelled', tbc: 'Date to be confirmed', closed: 'Registration closed', none: 'No booking required', past: 'This event has taken place' },
+    organiserText: 'Organised by the Oxford Saudi Society committee.', contact: 'Questions:', accessText: 'Tell us about any access requirements when you book; we will do what the venue allows. Prayer arrangements and family-friendly timings are considered for every gathering.',
+    privacyLine: 'Registration asks only for your name and email; dietary or access requirements are optional when you book. See our', privacyLink: 'privacy notice', ticketNote: 'Tickets are issued only for confirmed events with open registration.',
+    cta: { soon: 'Registration opens after confirmation', interest: 'Register interest', book: 'Book now', waitlist: 'Join waitlist', full: 'Fully booked', member: 'Sign in as a member', cancelled: 'Event cancelled', tbc: 'Date to be confirmed', closed: 'Registration closed', none: 'No booking required', past: 'This event has taken place' },
     interestNote: 'Registering interest is not a booking or a guaranteed place.',
     tagsAria: 'Access and price', statusAria: 'Status',
   },
   ar: {
-    eyebrow: 'الجمعية السعودية في أكسفورد · ٢٠٢٦—٢٠٢٧', h1: 'فعاليات واجتماعات الجمعية', h1sub: 'Events & Gatherings',
-    lede: 'احتفالات واجتماعات مجتمعية ولقاءات بحثية وتقاليد مشتركة يقودها الطلبة في أكسفورد.',
-    range: 'ديسمبر ٢٠٢٦ – ديسمبر ٢٠٢٧', notice: 'جميع المواعيد والأماكن مقترحة حتى تأكيدها. يُفتح التسجيل فقط بعد تأكيد الفعالية.',
-    programme: 'برنامجنا', nEvents: (n) => `${T.LOCALE ? new Intl.NumberFormat('ar-SA-u-nu-arab').format(n) : n} فعاليات`, search: 'ابحث في الفعاليات', searchPh: 'ابحث في الفعاليات / Search events',
+    eyebrow: 'الجمعية السعودية في أكسفورد · ٢٠٢٦—٢٠٢٧', h1: 'فعاليات وأنشطة الجمعية', h1sub: '',
+    lede: 'احتفالات ولقاءات مجتمعية وحوارات بحثية وتقاليد مشتركة يقودها الطلبة في أكسفورد.',
+    range: 'ديسمبر ٢٠٢٦ – ديسمبر ٢٠٢٧', notice: 'جميع المواعيد والأماكن مبدئية إلى أن تُؤكَّد. يُفتح التسجيل بعد تأكيد الفعالية فقط، وحتى ذلك الحين يمكنك تسجيل اهتمامك.',
+    programme: 'برنامجنا', nEvents: (n) => { const N = new Intl.NumberFormat('ar-SA-u-nu-arab').format(n); return n === 0 ? 'لا توجد فعاليات' : n === 1 ? 'فعالية واحدة' : n === 2 ? 'فعاليتان' : (n % 100 >= 3 && n % 100 <= 10) ? `${N} فعاليات` : `${N} فعالية`; }, search: 'ابحث في الفعاليات', searchPh: 'ابحث باسم الفعالية أو المكان',
     month: 'كل الأشهر', category: 'كل الفئات', clear: 'مسح الخيارات', grid: 'بطاقات', list: 'قائمة', view: 'العرض', upcoming: 'القادمة', past: 'فعاليات سابقة',
     none: 'لا توجد فعاليات مطابقة', change: 'غيّر خيارات البحث', details: 'تفاصيل الفعالية', featured: 'مميّزة', next: 'التالية في البرنامج',
-    time: 'الوقت', date: 'التاريخ', location: 'المكان', about: 'عن الفعالية', agenda: 'البرنامج', venue: 'المكان', organiser: 'الجهة المنظمة والتواصل',
-    access: 'الوصول والأسئلة', share: 'مشاركة', copy: 'نسخ الرابط', copied: 'تم نسخ الرابط', ics: 'أضف إلى التقويم (.ics)', crumbHome: 'الرئيسية', crumbEvents: 'الفعاليات',
-    proposedLong: 'مقترح — لم يُؤكّد المكان والتاريخ بعد', proposedMsg: 'التاريخ والمكان مقترحان، ولم يبدأ الحجز المؤكد بعد.',
+    time: 'الوقت', date: 'التاريخ', location: 'المكان', about: 'عن الفعالية', agenda: 'البرنامج', agendaDraft: 'البرنامج المبدئي', venue: 'المكان', organiser: 'الجهة المنظمة والتواصل',
+    access: 'إمكانية الوصول والأسئلة', share: 'مشاركة', copy: 'نسخ الرابط', copied: 'تم نسخ الرابط', ics: 'أضف إلى التقويم (.ics)', crumbHome: 'الرئيسية', crumbEvents: 'الفعاليات',
+    proposedNote: 'التاريخ والمكان مبدئيان إلى أن تؤكدهما اللجنة.',
     eid: 'قد يختلف الموعد الهجري يومًا بحسب إعلان دخول الشهر، وستؤكد اللجنة أي تعديل.', dinner: 'تُعلن الرسوم وشروط الحجز لاحقًا.',
-    venueUnconfirmed: 'لم يُؤكَّد حجز المكان بعد. سيُنشر العنوان الدقيق وطريقة الوصول بعد إتمام الحجز.',
-    venueOutdoor: 'اجتماع في الهواء الطلق؛ تُعلن نقطة التجمّع بعد تأكيد الخطة.',
-    organiserText: 'تنظّمه لجنة الجمعية السعودية في أكسفورد.', contact: 'للاستفسار:', accessText: 'أخبرنا بأي احتياجات للوصول عند التسجيل أو عبر البريد، وسنوفّر ما يسمح به المكان. تُراعى ترتيبات الصلاة والمواعيد المناسبة للعائلات في كل اجتماع.',
-    privacyLine: 'لا يطلب التسجيل سوى اسمك وبريدك الإلكتروني. راجع', privacyLink: 'إشعار الخصوصية', ticketNote: 'تُصدر التذاكر فقط للفعاليات المؤكدة التي فُتح تسجيلها.',
-    cta: { soon: 'يُفتح التسجيل لاحقًا', interest: 'سجّل اهتمامك', book: 'احجز مقعدك', waitlist: 'انضم لقائمة الانتظار', full: 'اكتمل العدد', member: 'تسجيل دخول الأعضاء', cancelled: 'أُلغيت الفعالية', tbc: 'التاريخ قيد التأكيد', closed: 'أُغلق التسجيل', none: 'لا يتطلب التسجيل', past: 'انتهت هذه الفعالية' },
+    venueUnconfirmed: 'سيُنشر هنا العنوان الدقيق وطريقة الوصول بعد تأكيد المكان.',
+    venueOutdoor: 'لقاء في الهواء الطلق؛ تُعلن نقطة التجمّع بعد تأكيد الخطة.',
+    organiserText: 'تنظّمه لجنة الجمعية السعودية في أكسفورد.', contact: 'للاستفسار:', accessText: 'أبلغنا بأي متطلبات تتعلق بإمكانية الوصول عند الحجز، وسنوفّر ما يسمح به المكان. تُراعى ترتيبات الصلاة والمواعيد المناسبة للعائلات في كل لقاء.',
+    privacyLine: 'لا يطلب التسجيل سوى اسمك وبريدك الإلكتروني، وذكر المتطلبات الغذائية أو متطلبات إمكانية الوصول اختياري عند الحجز. راجع', privacyLink: 'إشعار الخصوصية', ticketNote: 'تُصدر التذاكر فقط للفعاليات المؤكدة التي فُتح تسجيلها.',
+    cta: { soon: 'يُفتح التسجيل بعد تأكيد الفعالية', interest: 'سجّل اهتمامك', book: 'احجز مقعدك', waitlist: 'انضم لقائمة الانتظار', full: 'اكتمل العدد', member: 'تسجيل دخول الأعضاء', cancelled: 'أُلغيت الفعالية', tbc: 'التاريخ قيد التأكيد', closed: 'أُغلق التسجيل', none: 'لا يتطلب التسجيل', past: 'انتهت هذه الفعالية' },
     interestNote: 'تسجيل الاهتمام ليس حجزًا ولا ضمانًا للمقعد.',
     tagsAria: 'الدخول والرسوم', statusAria: 'الحالة',
   },
@@ -83,7 +83,8 @@ function tagsOf(e, lang) {
   t.push({ k: e.audience === 'members' ? 'members' : 'public', text: label(e.audience === 'members' ? 'members' : 'public', lang) });
   if (e.price && e.price.status === 'free') t.push({ k: 'free', text: label('free', lang) });
   else if (e.price && e.price.status === 'tbd') t.push({ k: 'tbd', text: label('tbd', lang) });
-  t.push({ k: e.bookingRequired ? 'booking' : 'no_booking', text: label(e.bookingRequired ? 'booking' : 'no_booking', lang) });
+  const bk = !e.bookingRequired ? 'no_booking' : (e.eventStatus === 'confirmed' || e.eventStatus === 'completed') ? 'booking' : 'booking_later';
+  t.push({ k: bk, text: label(bk, lang) });
   return t;
 }
 const tagsHtml = (e, lang) => `<ul class="tags etags" aria-label="${esc(UI[lang].tagsAria)}">${tagsOf(e, lang).map((t) => `<li data-k="${t.k}">${esc(t.text)}</li>`).join('')}</ul>`;
@@ -121,14 +122,14 @@ function indexHtml(events, lang, urlFor, settings) {
   const featured = upcoming[0] || events[0];
   const months = [...new Map(events.map((e) => [T.monthKey(e.start), T.fmtMonth(e.start, lang)])).entries()];
   const cats = [...new Set(events.map((e) => e.category))];
-  const chips = [['public', label('public', lang)], ['free', label('free', lang)], ['booking', label('booking', lang)], ['members', label('members', lang)]];
+  const chips = [['public', label('public', lang)], ['free', label('free', lang)], ['booking', lang === 'ar' ? 'تتطلب التسجيل' : 'Registration needed'], ['members', label('members', lang)]];
   const hero = `
   <section class="band tint head ev-head">
     <div class="wrap ev-hero">
       <div class="ev-hero-copy">
         <p class="eyebrow">${esc(u.eyebrow)}</p>
         <h2>${esc(u.h1)}</h2>
-        <p class="h1-alt" lang="${lang === 'ar' ? 'en' : 'ar'}" dir="${lang === 'ar' ? 'ltr' : 'rtl'}">${esc(u.h1sub)}</p>
+        ${u.h1sub ? `<p class="h1-alt" lang="ar" dir="rtl">${esc(u.h1sub)}</p>` : ''}
         <hr class="gold-rule">
         <p class="lede">${esc(u.lede)}</p>
         <p class="ev-range">${esc(u.range)}</p>
@@ -182,30 +183,30 @@ function detailHtml(e, lang, urlFor, settings) {
   const cta = ctaFor(e, lang);
   const venueName = e.venue ? L(e.venue.name, lang) : (lang === 'ar' ? 'يُعلن لاحقًا' : 'To be announced');
   const venueNote = e.venue && e.venue.bookingStatus === 'confirmed' && e.venue.addressVerified ? esc(e.venue.addressVerified) : esc(e.venue && e.venue.type === 'outdoor' ? u.venueOutdoor : u.venueUnconfirmed);
-  const agenda = (e.agenda && e.agenda[lang] && e.agenda[lang].length) ? `<section class="ev-block"><h3>${esc(u.agenda)}</h3><ol class="ev-agenda">${e.agenda[lang].map((x) => `<li>${esc(x)}</li>`).join('')}</ol></section>` : '';
+  const agenda = (e.agenda && e.agenda[lang] && e.agenda[lang].length) ? `<section class="ev-block"><h3>${esc(e.eventStatus === 'confirmed' || e.eventStatus === 'completed' ? u.agenda : u.agendaDraft)}</h3><ol class="ev-agenda">${e.agenda[lang].map((x) => `<li>${esc(x)}</li>`).join('')}</ol></section>` : '';
   const email = settings.email ? `<a href="mailto:${esc(settings.email)}">${esc(settings.email)}</a>` : `<span class="ph">[hello@address]</span>`;
   const notices = [];
-  if (e.eventStatus === 'proposed') notices.push(u.proposedMsg);
   if (e.eid) notices.push(u.eid);
   if (e.price && e.price.status === 'tbd') notices.push(u.dinner);
   const icsHref = urlFor('event:' + e.slug, 'en').replace(/\/$/, '') + '/event.ics';
   return `
   <nav class="crumbs" aria-label="${esc(lang === 'ar' ? 'مسار الصفحة' : 'Breadcrumb')}"><a href="${urlFor('home', lang)}">${esc(u.crumbHome)}</a><span>/</span><a href="${urlFor('events', lang)}">${esc(u.crumbEvents)}</a><span>/</span><span aria-current="page">${esc(L(e.title, lang))}</span></nav>
   <div class="ev-detail" data-slug="${esc(e.slug)}" data-status="${esc(e.eventStatus)}" data-mode="${esc(e.registrationMode)}" data-aud="${esc(e.audience)}" data-start="${e.start.toISOString()}" data-end="${e.end.toISOString()}" data-cta="${cta.key}">
-    <figure class="ev-art"><img src="${esc(e.image.web)}" width="1080" height="1080" alt="${esc(L(e.image.alt, lang))}" fetchpriority="high"><figcaption class="ev-credit">${esc(lang === 'ar' ? 'صورة تصوّرية' : 'Concept artwork')}</figcaption></figure>
+    <figure class="ev-art"><img src="${esc(e.image.web)}" width="1080" height="1080" alt="${esc(L(e.image.alt, lang))}" fetchpriority="high"></figure>
     <div class="ev-info">
-      <div class="evc-top"><time class="pill" datetime="${e.start.toISOString()}">${esc(T.fmtPill(e.start, lang))}</time><span class="status s-${esc(e.eventStatus)}" data-status-label>${esc(statusText(e, lang))}</span></div>
+      <div class="evc-top"><time class="pill" datetime="${e.start.toISOString()}">${esc(T.fmtPill(e.start, lang))}</time></div>
+      <div class="ev-banner s-${esc(e.eventStatus)}" id="ev-banner" role="note"><b data-status-label>${esc(statusText(e, lang))}</b><span class="ev-banner-note" data-proposed-note${e.eventStatus === 'proposed' ? '' : ' hidden'}>${esc(u.proposedNote)}</span></div>
       <h2 class="ev-title">${esc(L(e.title, lang))}</h2>
       <p class="ev-title-alt" lang="${otherLang}" dir="${otherLang === 'ar' ? 'rtl' : 'ltr'}">${esc(L(e.title, otherLang))}</p>
       <dl class="ev-facts">
         <div><dt>${esc(u.date)}</dt><dd data-when>${esc(T.fmtDateLong(e.start, lang))}</dd></div>
         <div><dt>${esc(u.time)}</dt><dd data-time>${esc(T.fmtRange(e.start, e.end, lang))} <small>${esc(lang === 'ar' ? '(بتوقيت أكسفورد)' : '(Oxford time)')}</small></dd></div>
-        <div><dt>${esc(u.location)}</dt><dd data-venue>${esc(venueName)}${e.eventStatus === 'proposed' ? ` <small>${esc(lang === 'ar' ? '— مقترح' : '— proposed')}</small>` : ''}</dd></div>
+        <div><dt>${esc(u.location)}</dt><dd data-venue>${esc(venueName)}</dd></div>
       </dl>
       ${tagsHtml(e, lang)}
       ${notices.map((n) => `<p class="ev-note">${esc(n)}</p>`).join('')}
       <div class="reg-panel" id="reg-panel" data-cta="${cta.key}">
-        <p class="reg-state" id="reg-state" aria-live="polite">${e.eventStatus === 'proposed' ? esc(u.proposedLong) : ''}</p>
+        <p class="reg-state" id="reg-state" aria-live="polite"></p>
         <button type="button" class="btn btn-p reg-cta" id="reg-cta" data-key="${cta.key}"${cta.on ? '' : ' disabled aria-disabled="true"'}>${esc(cta.text)}</button>
         ${cta.key === 'interest' ? `<p class="reg-sub">${esc(u.interestNote)}</p>` : ''}
         <p class="reg-sub" id="reg-msg" hidden></p>
@@ -249,7 +250,7 @@ function nextEvent(events, lang) {
   const now = new Date();
   const e = events.find((x) => x.end >= now) || null;
   if (!e) return null;
-  return { e, title: L(e.title, lang), sub: `${T.fmtDate(e.start, lang)} · ${T.fmtRange(e.start, e.end, lang)}${e.venue ? ' · ' + L(e.venue.name, lang) : ''}${e.eventStatus === 'proposed' ? (lang === 'ar' ? ' · مقترح' : ' · proposed') : ''}` };
+  return { e, title: L(e.title, lang), sub: `${T.fmtDate(e.start, lang)} · ${T.fmtRange(e.start, e.end, lang)}${e.venue ? ' · ' + L(e.venue.name, lang) : ''}${e.eventStatus === 'proposed' ? (lang === 'ar' ? ' · مبدئي' : ' · proposed') : ''}` };
 }
 
 module.exports = { loadEvents, indexHtml, detailHtml, icsFor, jsonLd, nextEvent, UI, CATEGORY, tagsOf, L };

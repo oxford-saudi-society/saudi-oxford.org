@@ -345,15 +345,32 @@ test('C19 capacity cannot drop below seated; admin cancel releases the seat and 
   assert.ok(audit.body.audit.every((a) => !/(badr|racer\d+|member|formula|amal)@example\.org/.test(JSON.stringify(a.meta || {}))), 'audit meta carries no attendee emails');
 });
 
-test('C21 retention: anonymises ordinary PII for events past the window when enabled', async () => {
+test('C21 retention: registrations go 30 days after the event; anonymous totals and news opt-ins survive', async () => {
   const { runJobs } = await import('../netlify/functions/jobs.mjs');
-  await db.query("UPDATE oss_events SET start_utc = now() - interval '200 days', end_utc = now() - interval '200 days' + interval '3 hours' WHERE id = 'oss-003'");
-  process.env.RETENTION_ENABLED = 'true'; process.env.RETENTION_DAYS = '90';
-  const out = await runJobs(db, C.site);
-  assert.ok(out.retention.anonymised >= 1, JSON.stringify(out.retention));
-  const left = await q(db, "SELECT email FROM oss_registrations WHERE event_id = 'oss-003' AND email LIKE 'racer%'");
-  assert.equal(left.length, 0);
-  delete process.env.RETENTION_ENABLED;
+  const before = (await q(db, "SELECT count(*)::int AS n FROM oss_registrations WHERE event_id = 'oss-003'"))[0].n;
+  assert.ok(before >= 2);
+  await db.query("UPDATE oss_registrations SET marketing_opt_in = true, marketing_opt_in_at = now() WHERE id = (SELECT id FROM oss_registrations WHERE event_id = 'oss-003' AND status IN ('confirmed','checked_in','interested','waitlisted','offered') ORDER BY created_at LIMIT 1)");
+  // 29 days after the event: nothing is deleted yet
+  await db.query("UPDATE oss_events SET start_utc = now() - interval '29 days' - interval '3 hours', end_utc = now() - interval '29 days' WHERE id = 'oss-003'");
+  let out = await runJobs(db, C.site);
+  assert.equal(out.retention.registrationsDeleted, 0, JSON.stringify(out.retention));
+  // 31 days after: every registration, ticket, check-in, reminder and queued email for that event is gone
+  await db.query("UPDATE oss_events SET start_utc = now() - interval '31 days' - interval '3 hours', end_utc = now() - interval '31 days' WHERE id = 'oss-003'");
+  out = await runJobs(db, C.site);
+  assert.equal(out.retention.registrationsDeleted, before, JSON.stringify(out.retention));
+  assert.equal((await q(db, "SELECT count(*)::int AS n FROM oss_registrations WHERE event_id = 'oss-003'"))[0].n, 0);
+  assert.equal((await q(db, "SELECT count(*)::int AS n FROM oss_mail_outbox WHERE event_id = 'oss-003'"))[0].n, 0);
+  assert.equal((await q(db, "SELECT count(*)::int AS n FROM oss_checkins WHERE event_id = 'oss-003'"))[0].n, 0);
+  const ev = (await q(db, "SELECT final_counts FROM oss_events WHERE id = 'oss-003'"))[0];
+  assert.ok(ev.final_counts && ev.final_counts.deletedAt, 'anonymous totals are kept on the event');
+  assert.equal(out.retention.subscribersKept, 1, 'the one person who asked for news keeps that subscription');
+  assert.equal((await q(db, 'SELECT count(*)::int AS n FROM oss_subscribers'))[0].n, 1);
+  // other events are untouched
+  assert.ok((await q(db, "SELECT count(*)::int AS n FROM oss_registrations WHERE event_id <> 'oss-003'"))[0].n >= 0);
+  // the emergency brake stops all deletion
+  process.env.RETENTION_PAUSED = 'true';
+  assert.deepEqual((await runJobs(db, C.site)).retention, { paused: true });
+  delete process.env.RETENTION_PAUSED;
 });
 
 test('C18 annual dinner: price to be announced, interest only, nothing to pay or book', async () => {

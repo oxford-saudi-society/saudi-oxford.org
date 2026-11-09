@@ -48,6 +48,7 @@ export async function makeClient() {
     const res = await api(new Request((opts.base || site) + path, { method, headers, body, redirect: 'manual' }), { ip: opts.ip || '10.0.0.' + (opts.sameIp ? 1 : (++ipCounter % 250) + 1), waitUntil: (p) => waits.push(p) });
     await Promise.allSettled(waits);
     const ct = res.headers.get('content-type') || '';
+    if (opts.binary) return { status: res.status, headers: res.headers, buffer: Buffer.from(await res.arrayBuffer()) };
     const text = await res.text();
     return { status: res.status, headers: res.headers, location: res.headers.get('location'), cookie: (res.headers.get('set-cookie') || '').split(';')[0] || null, body: ct.includes('json') && text ? JSON.parse(text) : text };
   }

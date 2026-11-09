@@ -31,13 +31,13 @@
 
   var S = {
     en: {
-      status: { proposed: 'Proposed · Not Confirmed', confirmed: 'Confirmed', cancelled: 'Event cancelled', postponed: 'Date to be confirmed', completed: 'Past event' },
-      cta: { soon: 'Registration opening soon', interest: 'Register interest', book: 'Book now', waitlist: 'Join waitlist', full: 'Fully booked', member: 'Sign in as a member', cancelled: 'Event cancelled', tbc: 'Date to be confirmed', closed: 'Registration closed', none: 'No booking required', past: 'This event has taken place' },
+      status: { proposed: 'Proposed — Not Confirmed', confirmed: 'Confirmed', cancelled: 'Event cancelled', postponed: 'Date to be confirmed', completed: 'Past event' },
+      cta: { soon: 'Registration opens after confirmation', interest: 'Register interest', book: 'Book now', waitlist: 'Join waitlist', full: 'Fully booked', member: 'Sign in as a member', cancelled: 'Event cancelled', tbc: 'Date to be confirmed', closed: 'Registration closed', none: 'No booking required', past: 'This event has taken place' },
       count: function (n) { return n + ' event' + (n === 1 ? '' : 's'); },
       seats: function (n) { return n === 1 ? '1 place left' : n + ' places left'; }, waitOnly: 'Fully booked — waitlist open',
       kind: { interest: 'Register interest', book: 'Book your place', waitlist: 'Join the waitlist', login: 'Member sign-in' },
       intro: {
-        interest: 'This event is a proposed date and venue. Registering interest is not a booking or a guaranteed place — we will write to you when registration opens.',
+        interest: 'This event is not confirmed yet. Registering interest is not a booking or a guaranteed place — we will write to you when registration opens.',
         book: 'Your place is assigned when you confirm your email address. Seats are not held before you click the link we send.',
         waitlist: 'All places are taken. Join the waitlist and we will email you if a place opens; you will then have 24 hours to claim it.',
         login: 'This event is reserved for verified members. Enter the email address on your membership and we will send you a sign-in link.'
@@ -79,13 +79,13 @@
       wa: function (title, when, url) { return title + ' — ' + when + '\n' + url; }
     },
     ar: {
-      status: { proposed: 'مقترح · غير مؤكد', confirmed: 'مؤكدة', cancelled: 'أُلغيت الفعالية', postponed: 'التاريخ قيد التأكيد', completed: 'فعالية سابقة' },
+      status: { proposed: 'مبدئي — بانتظار التأكيد', confirmed: 'مؤكدة', cancelled: 'أُلغيت الفعالية', postponed: 'التاريخ قيد التأكيد', completed: 'فعالية سابقة' },
       cta: { soon: 'يُفتح التسجيل لاحقًا', interest: 'سجّل اهتمامك', book: 'احجز مقعدك', waitlist: 'انضم لقائمة الانتظار', full: 'اكتمل العدد', member: 'تسجيل دخول الأعضاء', cancelled: 'أُلغيت الفعالية', tbc: 'التاريخ قيد التأكيد', closed: 'أُغلق التسجيل', none: 'لا يتطلب التسجيل', past: 'انتهت هذه الفعالية' },
-      count: function (n) { return num(n) + ' فعاليات'; },
+      count: function (n) { return n === 0 ? 'لا توجد فعاليات' : n === 1 ? 'فعالية واحدة' : n === 2 ? 'فعاليتان' : (n % 100 >= 3 && n % 100 <= 10) ? num(n) + ' فعاليات' : num(n) + ' فعالية'; },
       seats: function (n) { return n === 1 ? 'مقعد واحد متبقٍ' : 'المقاعد المتبقية: ' + num(n); }, waitOnly: 'اكتمل العدد — قائمة الانتظار مفتوحة',
       kind: { interest: 'تسجيل الاهتمام', book: 'حجز مقعد', waitlist: 'الانضمام لقائمة الانتظار', login: 'تسجيل دخول الأعضاء' },
       intro: {
-        interest: 'التاريخ والمكان مقترحان، ولم يبدأ الحجز المؤكد بعد. تسجيل الاهتمام ليس حجزًا ولا ضمانًا للمقعد، وسنراسلك عند فتح التسجيل.',
+        interest: 'هذه الفعالية لم تُؤكَّد بعد. تسجيل الاهتمام ليس حجزًا ولا ضمانًا للمقعد، وسنراسلك عند فتح التسجيل.',
         book: 'يُخصّص مقعدك عند تأكيد بريدك الإلكتروني. لا تُحجز المقاعد قبل الضغط على الرابط الذي نرسله.',
         waitlist: 'اكتملت المقاعد. انضم لقائمة الانتظار وسنراسلك إن توفّر مقعد، ويكون أمامك ٢٤ ساعة لتأكيده.',
         login: 'هذه الفعالية مخصصة لأعضاء الجمعية المعتمدين. أدخل بريد عضويتك وسنرسل لك رابط دخول.'
@@ -268,7 +268,7 @@
       if (extra && !(stateP.getAttribute('data-banner'))) { stateP.textContent = extra; }
       // status label + facts if the committee changed them after the build
       var st2 = det.querySelector('[data-status-label]');
-      if (st2 && ev.eventStatus !== det.getAttribute('data-status')) { st2.className = 'status s-' + ev.eventStatus; st2.textContent = s.status[ev.eventStatus] || ev.eventStatus; det.setAttribute('data-status', ev.eventStatus); }
+      if (st2 && ev.eventStatus !== det.getAttribute('data-status')) { var bn = $('ev-banner'), pn = det.querySelector('[data-proposed-note]'); if (bn) bn.className = 'ev-banner s-' + ev.eventStatus; if (pn) pn.hidden = ev.eventStatus !== 'proposed'; st2.textContent = s.status[ev.eventStatus] || ev.eventStatus; det.setAttribute('data-status', ev.eventStatus); }
       if (ev.startUtc !== det.getAttribute('data-start') || ev.endUtc !== det.getAttribute('data-end')) {
         var a = new Date(ev.startUtc), b = new Date(ev.endUtc);
         var w = det.querySelector('[data-when]'), tm = det.querySelector('[data-time] '), pill = det.querySelector('.pill');
@@ -297,6 +297,9 @@
       $('reg-submit').textContent = s.submit[m];
       var nameF = $('reg-name').closest('.f'), newsF = $('reg-news').closest('.f');
       nameF.hidden = m === 'login'; newsF.hidden = m === 'login';
+      var useP = form.querySelector('.reg-use'), reqF = $('reg-req-f');
+      if (useP) useP.hidden = m === 'login';
+      if (reqF) reqF.hidden = !(m === 'book' || m === 'waitlist'); // dietary / access notes only matter for an actual place
       $('reg-errs').classList.remove('on'); $('reg-errs').textContent = '';
       form.querySelectorAll('.f.err').forEach(function (f) { f.classList.remove('err'); });
       form.hidden = false; done.hidden = true;
@@ -361,6 +364,7 @@
       if (mode !== 'login') { body.name = name; body.marketing_opt_in = $('reg-news').checked; }
       var path = mode === 'login' ? '/auth/request-link' : mode === 'interest' ? '/events/' + slug + '/interest' : '/events/' + slug + '/register';
       if (mode === 'waitlist') body.waitlist = true;
+      if ((mode === 'book' || mode === 'waitlist') && $('reg-req') && $('reg-req').value.trim()) body.requirements = $('reg-req').value.trim().slice(0, 500);
       busy = true; var btn = $('reg-submit'), keep = btn.textContent; btn.disabled = true; btn.textContent = s.sending;
       try {
         var res = await api(path, { method: 'POST', body: body, headers: { 'Idempotency-Key': idem(slug, email, mode) } });

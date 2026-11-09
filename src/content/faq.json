@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-08",
+  "updated": "2026-11-09",
   "intro": {
     "en": "Practical guidance for studying and living in Oxford, kept by the committee for Saudi students, researchers and their families.",
     "ar": "دليل عملي للدراسة والحياة في أكسفورد، تحدّثه اللجنة للطلبة والباحثين السعوديين وأسرهم."
@@ -19,7 +19,7 @@
           },
           "a": {
             "en": "No. Membership is open to all members of the University, and our cultural events are open to the wider Oxford community. Membership is free for Saudi students; other members pay a small annual fee that funds the programme.",
-            "ar": "لا. العضوية مفتوحة لجميع منتسبي الجامعة، وفعالياتنا الثقافية مفتوحة لمجتمع أكسفورد الأوسع. العضوية مجانية للطلبة السعوديين، ويدفع الأعضاء الآخرون رسماً سنوياً بسيطاً يموّل البرنامج."
+            "ar": "لا. العضوية مفتوحة لجميع منتسبي الجامعة، وفعالياتنا الثقافية مفتوحة لمجتمع أكسفورد. العضوية مجانية للطلبة السعوديين، ويدفع الأعضاء الآخرون رسماً سنوياً بسيطاً يموّل البرنامج."
           },
           "refs": [],
           "id": "join-non-saudi"
@@ -30,8 +30,8 @@
             "ar": "كيف أثبت أنني سعودي؟"
           },
           "a": {
-            "en": "After you apply we'll email you for a photo of your Saudi passport or national ID, or your Cultural Bureau scholarship confirmation. We check it and then delete it — no copy is kept.",
-            "ar": "بعد تقديم طلبك سنراسلك لطلب صورة من جواز سفرك السعودي أو هويتك الوطنية، أو تأكيد الابتعاث من الملحقية الثقافية. نتحقق منها ثم نحذفها — لا نحتفظ بنسخة."
+            "en": "After you apply, sign in to your membership page and upload one document: the photo page of your Saudi passport, your national ID or your Cultural Bureau scholarship confirmation. Only authorised committee members can open it, and it is deleted automatically as soon as the check is recorded — we keep the result, never the document. Please do not send identity documents by email.",
+            "ar": "بعد تقديم طلبك، سجّل الدخول إلى صفحة عضويتك وارفع مستندًا واحدًا: صفحة الصورة في جواز سفرك السعودي، أو هويتك الوطنية، أو تأكيد الابتعاث من الملحقية الثقافية. لا يستطيع فتحه سوى أعضاء اللجنة المخوّلين، ويُحذف تلقائيًا فور تسجيل نتيجة التحقق — نحتفظ بالنتيجة فقط لا بالمستند. يرجى عدم إرسال وثائق الهوية بالبريد الإلكتروني."
           },
           "refs": [],
           "id": "prove-saudi"
@@ -42,8 +42,8 @@
             "ar": "كيف أدفع رسوم العضوية؟"
           },
           "a": {
-            "en": "Once you've applied you get a reference number, and you can pay by card through a secure payment page or by bank transfer quoting the reference. Membership starts as soon as the payment is matched. A hardship fund exists for anyone who needs it — email the treasurer in confidence.",
-            "ar": "بعد تقديم الطلب ستحصل على رقم مرجعي، ويمكنك الدفع بالبطاقة عبر صفحة دفع آمنة أو بالتحويل البنكي مع ذكر الرقم المرجعي. تبدأ العضوية بمجرد مطابقة الدفعة. يوجد صندوق للمساعدة لمن يحتاج — راسل أمين الصندوق بسرّية."
+            "en": "Once you've applied you get a membership number. The treasurer will then email you how to pay; quote your membership number as the payment reference. Membership starts once the committee has confirmed the payment.",
+            "ar": "بعد تقديم الطلب تحصل على رقم عضوية، ثم يراسلك أمين الصندوق بطريقة الدفع؛ اكتب رقم عضويتك مرجعًا للدفع. تبدأ العضوية بعد تأكيد اللجنة استلام الدفعة."
           },
           "refs": [],
           "id": "pay-fee"
@@ -67,7 +67,7 @@
           },
           "a": {
             "en": "Alumni and staff are welcome at social events and the annual dinner. Full membership may be restricted by the Society's constitution.",
-            "ar": "الخريجون والموظفون مرحّب بهم في الفعاليات الاجتماعية والعشاء السنوي. قد تنطبق قيود على العضوية الكاملة بحسب دستور الجمعية."
+            "ar": "الخريجون والموظفون مرحّب بهم في الفعاليات الاجتماعية والعشاء السنوي. قد تنطبق قيود على العضوية الكاملة بحسب اللائحة الأساسية للجمعية."
           },
           "refs": [],
           "id": "alumni-staff"
@@ -115,7 +115,7 @@
           },
           "a": {
             "en": "The committee is elected at the AGM and any member can stand. Details are announced a term in advance.",
-            "ar": "تُنتخب اللجنة في الاجتماع العمومي السنوي، ويمكن لأي عضو الترشّح. تُعلن التفاصيل قبل الاجتماع بفصل دراسي كامل."
+            "ar": "تُنتخب اللجنة في اجتماع الجمعية العمومية السنوي، ويمكن لأي عضو الترشّح. تُعلن التفاصيل قبل الاجتماع بفصل دراسي كامل."
           },
           "refs": [],
           "id": "stand-for-committee"
@@ -141,7 +141,8 @@
           "refs": [
             {
               "label": "SACB: starting your studies",
-              "url": "https://sites.moe.gov.sa/cm/uk/departments/department-85/"
+              "url": "https://sites.moe.gov.sa/cm/uk/departments/department-85/",
+              "labelAr": "الملحقية الثقافية (SACB): مباشرة الدراسة"
             }
           ],
           "id": "safir-start"
@@ -158,11 +159,13 @@
           "refs": [
             {
               "label": "SACB: starting your studies",
-              "url": "https://sites.moe.gov.sa/cm/uk/departments/department-85/"
+              "url": "https://sites.moe.gov.sa/cm/uk/departments/department-85/",
+              "labelAr": "الملحقية الثقافية (SACB): مباشرة الدراسة"
             },
             {
               "label": "Oxford: term dates",
-              "url": "https://www.ox.ac.uk/about/the-university/facts-and-figures/dates-of-term"
+              "url": "https://www.ox.ac.uk/about/the-university/facts-and-figures/dates-of-term",
+              "labelAr": "جامعة أكسفورد: مواعيد الفصول الدراسية"
             }
           ],
           "id": "safir-study-plan"
@@ -179,11 +182,13 @@
           "refs": [
             {
               "label": "SACB: financial guarantees",
-              "url": "https://sites.moe.gov.sa/cm/uk/departments/department-67/"
+              "url": "https://sites.moe.gov.sa/cm/uk/departments/department-67/",
+              "labelAr": "الملحقية الثقافية (SACB): الضمانات المالية"
             },
             {
               "label": "SACB: starting your studies",
-              "url": "https://sites.moe.gov.sa/cm/uk/departments/department-85/"
+              "url": "https://sites.moe.gov.sa/cm/uk/departments/department-85/",
+              "labelAr": "الملحقية الثقافية (SACB): مباشرة الدراسة"
             }
           ],
           "id": "financial-guarantee"
@@ -200,7 +205,8 @@
           "refs": [
             {
               "label": "SACB: financial guarantees",
-              "url": "https://sites.moe.gov.sa/cm/uk/departments/department-67/"
+              "url": "https://sites.moe.gov.sa/cm/uk/departments/department-67/",
+              "labelAr": "الملحقية الثقافية (SACB): الضمانات المالية"
             }
           ],
           "id": "guarantee-college-or-university"
@@ -217,7 +223,8 @@
           "refs": [
             {
               "label": "SACB: financial guarantees",
-              "url": "https://sites.moe.gov.sa/cm/uk/departments/department-67/"
+              "url": "https://sites.moe.gov.sa/cm/uk/departments/department-67/",
+              "labelAr": "الملحقية الثقافية (SACB): الضمانات المالية"
             }
           ],
           "id": "bench-fees"
@@ -234,7 +241,8 @@
           "refs": [
             {
               "label": "SACB: submit an enquiry",
-              "url": "https://sites.moe.gov.sa/cm/uk/departments/department-31/"
+              "url": "https://sites.moe.gov.sa/cm/uk/departments/department-31/",
+              "labelAr": "الملحقية الثقافية (SACB): تقديم استفسار"
             }
           ],
           "id": "contact-bureau"
@@ -251,11 +259,13 @@
           "refs": [
             {
               "label": "Ministry: technical support",
-              "url": "https://www.moe.gov.sa/en/services/unified-services-guide/reportissue"
+              "url": "https://www.moe.gov.sa/en/services/unified-services-guide/reportissue",
+              "labelAr": "وزارة التعليم: الدعم الفني"
             },
             {
               "label": "SACB: submit an enquiry",
-              "url": "https://sites.moe.gov.sa/cm/uk/departments/department-31/"
+              "url": "https://sites.moe.gov.sa/cm/uk/departments/department-31/",
+              "labelAr": "الملحقية الثقافية (SACB): تقديم استفسار"
             }
           ],
           "id": "safir-upload-error"
@@ -272,11 +282,13 @@
           "refs": [
             {
               "label": "SACB: submit an enquiry",
-              "url": "https://sites.moe.gov.sa/cm/uk/departments/department-31/"
+              "url": "https://sites.moe.gov.sa/cm/uk/departments/department-31/",
+              "labelAr": "الملحقية الثقافية (SACB): تقديم استفسار"
             },
             {
               "label": "SACB: starting your studies",
-              "url": "https://sites.moe.gov.sa/cm/uk/departments/department-85/"
+              "url": "https://sites.moe.gov.sa/cm/uk/departments/department-85/",
+              "labelAr": "الملحقية الثقافية (SACB): مباشرة الدراسة"
             }
           ],
           "id": "stipend-delay"
@@ -293,7 +305,8 @@
           "refs": [
             {
               "label": "SACB: travel tickets",
-              "url": "https://sites.moe.gov.sa/cm/uk/departments/department-32/"
+              "url": "https://sites.moe.gov.sa/cm/uk/departments/department-32/",
+              "labelAr": "الملحقية الثقافية (SACB): تذاكر السفر"
             }
           ],
           "id": "travel-ticket"
@@ -310,7 +323,8 @@
           "refs": [
             {
               "label": "SACB: travel tickets",
-              "url": "https://sites.moe.gov.sa/cm/uk/departments/department-32/"
+              "url": "https://sites.moe.gov.sa/cm/uk/departments/department-32/",
+              "labelAr": "الملحقية الثقافية (SACB): تذاكر السفر"
             }
           ],
           "id": "change-ticket"
@@ -327,7 +341,8 @@
           "refs": [
             {
               "label": "SACB: conference participation",
-              "url": "https://sites.moe.gov.sa/cm/uk/departments/department-34/"
+              "url": "https://sites.moe.gov.sa/cm/uk/departments/department-34/",
+              "labelAr": "الملحقية الثقافية (SACB): المشاركة في المؤتمرات"
             }
           ],
           "id": "conference-support"
@@ -344,11 +359,13 @@
           "refs": [
             {
               "label": "SACB: scholarship extensions",
-              "url": "https://sites.moe.gov.sa/cm/uk/departments/department-65/"
+              "url": "https://sites.moe.gov.sa/cm/uk/departments/department-65/",
+              "labelAr": "الملحقية الثقافية (SACB): تمديد البعثة"
             },
             {
               "label": "Oxford: research degree stages",
-              "url": "https://www.ox.ac.uk/students/academic/graduate/research"
+              "url": "https://www.ox.ac.uk/students/academic/graduate/research",
+              "labelAr": "جامعة أكسفورد: مراحل درجات البحث"
             }
           ],
           "id": "extension-letters"
@@ -374,11 +391,13 @@
           "refs": [
             {
               "label": "The Airline: airport coach",
-              "url": "https://www.oxfordbus.co.uk/airline"
+              "url": "https://www.oxfordbus.co.uk/airline",
+              "labelAr": "The Airline: حافلة المطار"
             },
             {
               "label": "The Airline: 2026 stop changes",
-              "url": "https://www.oxfordbus.co.uk/airline-fare-and-timetable-changes"
+              "url": "https://www.oxfordbus.co.uk/airline-fare-and-timetable-changes",
+              "labelAr": "The Airline: تغييرات المواقف لعام ٢٠٢٦"
             }
           ],
           "id": "heathrow-to-oxford"
@@ -395,7 +414,8 @@
           "refs": [
             {
               "label": "The Airline: airport coach",
-              "url": "https://www.oxfordbus.co.uk/airline"
+              "url": "https://www.oxfordbus.co.uk/airline",
+              "labelAr": "The Airline: حافلة المطار"
             }
           ],
           "id": "gatwick-to-oxford"
@@ -412,11 +432,13 @@
           "refs": [
             {
               "label": "Oxford Tube: timetables",
-              "url": "https://www.oxfordtube.com/timetables"
+              "url": "https://www.oxfordtube.com/timetables",
+              "labelAr": "Oxford Tube: جداول الرحلات"
             },
             {
               "label": "Oxford: student transport discounts",
-              "url": "https://www.ox.ac.uk/students/life/travel"
+              "url": "https://www.ox.ac.uk/students/life/travel",
+              "labelAr": "جامعة أكسفورد: خصومات المواصلات للطلبة"
             }
           ],
           "id": "oxford-london"
@@ -433,7 +455,8 @@
           "refs": [
             {
               "label": "Oxford: student transport discounts",
-              "url": "https://www.ox.ac.uk/students/life/travel"
+              "url": "https://www.ox.ac.uk/students/life/travel",
+              "labelAr": "جامعة أكسفورد: خصومات المواصلات للطلبة"
             }
           ],
           "id": "travel-discounts"
@@ -450,7 +473,8 @@
           "refs": [
             {
               "label": "Royal Mail: international parcels",
-              "url": "https://www.royalmail.com/sending/international"
+              "url": "https://www.royalmail.com/sending/international",
+              "labelAr": "Royal Mail: الطرود الدولية"
             }
           ],
           "id": "shipping-to-saudi"
@@ -467,11 +491,13 @@
           "refs": [
             {
               "label": "SAUDIA: baggage allowance",
-              "url": "https://www.saudia.com/pages/before-flying/baggage/baggage-allowances"
+              "url": "https://www.saudia.com/pages/before-flying/baggage/baggage-allowances",
+              "labelAr": "الخطوط السعودية (SAUDIA): الأمتعة المسموح بها"
             },
             {
               "label": "British Airways: baggage allowance",
-              "url": "https://www.britishairways.com/content/en/gb/information/baggage-essentials"
+              "url": "https://www.britishairways.com/content/en/gb/information/baggage-essentials",
+              "labelAr": "British Airways: الأمتعة المسموح بها"
             }
           ],
           "id": "baggage-allowance"
@@ -497,11 +523,13 @@
           "refs": [
             {
               "label": "Oxford: housing options",
-              "url": "https://www.ox.ac.uk/admissions/graduate/after-you-apply/applying-for-accommodation"
+              "url": "https://www.ox.ac.uk/admissions/graduate/after-you-apply/applying-for-accommodation",
+              "labelAr": "جامعة أكسفورد: خيارات السكن"
             },
             {
               "label": "Oxford: accommodation applications",
-              "url": "https://gradaccommodation.admin.ox.ac.uk/how-to-apply"
+              "url": "https://gradaccommodation.admin.ox.ac.uk/how-to-apply",
+              "labelAr": "جامعة أكسفورد: طلبات السكن"
             }
           ],
           "id": "graduate-accommodation"
@@ -518,11 +546,13 @@
           "refs": [
             {
               "label": "Oxford: housing options",
-              "url": "https://www.ox.ac.uk/admissions/graduate/after-you-apply/applying-for-accommodation"
+              "url": "https://www.ox.ac.uk/admissions/graduate/after-you-apply/applying-for-accommodation",
+              "labelAr": "جامعة أكسفورد: خيارات السكن"
             },
             {
               "label": "Oxford: student transport discounts",
-              "url": "https://www.ox.ac.uk/students/life/travel"
+              "url": "https://www.ox.ac.uk/students/life/travel",
+              "labelAr": "جامعة أكسفورد: خصومات المواصلات للطلبة"
             }
           ],
           "id": "neighbourhoods"
@@ -539,11 +569,13 @@
           "refs": [
             {
               "label": "Oxford: housing options",
-              "url": "https://www.ox.ac.uk/admissions/graduate/after-you-apply/applying-for-accommodation"
+              "url": "https://www.ox.ac.uk/admissions/graduate/after-you-apply/applying-for-accommodation",
+              "labelAr": "جامعة أكسفورد: خيارات السكن"
             },
             {
               "label": "SpareRoom: Oxford rooms",
-              "url": "https://www.spareroom.co.uk/flatshare/oxfordshire/oxford"
+              "url": "https://www.spareroom.co.uk/flatshare/oxfordshire/oxford",
+              "labelAr": "SpareRoom: غرف في أكسفورد"
             }
           ],
           "id": "private-rooms"
@@ -560,7 +592,8 @@
           "refs": [
             {
               "label": "Oxford: housing options",
-              "url": "https://www.ox.ac.uk/admissions/graduate/after-you-apply/applying-for-accommodation"
+              "url": "https://www.ox.ac.uk/admissions/graduate/after-you-apply/applying-for-accommodation",
+              "labelAr": "جامعة أكسفورد: خيارات السكن"
             }
           ],
           "id": "remote-viewing"
@@ -577,11 +610,13 @@
           "refs": [
             {
               "label": "British Heart Foundation: furniture shops",
-              "url": "https://www.bhf.org.uk/what-we-do/find-bhf-near-you?servicetype=furniture-electrical-store"
+              "url": "https://www.bhf.org.uk/what-we-do/find-bhf-near-you?servicetype=furniture-electrical-store",
+              "labelAr": "British Heart Foundation: متاجر الأثاث"
             },
             {
               "label": "Argos UK: household essentials",
-              "url": "https://www.argos.co.uk/"
+              "url": "https://www.argos.co.uk/",
+              "labelAr": "Argos: مستلزمات المنزل"
             }
           ],
           "id": "second-hand-furniture"
@@ -598,7 +633,8 @@
           "refs": [
             {
               "label": "Moving home: meter readings",
-              "url": "https://www.citizensadvice.org.uk/consumer/energy/energy-supply/moving-home-your-energy-supply/moving-home-dealing-with-your-energy-supply/"
+              "url": "https://www.citizensadvice.org.uk/consumer/energy/energy-supply/moving-home-your-energy-supply/moving-home-dealing-with-your-energy-supply/",
+              "labelAr": "الانتقال إلى سكن جديد: قراءات العدادات"
             }
           ],
           "id": "utilities"
@@ -615,7 +651,8 @@
           "refs": [
             {
               "label": "Ofcom: coverage checker",
-              "url": "https://www.ofcom.org.uk/phones-and-broadband/coverage-and-speeds/Ofcom-checker"
+              "url": "https://www.ofcom.org.uk/phones-and-broadband/coverage-and-speeds/Ofcom-checker",
+              "labelAr": "Ofcom: فحص تغطية الشبكة"
             }
           ],
           "id": "mobile-broadband"
@@ -632,7 +669,8 @@
           "refs": [
             {
               "label": "NCSC: spot scams",
-              "url": "https://www.ncsc.gov.uk/collection/phishing-scams/spot-scams"
+              "url": "https://www.ncsc.gov.uk/collection/phishing-scams/spot-scams",
+              "labelAr": "المركز الوطني للأمن السيبراني (NCSC): كشف رسائل الاحتيال"
             }
           ],
           "id": "rental-scams"
@@ -648,7 +686,7 @@
       "items": [
         {
           "q": {
-            "ar": "كيف أحصل على إفادة التسجيل الرسمية من أكسفورد؟",
+            "ar": "كيف أحصل على إفادة القيد الدراسي (تعريف طالب) من أكسفورد؟",
             "en": "How do I download proof of enrolment from Oxford?"
           },
           "a": {
@@ -658,7 +696,8 @@
           "refs": [
             {
               "label": "Oxford: Student Self Service",
-              "url": "https://www.ox.ac.uk/students/academic/guidance/student-self-service"
+              "url": "https://www.ox.ac.uk/students/academic/guidance/student-self-service",
+              "labelAr": "جامعة أكسفورد: Student Self Service"
             }
           ],
           "id": "proof-of-enrolment"
@@ -675,7 +714,8 @@
           "refs": [
             {
               "label": "Oxford: Student Self Service",
-              "url": "https://www.ox.ac.uk/students/academic/guidance/student-self-service"
+              "url": "https://www.ox.ac.uk/students/academic/guidance/student-self-service",
+              "labelAr": "جامعة أكسفورد: Student Self Service"
             }
           ],
           "id": "bank-student-status"
@@ -692,7 +732,8 @@
           "refs": [
             {
               "label": "Oxford: Student Self Service",
-              "url": "https://www.ox.ac.uk/students/academic/guidance/student-self-service"
+              "url": "https://www.ox.ac.uk/students/academic/guidance/student-self-service",
+              "labelAr": "جامعة أكسفورد: Student Self Service"
             }
           ],
           "id": "supervision-reports"
@@ -709,11 +750,13 @@
           "refs": [
             {
               "label": "Bodleian: inter-library requests",
-              "url": "https://www.bodleian.ox.ac.uk/services/borrow/inter-library-requests"
+              "url": "https://www.bodleian.ox.ac.uk/services/borrow/inter-library-requests",
+              "labelAr": "مكتبات بودليان (Bodleian): طلبات الإعارة بين المكتبات"
             },
             {
               "label": "Bodleian: item requests",
-              "url": "https://www.bodleian.ox.ac.uk/services/borrow/request"
+              "url": "https://www.bodleian.ox.ac.uk/services/borrow/request",
+              "labelAr": "مكتبات بودليان (Bodleian): طلب الكتب والمواد"
             }
           ],
           "id": "inter-library-requests"
@@ -730,7 +773,8 @@
           "refs": [
             {
               "label": "Oxford: Academic English",
-              "url": "https://www.ox.ac.uk/students/academic/guidance/skills/language"
+              "url": "https://www.ox.ac.uk/students/academic/guidance/skills/language",
+              "labelAr": "جامعة أكسفورد: الإنجليزية الأكاديمية"
             }
           ],
           "id": "academic-english"
@@ -747,14 +791,15 @@
           "refs": [
             {
               "label": "Oxford: academic dress",
-              "url": "https://www.ox.ac.uk/students/academic/dress"
+              "url": "https://www.ox.ac.uk/students/academic/dress",
+              "labelAr": "جامعة أكسفورد: الزي الأكاديمي"
             }
           ],
           "id": "sub-fusc"
         },
         {
           "q": {
-            "ar": "أين يمكنني طباعة ملصق علمي (Poster) في أكسفورد؟",
+            "ar": "أين يمكنني طباعة بوستر علمي (ملصق بحثي) في أكسفورد؟",
             "en": "Where can I have an academic poster printed in Oxford?"
           },
           "a": {
@@ -764,7 +809,8 @@
           "refs": [
             {
               "label": "Oxford Physics: poster printing",
-              "url": "https://www.physics.ox.ac.uk/about-us/our-facilities-and-services/media-services"
+              "url": "https://www.physics.ox.ac.uk/about-us/our-facilities-and-services/media-services",
+              "labelAr": "قسم الفيزياء بجامعة أكسفورد: طباعة البوسترات"
             }
           ],
           "id": "poster-printing"
@@ -775,13 +821,14 @@
             "en": "Where can I check the official stages of an Oxford DPhil?"
           },
           "a": {
-            "ar": "تشرح صفحة «Research Degree Stages» في أكسفورد نقل الحالة الأكاديمية (Transfer of Status) وتأكيدها (Confirmation of Status) وتسليم الأطروحة ومناقشتها. ابدأ بالصفحة ثم راجع دليل برنامجك لدى القسم لمعرفة الإجراءات والمواعيد الخاصة به. يستطيع موظف الدراسات العليا توجيهك إلى النماذج والمراحل الصحيحة.",
+            "ar": "تشرح صفحة «Research Degree Stages» في أكسفورد التحويل إلى مرحلة الدكتوراه (Transfer of Status) وتأكيدها (Confirmation of Status) وتسليم الأطروحة ومناقشتها. ابدأ بالصفحة ثم راجع دليل برنامجك لدى القسم لمعرفة الإجراءات والمواعيد الخاصة به. يستطيع موظف الدراسات العليا توجيهك إلى النماذج والمراحل الصحيحة.",
             "en": "Oxford’s Research Degree Stages page covers transfer of status, confirmation of status, thesis submission and examination. Start with that guide, then read your department’s course handbook for programme-specific requirements and deadlines. Your Graduate Studies Assistant can direct you to the correct forms and milestones for your course."
           },
           "refs": [
             {
               "label": "Oxford: research degree stages",
-              "url": "https://www.ox.ac.uk/students/academic/graduate/research"
+              "url": "https://www.ox.ac.uk/students/academic/graduate/research",
+              "labelAr": "جامعة أكسفورد: مراحل درجات البحث"
             }
           ],
           "id": "dphil-stages"
@@ -798,7 +845,8 @@
           "refs": [
             {
               "label": "Oxford: CareerConnect",
-              "url": "https://www.ox.ac.uk/careers/what-we-offer/careerconnect-platform"
+              "url": "https://www.ox.ac.uk/careers/what-we-offer/careerconnect-platform",
+              "labelAr": "جامعة أكسفورد: CareerConnect"
             }
           ],
           "id": "internships"
@@ -815,11 +863,13 @@
           "refs": [
             {
               "label": "Saudi Ministry: degree equivalence",
-              "url": "https://www.moe.gov.sa/ar/services/unified-services-guide/certeq"
+              "url": "https://www.moe.gov.sa/ar/services/unified-services-guide/certeq",
+              "labelAr": "وزارة التعليم السعودية: معادلة الشهادات"
             },
             {
               "label": "Saudi Ministry: equivalence portal",
-              "url": "https://eqs.moe.gov.sa/Home/Landing"
+              "url": "https://eqs.moe.gov.sa/Home/Landing",
+              "labelAr": "وزارة التعليم السعودية: بوابة معادلة الشهادات"
             }
           ],
           "id": "degree-equivalency"
@@ -845,24 +895,26 @@
           "refs": [
             {
               "label": "OUISoc: halal shopping guide",
-              "url": "https://ouisoc.org/halal-food-in-oxford"
+              "url": "https://ouisoc.org/halal-food-in-oxford",
+              "labelAr": "OUISoc: دليل التسوق الحلال"
             }
           ],
           "id": "halal-groceries"
         },
         {
           "q": {
-            "ar": "كيف أقدّم لطفلي على مدرسة في أوكسفوردشاير عند الانتقال خلال العام؟",
+            "ar": "كيف أقدّم لطفلي على مدرسة في أكسفوردشاير عند الانتقال خلال العام؟",
             "en": "How do I apply for an Oxfordshire school place when moving mid-year?"
           },
           "a": {
-            "ar": "استخدم بوابة القبول المدرسي الإلكترونية التابعة لمجلس أوكسفوردشاير واختر طلب «In-year» للصف المطلوب عند الانتقال خلال العام. أدخل العنوان وتفضيلات المدارس وأرسل النموذج كاملًا؛ فالمسودة غير المرسلة لا تُعالج. يوضح المجلس الفرق بين التسجيل المعتاد لشهر سبتمبر والانتقال أثناء السنة الدراسية.",
+            "ar": "استخدم بوابة القبول المدرسي الإلكترونية التابعة لمجلس أكسفوردشاير واختر طلب «In-year» للصف المطلوب عند الانتقال خلال العام. أدخل العنوان وتفضيلات المدارس وأرسل النموذج كاملًا؛ فالمسودة غير المرسلة لا تُعالج. يوضح المجلس الفرق بين التسجيل المعتاد لشهر سبتمبر والانتقال أثناء السنة الدراسية.",
             "en": "Use Oxfordshire County Council’s online school admissions portal and choose an in-year application for the child’s intended year group. Enter your address and preferences and submit the completed form; an unsent draft will not be processed. The council explains the separate process for usual September entry and mid-year transfers."
           },
           "refs": [
             {
               "label": "Oxfordshire: school admissions",
-              "url": "https://www.oxfordshire.gov.uk/schools/apply-school-place/online-applications"
+              "url": "https://www.oxfordshire.gov.uk/schools/apply-school-place/online-applications",
+              "labelAr": "مقاطعة أكسفوردشاير: القبول في المدارس"
             }
           ],
           "id": "school-places"
@@ -879,7 +931,8 @@
           "refs": [
             {
               "label": "STC: international roaming support",
-              "url": "https://www.stc.com.sa/en/personal/mobile/roaming/roaming-prices/roaming-outside-the-kingdom.html"
+              "url": "https://www.stc.com.sa/en/personal/mobile/roaming/roaming-prices/roaming-outside-the-kingdom.html",
+              "labelAr": "STC: دعم التجوال الدولي"
             }
           ],
           "id": "saudi-sim-codes"
@@ -905,7 +958,8 @@
           "refs": [
             {
               "label": "OUISoc: prayer room access",
-              "url": "https://ouisoc.org/prayer-spaces"
+              "url": "https://ouisoc.org/prayer-spaces",
+              "labelAr": "OUISoc: الدخول إلى المصلى"
             }
           ],
           "id": "prayer-room"
@@ -922,11 +976,13 @@
           "refs": [
             {
               "label": "OUISoc: current prayer times",
-              "url": "https://ouisoc.org/prayer-times"
+              "url": "https://ouisoc.org/prayer-times",
+              "labelAr": "OUISoc: مواقيت الصلاة الحالية"
             },
             {
               "label": "OUISoc: prayer room access",
-              "url": "https://ouisoc.org/prayer-spaces"
+              "url": "https://ouisoc.org/prayer-spaces",
+              "labelAr": "OUISoc: الدخول إلى المصلى"
             }
           ],
           "id": "friday-prayer-times"
@@ -943,7 +999,8 @@
           "refs": [
             {
               "label": "Oxford University Hospitals: chaplaincy",
-              "url": "https://www.ouh.nhs.uk/patient-guide/chaplaincy/"
+              "url": "https://www.ouh.nhs.uk/patient-guide/chaplaincy/",
+              "labelAr": "مستشفيات جامعة أكسفورد (OUH): الرعاية الروحية"
             }
           ],
           "id": "hospital-prayer-spaces"
@@ -960,7 +1017,8 @@
           "refs": [
             {
               "label": "NHS: find a GP",
-              "url": "https://www.nhs.uk/service-search/find-a-gp/"
+              "url": "https://www.nhs.uk/service-search/find-a-gp/",
+              "labelAr": "NHS: البحث عن طبيب أسرة"
             }
           ],
           "id": "register-gp"
@@ -977,7 +1035,8 @@
           "refs": [
             {
               "label": "Oxford: counselling appointments",
-              "url": "https://www.ox.ac.uk/students/welfare/counselling/appointment"
+              "url": "https://www.ox.ac.uk/students/welfare/counselling/appointment",
+              "labelAr": "جامعة أكسفورد: مواعيد الإرشاد النفسي"
             }
           ],
           "id": "counselling"
@@ -1003,11 +1062,13 @@
           "refs": [
             {
               "label": "Oxford: clubs and societies",
-              "url": "https://www.ox.ac.uk/students/life/clubs/clubs/registered-clubs/current-clubs-and-societies"
+              "url": "https://www.ox.ac.uk/students/life/clubs/clubs/registered-clubs/current-clubs-and-societies",
+              "labelAr": "جامعة أكسفورد: الأندية والجمعيات"
             },
             {
               "label": "Oxford: events listings",
-              "url": "https://www.ox.ac.uk/events"
+              "url": "https://www.ox.ac.uk/events",
+              "labelAr": "جامعة أكسفورد: قائمة الفعاليات"
             }
           ],
           "id": "meet-saudis"
@@ -1024,7 +1085,8 @@
           "refs": [
             {
               "label": "Oxford: events listings",
-              "url": "https://www.ox.ac.uk/events"
+              "url": "https://www.ox.ac.uk/events",
+              "labelAr": "جامعة أكسفورد: قائمة الفعاليات"
             }
           ],
           "id": "oxford-events"
@@ -1041,7 +1103,8 @@
           "refs": [
             {
               "label": "Oxford: clubs and societies",
-              "url": "https://www.ox.ac.uk/students/life/clubs/clubs/registered-clubs/current-clubs-and-societies"
+              "url": "https://www.ox.ac.uk/students/life/clubs/clubs/registered-clubs/current-clubs-and-societies",
+              "labelAr": "جامعة أكسفورد: الأندية والجمعيات"
             }
           ],
           "id": "clubs-societies"
@@ -1058,7 +1121,8 @@
           "refs": [
             {
               "label": "Oxford: sport and facilities",
-              "url": "https://www.ox.ac.uk/students/life/sport"
+              "url": "https://www.ox.ac.uk/students/life/sport",
+              "labelAr": "جامعة أكسفورد: الرياضة والمرافق"
             }
           ],
           "id": "sport"

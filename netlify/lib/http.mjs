@@ -22,12 +22,12 @@ export function redirect(location, headers = {}) {
 }
 
 const MAX_BODY = 16 * 1024;
-export async function readJson(req) {
+export async function readJson(req, maxBytes = MAX_BODY) {
   const ct = (req.headers.get('content-type') || '').toLowerCase();
   const raw = await req.text();
   if (!ct && !raw.trim()) return {}; // bodiless action (e.g. retry, logout)
   if (!ct.startsWith('application/json')) fail(415, 'json_required');
-  if (raw.length > MAX_BODY) fail(413, 'body_too_large');
+  if (raw.length > maxBytes) fail(413, 'body_too_large');
   if (!raw.trim()) return {};
   try { const v = JSON.parse(raw); if (!v || typeof v !== 'object' || Array.isArray(v)) fail(400, 'bad_json'); return v; }
   catch (e) { if (e instanceof HttpError) throw e; fail(400, 'bad_json'); }
