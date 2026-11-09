@@ -1,7 +1,7 @@
 (function () {
   'use strict';
   var lang = (document.documentElement.lang || 'en').slice(0, 2) === 'ar' ? 'ar' : 'en';
-  var SITE = { lang: lang, email: '', treasurerEmail: '', membershipEmail: '', fees: {}, payLinks: {}, bank: {}, formEndpoint: '/' };
+  var SITE = { lang: lang, email: '', treasurerEmail: '', membershipEmail: '', fees: {}, payLinks: {}, bank: {}, apiBase: '/api' };
   try { var el0 = document.getElementById('site-settings'); if (el0) Object.assign(SITE, JSON.parse(el0.textContent)); } catch (e) {}
   function $(id) { return document.getElementById(id); }
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
@@ -179,8 +179,6 @@
     var tier = selectedTier();
     document.querySelectorAll('#tiers .tier').forEach(function (l) { l.classList.toggle('sel', l.querySelector('input').checked); });
     $('email-hint').hidden = !(tier && (tier.id === 'student' || tier.id === 'saudi'));
-    $('f-tier-label').value = tier ? tier.en : '';
-    $('f-amount').value = tier && tier.price ? amountOf(tier) : '0';
     $('sum').innerHTML = !tier ? t('sumNone') : tier.price ? t('sumPaid', { amount: amountHtml(tier) }) : tier.verify ? t('sumVerify') : t('sumFree');
     $('step3-label').textContent = STEP3[step3Kind(tier)][lang === 'ar' ? 1 : 0];
     if (tier) { $('tier-msg').style.display = 'none'; $('tiers').classList.remove('err'); }
@@ -201,79 +199,127 @@
     return bad.length === 0;
   }
   ['f-name', 'f-email', 'f-college', 'f-status', 'f-consent'].forEach(function (id) { var clear = function () { setErr(id.replace('f-', ''), false); }; $(id).addEventListener('input', clear); $(id).addEventListener('change', clear); });
-  function makeRef() { return 'OSS-' + Date.now().toString(36).toUpperCase().slice(-5) + Math.random().toString(36).toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 2); }
+  /* Submission goes to the society's own database (/api/membership/apply), which issues a permanent
+     membership number and a place in the review queue. Nothing is claimed until the server answers. */
+  var M = {
+    en: {
+      eyebrowNew: 'Application received', eyebrowAgain: 'You have already applied', eyebrowMember: 'You are already a member',
+      thanks: 'Thank you, {name}.', welcomeBack: 'Welcome back, {name}.',
+      ledeNew: 'Your application is with the committee. Keep your membership number: you will use it for payments, members-only events and anything you send us.',
+      ledeAgain: 'We already have your application, so nothing new was submitted. Here is where it stands.',
+      ledeMember: 'This email address already belongs to an active membership.',
+      org: 'Oxford Saudi Society', noLabel: 'Membership number', nameL: 'Name', typeL: 'Membership', appliedL: 'Applied', copy: 'Copy number', copied: 'Copied',
+      st: { pending: 'Pending review', info_requested: 'Question from the committee', approved: 'Active member', declined: 'Not approved', revoked: 'Ended', expired: 'Expired' },
+      qL: 'Your place in the review queue', qP: 'The committee reviews applications in the order they arrive. You will get an email as soon as yours is decided.',
+      t1: 'Application received', t2: 'Committee review', t3pay: 'Payment of {amount}', t3verify: 'Proof of Saudi nationality', t4: 'Membership active',
+      payH: 'Pay {amount} to complete your membership', payP: 'Use your membership number as the payment reference so the treasurer can match it. Membership is approved once the payment is matched.',
+      verifyH: 'Proof of Saudi nationality', verifyP: 'The committee will email you to check Saudi nationality (passport, national ID or Cultural Bureau scholarship confirmation). Please do not send any document until we ask. It is checked and then deleted.',
+      mailNote: 'We have sent a confirmation to <b dir="ltr">{email}</b>. Its link lets you follow your application and answer any question from the committee.',
+      track: 'Track my application', print: 'Save or print', again: 'Submit another application',
+      failH: 'Your application was not submitted', fail: 'We could not reach the membership system just now. Your answers are still in the form: please press Submit again in a minute.', failMail: 'If it keeps failing, email {email}.',
+      rate: 'Too many attempts from this connection. Please wait a few minutes and try again.'
+    },
+    ar: {
+      eyebrowNew: 'تم استلام الطلب', eyebrowAgain: 'لقد تقدّمت بطلب من قبل', eyebrowMember: 'أنت عضو بالفعل',
+      thanks: 'شكرًا لك يا {name}.', welcomeBack: 'أهلًا بعودتك يا {name}.',
+      ledeNew: 'طلبك الآن لدى اللجنة. احتفظ برقم عضويتك؛ ستستخدمه في الدفع وحجز فعاليات الأعضاء وفي أي مراسلة معنا.',
+      ledeAgain: 'طلبك موجود لدينا، فلم يُرسل طلب جديد. هذا وضع طلبك الآن.',
+      ledeMember: 'هذا البريد مرتبط بعضوية فعّالة.',
+      org: 'الجمعية السعودية في أكسفورد', noLabel: 'رقم العضوية', nameL: 'الاسم', typeL: 'العضوية', appliedL: 'تاريخ الطلب', copy: 'نسخ الرقم', copied: 'تم النسخ',
+      st: { pending: 'قيد المراجعة', info_requested: 'سؤال من اللجنة', approved: 'عضو فعّال', declined: 'لم تتم الموافقة', revoked: 'منتهية', expired: 'منتهية الصلاحية' },
+      qL: 'ترتيبك في قائمة المراجعة', qP: 'تراجع اللجنة الطلبات بحسب ترتيب وصولها، وستصلك رسالة بالبريد فور البت في طلبك.',
+      t1: 'تم استلام الطلب', t2: 'مراجعة اللجنة', t3pay: 'دفع {amount}', t3verify: 'إثبات الجنسية السعودية', t4: 'تفعيل العضوية',
+      payH: 'ادفع {amount} لإتمام عضويتك', payP: 'اكتب رقم عضويتك مرجعًا للدفع ليتمكن أمين الصندوق من مطابقته. تُعتمد العضوية بعد مطابقة الدفعة.',
+      verifyH: 'إثبات الجنسية السعودية', verifyP: 'ستراسلك اللجنة للتحقق من الجنسية السعودية (جواز السفر أو الهوية الوطنية أو تأكيد الابتعاث من الملحقية). يرجى عدم إرسال أي وثيقة قبل أن نطلبها، وتُحذف بعد التحقق.',
+      mailNote: 'أرسلنا تأكيدًا إلى <b dir="ltr">{email}</b>، ويتيح لك الرابط فيه متابعة طلبك والإجابة عن أي سؤال من اللجنة.',
+      track: 'تابع طلبي', print: 'حفظ أو طباعة', again: 'تقديم طلب آخر',
+      failH: 'لم يُرسل طلبك', fail: 'تعذّر الوصول إلى نظام العضوية الآن. إجاباتك ما زالت في النموذج؛ اضغط «إرسال الطلب» مرة أخرى بعد دقيقة.', failMail: 'إن تكرر الخطأ فراسلنا على {email}.',
+      rate: 'محاولات كثيرة من هذا الاتصال. انتظر بضع دقائق ثم حاول مجددًا.'
+    }
+  };
+  function m(key, vars) { var v = (M[lang][key] !== undefined ? M[lang][key] : M.en[key]); if (typeof v === 'string' && vars) Object.keys(vars).forEach(function (k) { v = v.split('{' + k + '}').join(vars[k]); }); return v; }
+  function fmtDay(d) { try { return new Intl.DateTimeFormat(lang === 'ar' ? 'ar-SA-u-ca-gregory-nu-arab' : 'en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Europe/London' }).format(new Date(d)); } catch (e) { return ''; } }
+  function num(n) { return lang === 'ar' ? new Intl.NumberFormat('ar-SA-u-nu-arab').format(n) : String(n); }
   function collect() {
-    var tier = selectedTier(), ref = makeRef(); $('f-reference').value = ref;
-    return { ref: ref, tier: tier.id, tierLabel: tier.en, amount: tier.price, verify: !!tier.verify, name: $('f-name').value.trim(), nameAr: $('f-name-ar').value.trim(), email: $('f-email').value.trim(),
-      college: $('f-college').value.trim(), status: $('f-status').value, phone: $('f-phone').value.trim(),
+    var tier = selectedTier();
+    return { tier: tier ? tier.id : '', name: $('f-name').value.trim(), nameAr: $('f-name-ar').value.trim(), email: $('f-email').value.trim(), college: $('f-college').value.trim(), status: $('f-status').value, phone: $('f-phone').value.trim(),
       volunteer: Array.prototype.slice.call(form.querySelectorAll('input[name="volunteer"]:checked')).map(function (c) { return c.value; }),
-      heard: $('f-heard').value, consentNews: form.querySelector('input[name="consent_news"]').checked, lang: lang, submittedAt: new Date().toISOString() };
+      heard: $('f-heard').value, consent_privacy: $('f-consent').checked, consent_news: form.querySelector('input[name="consent_news"]').checked,
+      privacy_version: SITE.privacyVersion || '', lang: lang, website: form.querySelector('input[name="website"]').value };
   }
-  function plainText(app) {
-    var L = ['Oxford Saudi Society — membership application', 'Reference: ' + app.ref, 'Membership: ' + app.tierLabel + (app.amount ? ' (£' + app.amount + ')' : app.verify ? ' (free — proof of nationality to follow)' : ' (free)'), 'Name: ' + app.name];
-    if (app.nameAr) L.push('Name (Arabic): ' + app.nameAr);
-    L.push('Email: ' + app.email, 'College / department: ' + app.college, 'Status: ' + (STATUS[app.status] || app.status));
-    if (app.phone) L.push('Mobile / WhatsApp: ' + app.phone);
-    L.push('Volunteering: ' + (app.volunteer.length ? app.volunteer.map(function (v) { return VOL[v] || v; }).join(', ') : '—'));
-    if (app.heard) L.push('Heard about us: ' + app.heard);
-    L.push('Privacy consent: yes', 'Event news by email: ' + (app.consentNews ? 'yes' : 'no'), 'Submitted: ' + app.submittedAt.replace('T', ' ').slice(0, 16) + ' UTC');
-    return L.join('\n');
-  }
-  function timeout(p, ms) { return Promise.race([p, new Promise(function (res) { setTimeout(function () { res(undefined); }, ms); })]); }
   async function send(app) {
-    if (!SITE.formEndpoint || typeof fetch !== 'function') return false;
-    var fd = new FormData(form); fd.set('form-name', form.getAttribute('name') || 'join');
-    ['lang', 'submittedAt'].forEach(function (k) { fd.set(k, app[k]); });
-    var body = new URLSearchParams(fd).toString();
-    try { var r = await timeout(fetch(SITE.formEndpoint, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: body }), 12000); return !!(r && r.ok); }
-    catch (e) { return false; }
+    var ctl = typeof AbortController === 'function' ? new AbortController() : null;
+    var timer = setTimeout(function () { if (ctl) ctl.abort(); }, 15000);
+    try {
+      var r = await fetch((SITE.apiBase || '/api') + '/membership/apply', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(app), signal: ctl ? ctl.signal : undefined });
+      var data = null; try { data = await r.json(); } catch (e) { /* not json */ }
+      return { ok: r.ok, status: r.status, data: data };
+    } catch (e) { return { ok: false, status: 0, data: null }; }
+    finally { clearTimeout(timer); }
+  }
+  function showFail(res) {
+    var box = $('join-fail');
+    if (!box) { box = document.createElement('div'); box.id = 'join-fail'; box.className = 'err-sum on'; box.setAttribute('role', 'alert'); $('submit-btn').parentNode.parentNode.insertBefore(box, $('submit-btn').parentNode); }
+    if (res.status === 400 && res.data && res.data.fields) {
+      var map = { name: 'name', email: 'email', college: 'college', status: 'status', consent: 'consent' };
+      Object.keys(res.data.fields).forEach(function (k) { if (map[k]) setErr(map[k], true); if (k === 'tier') { $('tier-msg').style.display = 'block'; $('tiers').classList.add('err'); } });
+      box.hidden = true; $('err-sum').classList.add('on'); return;
+    }
+    box.hidden = false;
+    box.innerHTML = '<b>' + esc(m('failH')) + '</b> ' + esc(res.status === 429 ? m('rate') : m('fail')) + (res.status === 429 ? '' : ' ' + m('failMail', { email: SITE.email ? '<a href="mailto:' + esc(SITE.email) + '">' + esc(SITE.email) + '</a>' : '' }));
+    box.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
   form.addEventListener('submit', async function (e) {
     e.preventDefault(); if (busy) return;
     if (form.querySelector('input[name="website"]').value) return;
     if (!validate()) return;
     busy = true; var btn = $('submit-btn'), lbl = $('submit-label'), keep = lbl.innerHTML; btn.disabled = true; lbl.textContent = t('sending');
-    var app = collect(); var ok = await send(app);
+    var app = collect(); var res = await send(app);
     busy = false; btn.disabled = false; lbl.innerHTML = keep;
-    last = { app: app, saved: ok }; renderDone();
+    if (!res.ok || !res.data || !res.data.member) { showFail(res); return; }
+    var f = $('join-fail'); if (f) f.hidden = true;
+    last = { app: app, result: res.data.result, member: res.data.member }; renderDone();
   });
   function setSteps(stage) { document.querySelectorAll('#steps li').forEach(function (li) { var n = +li.getAttribute('data-step'); li.classList.remove('on', 'done'); if (stage === 'form') { if (n < 3) li.classList.add('on'); } else if (stage === 'pay') li.classList.add(n < 3 ? 'done' : 'on'); else li.classList.add('done'); }); }
   function renderDone() {
-    var app = last.app, saved = last.saved, tier = tierOf(app.tier) || TIERS[0], paid = tier.price > 0, kind = step3Kind(tier);
-    var first = esc(app.name.split(/\s+/)[0] || app.name), text = plainText(app);
-    var memberMail = SITE.membershipEmail || SITE.email || '', treasurerMail = SITE.treasurerEmail || SITE.email || '';
-    var mail = 'mailto:' + encodeURIComponent(memberMail) + '?subject=' + encodeURIComponent('Membership application ' + app.ref + ' — ' + app.name) + '&body=' + encodeURIComponent(text);
-    var h = '<p class="eyebrow">' + esc(t(saved ? 'eyebrowSaved' : 'eyebrowSend')) + '</p>';
-    h += '<h2 style="font-size:clamp(28px,3.6vw,40px);margin-top:12px">' + esc(t('thanks', { name: first })) + '</h2>';
-    h += '<div><div class="ref"><span class="rk">' + esc(t('refLabel')) + '</span><span class="rv">' + esc(app.ref) + '</span></div></div>';
-    h += '<div><span class="state ' + (saved ? 'ok' : 'todo') + '">' + esc(t(saved ? 'stateSaved' : 'stateSend')) + '</span></div>';
-    if (saved) h += '<p class="lede" style="max-width:60ch">' + t(paid || kind === 'verify' ? 'savedBody' : 'savedBodyFree', { email: esc(app.email) }) + '</p>';
-    else {
-      h += '<p class="lede" style="max-width:60ch">' + esc(t('sendBody')) + '</p>';
-      h += '<div class="mailrow"><a class="btn btn-p" href="' + mail + '">' + esc(t('openMail')) + '</a><button type="button" class="btn btn-s" id="copy-app">' + esc(t('copyApp')) + '</button>';
-      h += '<span class="addr">' + esc(t('orWrite')) + ' ' + phOr(memberMail, '[membership@address]') + '</span></div>';
-      h += '<p class="muted" id="copy-note" style="font-size:13.5px;margin-top:10px"></p><textarea class="copybox" id="copy-box" readonly spellcheck="false" hidden>' + esc(text) + '</textarea>';
+    var app = last.app, mem = last.member, kind = last.result, tier = tierOf(mem.tier) || selectedTier() || TIERS[0];
+    var first = esc((app.name || mem.name || '').split(/\s+/)[0]);
+    var amount = '£' + (mem.amountGbp || 0), paid = mem.amountGbp > 0, verify = mem.nationalityStatus === 'pending' || mem.nationalityStatus === 'verified';
+    var isMember = mem.status === 'approved';
+    var h = '<p class="eyebrow">' + esc(m(kind === 'already_member' ? 'eyebrowMember' : kind === 'already' ? 'eyebrowAgain' : 'eyebrowNew')) + '</p>';
+    h += '<h2 class="done-h">' + esc(m(kind === 'received' ? 'thanks' : 'welcomeBack', { name: first })) + '</h2>';
+    h += '<p class="lede done-lede">' + esc(m(kind === 'already_member' ? 'ledeMember' : kind === 'already' ? 'ledeAgain' : 'ledeNew')) + '</p>';
+    // membership card
+    h += '<div class="mcard" id="mcard"><div class="mcard-top"><span class="mcard-org">' + esc(m('org')) + '</span><span class="mstate s-' + esc(mem.status) + '">' + esc(m('st')[mem.status] || mem.status) + '</span></div>';
+    h += '<span class="mk">' + esc(m('noLabel')) + '</span><span class="mno" dir="ltr" id="mno">' + esc(mem.memberNo) + '</span>';
+    h += '<div class="mcard-meta"><div><span class="mk">' + esc(m('nameL')) + '</span><b>' + esc(mem.name || app.name) + '</b></div><div><span class="mk">' + esc(m('typeL')) + '</span><b>' + esc((mem.tierLabel && mem.tierLabel[lang]) || tier[lang]) + '</b></div><div><span class="mk">' + esc(m('appliedL')) + '</span><b>' + esc(fmtDay(mem.appliedAt)) + '</b></div></div>';
+    h += '<button type="button" class="mcopy" id="mcopy">' + esc(m('copy')) + '</button></div>';
+    if (!isMember && mem.position) h += '<div class="qtile"><span class="mk">' + esc(m('qL')) + '</span><b class="qno">' + esc(num(mem.position)) + '</b><p>' + esc(m('qP')) + '</p></div>';
+    if (!isMember) {
+      var third = paid ? m('t3pay', { amount: amount }) : verify ? m('t3verify') : null;
+      var steps = [[m('t1'), 'done', fmtDay(mem.appliedAt)], [m('t2'), 'now', '']];
+      if (third) steps.push([third, paid && mem.paymentStatus === 'received' ? 'done' : '', '']);
+      steps.push([m('t4'), '', '']);
+      h += '<ol class="track">' + steps.map(function (s, i) { return '<li class="' + s[1] + '"><span class="tk">' + (s[1] === 'done' ? '✓' : num(i + 1)) + '</span><span class="tt">' + esc(s[0]) + (s[2] ? '<small>' + esc(s[2]) + '</small>' : '') + '</span></li>'; }).join('') + '</ol>';
     }
-    if (paid) {
+    if (!isMember && paid) {
       var link = SITE.payLinks[tier.id] || '';
-      h += '<p class="eyebrow" style="margin-top:44px">' + esc(t('payEyebrow')) + '</p><h3 class="disp" style="font-size:28px;margin:10px 0 8px">' + t('payTitle', { amount: amountHtml(tier) }) + '</h3>';
-      h += '<p style="color:var(--ink-80);max-width:60ch">' + esc(t('payBody')) + '</p><div class="paygrid">';
-      h += '<div class="card tinted"><h3>' + esc(t('cardTitle')) + '</h3><p class="big">' + amountHtml(tier) + '</p>';
-      h += link ? '<a class="btn btn-p" href="' + esc(link) + '" target="_blank" rel="noopener">' + t('cardBtn', { amount: esc(amountOf(tier)) }) + '</a>' : '<span class="btn btn-p is-off ph" aria-disabled="true">' + esc(t('cardSoon')) + '</span>';
-      h += '<p style="margin-top:14px;font-size:13.5px">' + esc(t('cardNote')) + '</p></div>';
+      h += '<div class="nextpanel"><h3 class="disp">' + esc(m('payH', { amount: amount })) + '</h3><p>' + esc(m('payP')) + '</p><div class="paygrid">';
+      h += '<div class="card tinted"><h3>' + esc(t('cardTitle')) + '</h3><p class="big">' + amountHtml(tier) + '</p>' + (link ? '<a class="btn btn-p" href="' + esc(link) + '" target="_blank" rel="noopener">' + t('cardBtn', { amount: esc(amount) }) + '</a>' : '<span class="btn btn-p is-off ph" aria-disabled="true">' + esc(t('cardSoon')) + '</span>') + '<p style="margin-top:14px;font-size:13.5px">' + esc(t('cardNote')) + '</p></div>';
       h += '<div class="card"><h3>' + esc(t('bankTitle')) + '</h3><dl class="kv"><dt>' + esc(t('acctName')) + '</dt><dd><span class="' + (SITE.bank.sortCode ? '' : 'ph') + '">' + esc(SITE.bank.accountName || 'Oxford Saudi Society') + '</span></dd>';
       h += '<dt>' + esc(t('sortCode')) + '</dt><dd>' + phOr(SITE.bank.sortCode, '[00-00-00]') + '</dd><dt>' + esc(t('acctNo')) + '</dt><dd>' + phOr(SITE.bank.accountNumber, '[00000000]') + '</dd>';
-      h += '<dt>' + esc(t('refK')) + '</dt><dd><b>' + esc(app.ref) + '</b></dd></dl><p style="margin-top:14px;font-size:13.5px">' + esc(t('bankNote')) + '</p></div></div>';
-      h += '<p class="muted" style="font-size:13px;margin-top:18px">' + esc(t('hardship')) + (treasurerMail ? ' <a href="mailto:' + esc(treasurerMail) + '">' + esc(treasurerMail) + '</a>' : '') + '</p>';
-    } else if (kind === 'verify') {
-      h += '<p class="eyebrow" style="margin-top:44px">' + esc(t('verifyEyebrow')) + '</p><h3 class="disp" style="font-size:28px;margin:10px 0 8px">' + esc(t('verifyTitle')) + '</h3>';
-      h += '<p style="color:var(--ink-80);max-width:60ch">' + t(saved ? 'verifyBodySaved' : 'verifyBodySend', { email: esc(app.email) }) + '</p>';
-      if (saved) h += '<p class="muted" style="font-size:13.5px;margin-top:12px">' + t('verifyNow', { email: phOr(memberMail, '[membership@address]') }) + '</p>';
+      h += '<dt>' + esc(t('refK')) + '</dt><dd><b dir="ltr">' + esc(mem.memberNo) + '</b></dd></dl></div></div>';
+      var tm = SITE.treasurerEmail || SITE.email || '';
+      h += '<p class="muted" style="font-size:13px;margin-top:14px">' + esc(t('hardship')) + (tm ? ' <a href="mailto:' + esc(tm) + '">' + esc(tm) + '</a>' : '') + '</p></div>';
+    } else if (!isMember && verify && mem.nationalityStatus !== 'verified') {
+      h += '<div class="nextpanel"><h3 class="disp">' + esc(m('verifyH')) + '</h3><p>' + esc(m('verifyP')) + '</p></div>';
     }
-    h += '<p class="again"><a href="#join-form-band" id="again">' + esc(t('again')) + '</a></p>';
-    done.innerHTML = h; done.hidden = false; form.hidden = true; setSteps(kind === 'none' ? 'all' : 'pay');
-    var cb = $('copy-app');
-    if (cb) cb.addEventListener('click', function () { var box = $('copy-box'), note = $('copy-note'); var p = (navigator.clipboard && navigator.clipboard.writeText) ? navigator.clipboard.writeText(text) : Promise.reject(); p.then(function () { note.textContent = t('copied'); box.hidden = true; }, function () { note.textContent = t('copyFail'); box.hidden = false; box.focus(); box.select(); }); });
+    h += '<p class="muted done-mail">' + m('mailNote', { email: esc(app.email) }) + '</p>';
+    h += '<div class="done-actions"><a class="btn btn-p" href="' + (lang === 'ar' ? '/ar' : '') + '/account/">' + esc(m('track')) + '</a><button type="button" class="btn btn-s" id="done-print">' + esc(m('print')) + '</button></div>';
+    h += '<p class="again"><a href="#join-form-band" id="again">' + esc(m('again')) + '</a></p>';
+    done.innerHTML = h; done.hidden = false; form.hidden = true; setSteps(isMember ? 'all' : (paid || verify) ? 'pay' : 'all');
+    $('mcopy').addEventListener('click', function () { var b = this; var p = (navigator.clipboard && navigator.clipboard.writeText) ? navigator.clipboard.writeText(mem.memberNo) : Promise.reject(); p.then(function () { b.textContent = m('copied'); setTimeout(function () { b.textContent = m('copy'); }, 2000); }, function () { var r = document.createRange(); r.selectNodeContents($('mno')); var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r); }); });
+    $('done-print').addEventListener('click', function () { window.print(); });
     $('again').addEventListener('click', function (ev) { ev.preventDefault(); last = null; form.reset(); done.hidden = true; form.hidden = false; $('err-sum').classList.remove('on'); form.querySelectorAll('.f.err').forEach(function (f) { f.classList.remove('err'); }); syncTier(); setSteps('form'); $('join-form-band').scrollIntoView({ behavior: 'smooth' }); });
     $('join-form-band').scrollIntoView({ behavior: 'smooth' });
   }

@@ -81,9 +81,9 @@ for (const page of pages) {
   }
   c($('#burger').length === 0 && $('nav.main .n').length === 0, 'old menu markup left behind');
   if (route === 'join') {
-    c($('form#join-form[data-netlify="true"]').length === 1, 'join form not marked for Netlify');
-    c($('form#join-form input[name="form-name"][value="join"]').length === 1, 'join form missing form-name field');
-    c($('form#join-form').attr('netlify-honeypot') === 'website', 'honeypot missing');
+    c($('form#join-form[data-api="/api/membership/apply"]').length === 1, 'join form must submit to the membership API');
+    c($('form#join-form[data-netlify]').length === 0, 'join form must not also be a Netlify form');
+    c($('form#join-form input[name="website"]').length === 1, 'honeypot missing');
   }
   c($('#en').attr('href') && $('#ar').attr('href') && exists($('#en').attr('href')) && exists($('#ar').attr('href')), 'language switch links broken');
 }

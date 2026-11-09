@@ -8,7 +8,7 @@
     "check": "node build/check.js",
     "test": "node --test tests/",
     "dev": "node qa/dev-server.mjs",
-    "e2e": "node qa/events-static.js && node qa/events-e2e.js"
+    "e2e": "node qa/events-static.js && node qa/faq-static.js && node qa/events-e2e.js && node qa/membership-e2e.js"
   },
   "keywords": [],
   "author": "",

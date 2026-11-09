@@ -3,16 +3,22 @@
   'use strict';
   var O = window.OSS, $ = O.$, esc = O.esc, lang = O.lang, base = O.base;
   var S = {
-    en: { title: 'My registrations', sub: 'Your event registrations, tickets and waitlist places.', signinH: 'Sign in with your email', signinP: 'Enter the address you used to register and we will email you a sign-in link. No password needed.', email: 'Email', send: 'Email me a sign-in link', sent: 'Check your email', sentP: 'If {email} has registrations or a membership, a sign-in link is on its way. It works once and expires in 30 minutes.',
+    en: { title: 'My registrations', page: 'My account', sub: 'Your membership, event registrations and tickets.', signinH: 'Sign in with your email', signinP: 'Enter the address you used to register and we will email you a sign-in link. No password needed.', email: 'Email', send: 'Email me a sign-in link', sent: 'Check your email', sentP: 'If {email} has registrations or a membership, a sign-in link is on its way. It works once and expires in 30 minutes.',
       signedInAs: 'Signed in as', member: 'Verified member', signout: 'Sign out', upcoming: 'Upcoming', past: 'Past', none: 'No registrations yet.', browse: 'Browse the programme', ticket: 'Show ticket', cancel: 'Cancel registration', claim: 'Claim my place', claimBy: 'Claim by {t}', cancelQ: 'Cancel this registration?', cancelT: 'Your place goes to the next person and any ticket stops working.', yesCancel: 'Yes, cancel', cancelled: 'Registration cancelled.', claimed: 'Your place is confirmed. Your ticket has been emailed to you.', claimGone: 'Sorry — that place was taken or the offer expired.', ticketNote: 'Opening a ticket here replaces any earlier ticket link.', desk: 'Committee desk', err: 'Something went wrong. Please try again.',
       status: { interested: 'Interest registered (not a booking)', confirmed: 'Confirmed', waitlisted: 'On the waitlist', offered: 'Place offered — claim it', checked_in: 'Checked in', cancelled: 'Cancelled', expired: 'Offer expired', declined: 'Declined' },
       banner: { signed_in: 'You are signed in.', invalid: 'That link is not valid.', expired: 'That link has expired. Request a new one below.', used: 'That link was already used — request a new one if you are not signed in.' },
-      evStatus: { proposed: 'proposed', confirmed: '', postponed: 'postponed — date to be confirmed', cancelled: 'cancelled', completed: '' } },
-    ar: { title: 'تسجيلاتي', sub: 'تسجيلاتك في الفعاليات وتذاكرك ومقاعدك في قوائم الانتظار.', signinH: 'سجّل الدخول ببريدك الإلكتروني', signinP: 'أدخل البريد الذي سجّلت به وسنرسل لك رابط دخول. لا حاجة لكلمة مرور.', email: 'البريد الإلكتروني', send: 'أرسل لي رابط الدخول', sent: 'تحقّق من بريدك', sentP: 'إذا كان {email} مرتبطًا بتسجيلات أو عضوية فرابط الدخول في طريقه إليك. يعمل مرة واحدة وتنتهي صلاحيته خلال ٣٠ دقيقة.',
+      evStatus: { proposed: 'proposed', confirmed: '', postponed: 'postponed — date to be confirmed', cancelled: 'cancelled', completed: '' },
+      mem: { h: 'Membership', no: 'Membership number', type: 'Membership', since: 'Applied', valid: 'Valid until', queue: 'Place in the review queue', none: 'You do not have a membership application yet.', join: 'Apply for membership',
+        st: { pending: 'Pending review', info_requested: 'The committee has a question', approved: 'Active member', declined: 'Not approved', revoked: 'Ended', expired: 'Expired' },
+        qH: 'Question from the committee', reply: 'Your answer', send: 'Send answer', sent: 'Thank you — your answer is with the committee. Your application keeps its place.', yourAnswer: 'Your last answer', payDue: 'Fee due: {amount}. Use your membership number as the payment reference.', verify: 'The committee will email you to check Saudi nationality — please do not send documents until asked.', reason: 'Reason' } },
+    ar: { title: 'تسجيلاتي', page: 'حسابي', sub: 'عضويتك وتسجيلاتك في الفعاليات وتذاكرك.', signinH: 'سجّل الدخول ببريدك الإلكتروني', signinP: 'أدخل البريد الذي سجّلت به وسنرسل لك رابط دخول. لا حاجة لكلمة مرور.', email: 'البريد الإلكتروني', send: 'أرسل لي رابط الدخول', sent: 'تحقّق من بريدك', sentP: 'إذا كان {email} مرتبطًا بتسجيلات أو عضوية فرابط الدخول في طريقه إليك. يعمل مرة واحدة وتنتهي صلاحيته خلال ٣٠ دقيقة.',
       signedInAs: 'مسجّل الدخول باسم', member: 'عضو معتمد', signout: 'تسجيل الخروج', upcoming: 'القادمة', past: 'السابقة', none: 'لا توجد تسجيلات بعد.', browse: 'تصفّح البرنامج', ticket: 'عرض التذكرة', cancel: 'إلغاء التسجيل', claim: 'تأكيد مقعدي', claimBy: 'أكّد قبل {t}', cancelQ: 'إلغاء هذا التسجيل؟', cancelT: 'سيذهب مقعدك إلى الشخص التالي وتتوقف أي تذكرة عن العمل.', yesCancel: 'نعم، ألغِ', cancelled: 'تم إلغاء التسجيل.', claimed: 'تم تأكيد مقعدك، وأُرسلت التذكرة إلى بريدك.', claimGone: 'عذرًا — حُجز المقعد أو انتهت مدة العرض.', ticketNote: 'فتح التذكرة هنا يستبدل أي رابط تذكرة سابق.', desk: 'مكتب اللجنة', err: 'حدث خطأ ما. حاول مجددًا.',
       status: { interested: 'تم تسجيل الاهتمام (ليس حجزًا)', confirmed: 'مؤكد', waitlisted: 'في قائمة الانتظار', offered: 'عُرض عليك مقعد — أكّده', checked_in: 'تم تسجيل الحضور', cancelled: 'ملغى', expired: 'انتهى العرض', declined: 'مرفوض' },
       banner: { signed_in: 'تم تسجيل دخولك.', invalid: 'هذا الرابط غير صالح.', expired: 'انتهت صلاحية الرابط. اطلب رابطًا جديدًا أدناه.', used: 'استُخدم هذا الرابط من قبل — اطلب رابطًا جديدًا إن لم تكن مسجّل الدخول.' },
-      evStatus: { proposed: 'مقترح', confirmed: '', postponed: 'مؤجل — التاريخ قيد التأكيد', cancelled: 'ملغاة', completed: '' } }
+      evStatus: { proposed: 'مقترح', confirmed: '', postponed: 'مؤجل — التاريخ قيد التأكيد', cancelled: 'ملغاة', completed: '' },
+      mem: { h: 'العضوية', no: 'رقم العضوية', type: 'العضوية', since: 'تاريخ الطلب', valid: 'صالحة حتى', queue: 'ترتيبك في قائمة المراجعة', none: 'لا يوجد لديك طلب عضوية بعد.', join: 'تقدّم بطلب العضوية',
+        st: { pending: 'قيد المراجعة', info_requested: 'لدى اللجنة سؤال', approved: 'عضو فعّال', declined: 'لم تتم الموافقة', revoked: 'منتهية', expired: 'منتهية الصلاحية' },
+        qH: 'سؤال من اللجنة', reply: 'إجابتك', send: 'إرسال الإجابة', sent: 'شكرًا لك — وصلت إجابتك إلى اللجنة، ويحتفظ طلبك بترتيبه.', yourAnswer: 'آخر إجابة منك', payDue: 'الرسوم المستحقة: {amount}. اكتب رقم عضويتك مرجعًا للدفع.', verify: 'ستراسلك اللجنة للتحقق من الجنسية السعودية — يرجى عدم إرسال وثائق قبل أن نطلبها.', reason: 'السبب' } }
   };
   var s = S[lang];
   document.body.insertAdjacentHTML('afterbegin', O.header('account'));
@@ -45,16 +51,42 @@
       '<div><span class="badge ' + esc(st) + '">' + esc(s.status[st] || st) + '</span>' + evNote + '<h3><a class="ev-link" style="color:inherit;text-decoration:none" href="' + base + '/events/' + esc(ev.slug) + '/">' + esc(title) + '</a></h3><p class="meta">' + esc(when) + (venue ? ' · ' + esc(venue) : '') + '</p>' + claim + '</div><div class="acts">' + acts + '</div></article>';
   }
 
+  function memCard(mm) {
+    var t = s.mem;
+    if (!mm) return '<section class="pane mem-pane"><h2>' + esc(t.h) + '</h2><p class="muted">' + esc(t.none) + '</p><a class="btn btn-p" href="' + base + '/join/">' + esc(t.join) + '</a></section>';
+    var day = function (d) { return d ? O.fmtShort(d) : ''; };
+    var h = '<section class="mem-pane"><div class="mcard"><div class="mcard-top"><span class="mcard-org">' + esc(O.ar ? 'الجمعية السعودية في أكسفورد' : 'Oxford Saudi Society') + '</span><span class="mstate s-' + esc(mm.status) + '">' + esc(t.st[mm.status] || mm.status) + '</span></div>';
+    h += '<span class="mk">' + esc(t.no) + '</span><span class="mno" dir="ltr">' + esc(mm.memberNo) + '</span>';
+    h += '<div class="mcard-meta"><div><span class="mk">' + esc(t.type) + '</span><b>' + esc(O.L(mm.tierLabel)) + '</b></div><div><span class="mk">' + esc(mm.status === 'approved' && mm.validUntil ? t.valid : t.since) + '</span><b>' + esc(mm.status === 'approved' && mm.validUntil ? day(mm.validUntil) : day(mm.appliedAt)) + '</b></div>' + (mm.position ? '<div><span class="mk">' + esc(t.queue) + '</span><b>' + esc(O.num(mm.position)) + '</b></div>' : '') + '</div></div>';
+    if (mm.reason) h += '<p class="alert warn">' + esc(t.reason) + ': ' + esc(mm.reason) + '</p>';
+    if ((mm.status === 'pending' || mm.status === 'info_requested') && mm.paymentStatus === 'due') h += '<p class="alert">' + esc(t.payDue.replace('{amount}', '£' + mm.amountGbp)) + '</p>';
+    if (mm.status === 'pending' && mm.nationalityStatus === 'pending') h += '<p class="alert">' + esc(t.verify) + '</p>';
+    if (mm.status === 'info_requested') {
+      h += '<form class="pane mem-q" id="mem-q"><h3>' + esc(t.qH) + '</h3><p class="preview">' + esc(mm.infoRequest) + '</p><div class="f"><label class="lbl" for="mem-ans">' + esc(t.reply) + '</label><textarea id="mem-ans" maxlength="4000" required></textarea></div><div class="form-foot"><button class="btn btn-p" type="submit">' + esc(t.send) + '</button></div></form>';
+    } else if (mm.infoResponse && (mm.status === 'pending')) {
+      h += '<p class="muted" style="font-size:13.5px">' + esc(t.yourAnswer) + ': “' + esc(mm.infoResponse.slice(0, 300)) + '”</p>';
+    }
+    return h + '</section>';
+  }
   async function load(note) {
     var me;
     try { me = await O.api('/me'); } catch (e) { if (e.status === 401) return signin(note); app.innerHTML = '<p class="alert bad">' + esc(s.err) + '</p>'; return; }
     var now = new Date(), up = me.registrations.filter(function (r) { return new Date(r.event.endUtc) >= now; }), past = me.registrations.filter(function (r) { return new Date(r.event.endUtc) < now; }).reverse();
-    var h = '<div class="app-head"><div><p class="eyebrow">' + esc(s.title) + '</p><h1>' + esc(s.title) + '</h1><p class="who">' + esc(s.signedInAs) + ' <b dir="ltr">' + esc(me.email) + '</b>' + (me.member ? ' · <span class="badge confirmed">' + esc(s.member) + '</span>' : '') + '</p></div><div class="rowc">' + (me.staff ? '<a class="btn btn-s btn-sm" href="' + base + '/admin/events/">' + esc(s.desk) + '</a>' : '') + '<button class="btn btn-s btn-sm" id="signout">' + esc(s.signout) + '</button></div></div>' + banner + (note || '');
+    var h = '<div class="app-head"><div><p class="eyebrow">' + esc(s.sub) + '</p><h1>' + esc(s.page) + '</h1><p class="who">' + esc(s.signedInAs) + ' <b dir="ltr">' + esc(me.email) + '</b>' + (me.member ? ' · <span class="badge confirmed">' + esc(s.member) + '</span>' : '') + '</p></div><div class="rowc">' + (me.staff ? '<a class="btn btn-s btn-sm" href="' + base + '/admin/events/">' + esc(s.desk) + '</a>' : '') + '<button class="btn btn-s btn-sm" id="signout">' + esc(s.signout) + '</button></div></div>' + banner + (note || '');
+    h += memCard(me.membership);
+    h += '<h2 class="eyebrow ev-sec" style="margin-top:30px">' + esc(s.title) + '</h2>';
     if (!me.registrations.length) h += '<div class="dir-empty"><p>' + esc(s.none) + '</p><a class="btn btn-p" href="' + base + '/events/">' + esc(s.browse) + '</a></div>';
     if (up.length) h += '<h2 class="eyebrow ev-sec">' + esc(s.upcoming) + '</h2><div class="stack">' + up.map(function (r) { return card(r, me); }).join('') + '</div>';
     if (past.length) h += '<h2 class="eyebrow ev-sec" style="margin-top:28px">' + esc(s.past) + '</h2><div class="stack">' + past.map(function (r) { return card(r, me); }).join('') + '</div>';
     if (me.registrations.some(function (r) { return r.status === 'confirmed' || r.status === 'checked_in'; })) h += '<p class="muted" style="font-size:13px;margin-top:18px">' + esc(s.ticketNote) + '</p>';
     app.innerHTML = h; banner = '';
+    var mq = $('mem-q');
+    if (mq) mq.addEventListener('submit', async function (e) {
+      e.preventDefault(); var v = $('mem-ans').value.trim(); if (v.length < 2) return;
+      mq.querySelector('button').disabled = true;
+      try { await O.api('/membership/respond', { method: 'POST', body: { response: v } }); return load('<p class="alert ok">' + esc(s.mem.sent) + '</p>'); }
+      catch (ex) { mq.querySelector('button').disabled = false; load('<p class="alert bad">' + esc(s.err) + '</p>'); }
+    });
     $('signout').addEventListener('click', async function () { try { await O.api('/auth/logout', { method: 'POST' }); } catch (e) { /* ignore */ } location.reload(); });
     app.querySelectorAll('[data-act]').forEach(function (b) {
       b.addEventListener('click', async function () {

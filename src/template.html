@@ -244,11 +244,8 @@
 
   <section class="band" id="join-form-band">
     <div class="wrap">
-      <form id="join-form" name="join" novalidate autocomplete="on" data-netlify="true" netlify-honeypot="website">
-        <input type="hidden" name="form-name" value="join">
-        <input type="hidden" name="reference" id="f-reference">
-        <input type="hidden" name="tier_label" id="f-tier-label">
-        <input type="hidden" name="amount" id="f-amount">
+      <form id="join-form" name="join" novalidate autocomplete="on" data-api="/api/membership/apply">
+        <noscript><p class="note" data-ar="يتطلب نموذج العضوية تفعيل JavaScript في المتصفح.">The membership form needs JavaScript switched on in your browser.</p></noscript>
         <p class="hp" aria-hidden="true"><label>Website <input type="text" name="website" tabindex="-1" autocomplete="off"></label></p>
 
         <p class="eyebrow" data-ar="الخطوة ١ · نوع العضوية">Step 1 · Membership type</p>

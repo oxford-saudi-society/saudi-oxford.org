@@ -163,4 +163,38 @@ CREATE TABLE IF NOT EXISTS oss_reminders (
 );
 `,
   },
+  {
+    id: '0002_membership',
+    sql: `
+CREATE SEQUENCE IF NOT EXISTS oss_member_seq START 1;
+ALTER TABLE oss_members DROP CONSTRAINT IF EXISTS oss_members_status_check;
+ALTER TABLE oss_members ADD CONSTRAINT oss_members_status_check CHECK (status IN ('pending','info_requested','approved','declined','revoked','expired'));
+ALTER TABLE oss_members ADD COLUMN IF NOT EXISTS member_no text UNIQUE;
+ALTER TABLE oss_members ADD COLUMN IF NOT EXISTS name_ar text;
+ALTER TABLE oss_members ADD COLUMN IF NOT EXISTS college text;
+ALTER TABLE oss_members ADD COLUMN IF NOT EXISTS uni_status text;
+ALTER TABLE oss_members ADD COLUMN IF NOT EXISTS phone text;
+ALTER TABLE oss_members ADD COLUMN IF NOT EXISTS volunteer text[];
+ALTER TABLE oss_members ADD COLUMN IF NOT EXISTS heard text;
+ALTER TABLE oss_members ADD COLUMN IF NOT EXISTS lang text NOT NULL DEFAULT 'en';
+ALTER TABLE oss_members ADD COLUMN IF NOT EXISTS consent_privacy_version text;
+ALTER TABLE oss_members ADD COLUMN IF NOT EXISTS consent_news boolean NOT NULL DEFAULT false;
+ALTER TABLE oss_members ADD COLUMN IF NOT EXISTS applied_at timestamptz;
+ALTER TABLE oss_members ADD COLUMN IF NOT EXISTS email_verified_at timestamptz;
+ALTER TABLE oss_members ADD COLUMN IF NOT EXISTS payment_status text NOT NULL DEFAULT 'not_required';
+ALTER TABLE oss_members ADD COLUMN IF NOT EXISTS amount_gbp integer NOT NULL DEFAULT 0;
+ALTER TABLE oss_members ADD COLUMN IF NOT EXISTS nationality_status text NOT NULL DEFAULT 'not_required';
+ALTER TABLE oss_members ADD COLUMN IF NOT EXISTS info_request text;
+ALTER TABLE oss_members ADD COLUMN IF NOT EXISTS info_requested_at timestamptz;
+ALTER TABLE oss_members ADD COLUMN IF NOT EXISTS info_response text;
+ALTER TABLE oss_members ADD COLUMN IF NOT EXISTS info_response_at timestamptz;
+ALTER TABLE oss_members ADD COLUMN IF NOT EXISTS decided_at timestamptz;
+ALTER TABLE oss_members ADD COLUMN IF NOT EXISTS decided_by text;
+ALTER TABLE oss_members ADD COLUMN IF NOT EXISTS decision_reason text;
+ALTER TABLE oss_members ADD COLUMN IF NOT EXISTS source text NOT NULL DEFAULT 'web';
+UPDATE oss_members SET applied_at = created_at WHERE applied_at IS NULL;
+UPDATE oss_members SET member_no = 'OSS-' || to_char(created_at AT TIME ZONE 'Europe/London', 'YYYY') || '-' || lpad(n::text, greatest(4, length(n::text)), '0') FROM (SELECT email AS e, nextval('oss_member_seq') AS n FROM oss_members WHERE member_no IS NULL ORDER BY created_at) x WHERE oss_members.email = x.e;
+CREATE INDEX IF NOT EXISTS oss_members_queue ON oss_members (status, applied_at)
+`,
+  },
 ];

@@ -461,7 +461,7 @@ html[dir="rtl"] .tier .tn{font-family:var(--arabic)}
 html[dir="rtl"] .f .lbl{letter-spacing:0;font-size:13.5px}
 .f .req{color:var(--gold-lt)}
 .f .hint{font-size:12.5px;color:var(--ink-3);text-transform:none;letter-spacing:0;font-weight:400}
-.f input[type="text"],.f input[type="email"],.f input[type="tel"],.f input[type="url"],.f select,.f textarea,.dir-search input{
+.f input[type="text"],.f input[type="email"],.f input[type="tel"],.f input[type="url"],.f input[type="date"],.f input[type="datetime-local"],.f input[type="number"],.f input[type="search"],.f select,.f textarea,.dir-search input{
   font:inherit;font-size:16px;color:var(--ink);padding:14px 18px;border-radius:var(--r-sm);width:100%;min-height:52px;
   background:rgba(2,12,28,.32);border:0;-webkit-appearance:none;appearance:none;outline:none;
   box-shadow:inset 0 2px 6px rgba(0,0,0,.35),inset 0 0 0 1px rgba(255,255,255,.12),inset 0 -1px 0 rgba(255,255,255,.06);
@@ -652,3 +652,57 @@ html[dir="rtl"] .cm-head{letter-spacing:0;font-size:12.5px}
   .cm-head{display:none}
 }
 @media(min-width:901px) and (max-width:1100px){.dir-grid{grid-template-columns:repeat(2,1fr)}}
+
+/* ── membership confirmation ───────────────────────────────────── */
+.done .done-h{font-size:clamp(30px,3.8vw,42px);margin:12px 0 0}
+.done .done-lede{max-width:62ch;margin-top:12px}
+.mcard{position:relative;display:grid;gap:6px;max-width:560px;margin-top:26px;padding:24px 26px 22px;border-radius:var(--r-lg);color:var(--navy);
+  background:linear-gradient(135deg,#fbfaf5 0%,#f1ede0 60%,#e9e1c8 100%);box-shadow:0 24px 50px -22px rgba(0,0,0,.7),inset 0 1px 0 #fff,inset 0 0 0 1px rgba(201,154,46,.35);overflow:hidden}
+.mcard::after{content:"";position:absolute;inset-inline-end:-60px;top:-60px;width:200px;height:200px;border-radius:50%;background:radial-gradient(closest-side,rgba(20,83,45,.14),transparent);pointer-events:none}
+.mcard-top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:8px}
+.mcard-org{font-family:var(--display);font-weight:600;font-size:17px;color:var(--navy)}
+html[dir="rtl"] .mcard-org{font-family:var(--arabic)}
+.mstate{font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:5px 11px;border-radius:var(--pill);background:rgba(201,154,46,.18);color:#7a5a12;white-space:nowrap}
+.mstate.s-approved{background:rgba(20,83,45,.14);color:#14532D}.mstate.s-declined,.mstate.s-revoked,.mstate.s-expired{background:rgba(160,30,30,.12);color:#8a1c1c}
+html[dir="rtl"] .mstate{letter-spacing:0}
+.mcard .mk{font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#8a6a1c}
+html[dir="rtl"] .mcard .mk{letter-spacing:0;font-size:12.5px}
+.mno{font-family:var(--display);font-weight:600;font-size:clamp(34px,6vw,46px);letter-spacing:.03em;line-height:1.05;color:var(--navy);direction:ltr;unicode-bidi:isolate;text-align:start}
+.mcard-meta{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:14px;padding-top:14px;border-top:1px solid rgba(0,33,71,.14)}
+.mcard-meta b{display:block;font-size:14px;font-weight:600;color:var(--navy);margin-top:2px;overflow-wrap:anywhere}
+.mcopy{position:absolute;inset-inline-end:18px;top:62px;font:inherit;font-size:12.5px;font-weight:600;color:var(--navy);background:rgba(0,33,71,.07);border:0;border-radius:var(--pill);padding:7px 12px;cursor:pointer}
+.mcopy:hover{background:rgba(0,33,71,.12)}
+.qtile{display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;column-gap:18px;align-items:center;max-width:560px;margin-top:14px;padding:18px 22px;border-radius:var(--r-md);background:var(--glass);box-shadow:var(--lift-sm),var(--spec)}
+.qtile .mk{grid-column:2;font-size:11.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-lt)}
+html[dir="rtl"] .qtile .mk{letter-spacing:0;font-size:13px}
+.qtile .qno{grid-row:1/3;grid-column:1;font-family:var(--display);font-size:56px;line-height:1;color:var(--ink);min-width:56px;text-align:center}
+.qtile p{grid-column:2;margin:4px 0 0;font-size:14px;color:var(--ink-2)}
+.track{list-style:none;padding:0;margin:26px 0 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;max-width:760px}
+.track li{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:var(--r-sm);background:rgba(255,255,255,.05);box-shadow:inset 0 0 0 1px rgba(255,255,255,.1);font-size:14px;color:var(--ink-3)}
+.track .tk{flex:0 0 26px;height:26px;border-radius:50%;display:grid;place-items:center;font-size:12.5px;font-weight:700;background:rgba(255,255,255,.1);color:var(--ink-2)}
+.track .tt small{display:block;font-size:12px;color:var(--ink-3);margin-top:2px}
+.track li.done{color:var(--ink)}.track li.done .tk{background:var(--green-lt);color:var(--navy)}
+.track li.now{color:var(--ink);background:rgba(227,182,92,.14);box-shadow:inset 0 0 0 1px rgba(227,182,92,.45)}.track li.now .tk{background:var(--gold-lt);color:var(--navy)}
+.nextpanel{margin-top:30px;max-width:860px}
+.nextpanel h3.disp{font-size:26px;margin:0 0 8px}
+.nextpanel > p{color:var(--ink-2);max-width:62ch}
+.done-mail{font-size:14px;margin-top:26px;max-width:62ch}
+.done-mail b{color:var(--ink)}
+.done-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+#join-fail{margin:0 0 14px}
+@media (max-width:620px){
+  .mcard{padding:20px 18px}.mcard-meta{grid-template-columns:1fr 1fr}.mcopy{position:static;justify-self:start;margin-top:8px}
+  .qtile .qno{font-size:46px}
+}
+@media print{
+  header.site,.tabbar,footer.site,.done-actions,.again,.mcopy,ol.steps,.sec-head{display:none!important}
+  body{background:#fff!important;color:#000}
+  .done,.done *{color:#000!important}
+  .mcard{box-shadow:none;border:1px solid #bbb}
+  .qtile,.track li{background:none;box-shadow:none;border:1px solid #ccc}
+}
+html[dir="rtl"] .mno{text-align:right}
+.f input[type="date"],.f input[type="datetime-local"]{color-scheme:dark}
+.mcard-top{flex-wrap:wrap}
+.mstate{white-space:normal;text-align:center;max-width:100%}
+@media (max-width:620px){.mcard-top{flex-direction:column;align-items:flex-start;gap:8px}}

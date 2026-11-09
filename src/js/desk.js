@@ -5,8 +5,8 @@
   var O = window.OSS, $ = O.$, esc = O.esc, lang = O.lang, base = O.base, L = O.L;
   var S = {
     en: {
-      title: 'Committee desk', sub: 'Events operations', signinH: 'Staff sign-in', signinP: 'Enter your committee email and we will send you a sign-in link.', email: 'Email', send: 'Email me a sign-in link', sent: 'Check your email', notStaff: 'This address is not on the staff list. Ask a super admin to add you.',
-      tabs: { overview: 'Programme', checkin: 'Check-in', mail: 'Email queue', members: 'Members', staff: 'Staff', audit: 'Audit log' }, back: '← Programme',
+      title: 'Committee desk', sub: 'Membership & events', signinH: 'Staff sign-in', signinP: 'Enter your committee email and we will send you a sign-in link.', email: 'Email', send: 'Email me a sign-in link', sent: 'Check your email', notStaff: 'This address is not on the staff list. Ask a super admin to add you.',
+      tabs: { membership: 'Membership', overview: 'Events', checkin: 'Check-in', mail: 'Email queue', members: 'Members', staff: 'Staff', audit: 'Audit log' }, back: '← Programme',
       th: { event: 'Event', when: 'When', status: 'Status', mode: 'Registration', cap: 'Capacity', interested: 'Interest', confirmed: 'Confirmed', waitlist: 'Waitlist', checkedIn: 'Checked in', actions: '' },
       st: { proposed: 'Proposed', confirmed: 'Confirmed', postponed: 'Postponed', cancelled: 'Cancelled', completed: 'Completed' },
       mode: { none: 'No booking', interest_only: 'Interest only', open: 'Open', waitlist_only: 'Waitlist only', closed: 'Closed' },
@@ -30,8 +30,8 @@
       signout: 'Sign out', who: 'Signed in as'
     },
     ar: {
-      title: 'مكتب اللجنة', sub: 'إدارة الفعاليات', signinH: 'دخول أعضاء اللجنة', signinP: 'أدخل بريدك في اللجنة وسنرسل لك رابط دخول.', email: 'البريد الإلكتروني', send: 'أرسل لي رابط الدخول', sent: 'تحقّق من بريدك', notStaff: 'هذا البريد ليس في قائمة الموظفين. اطلب من المشرف العام إضافتك.',
-      tabs: { overview: 'البرنامج', checkin: 'تسجيل الحضور', mail: 'قائمة البريد', members: 'الأعضاء', staff: 'الموظفون', audit: 'سجل التدقيق' }, back: '→ البرنامج',
+      title: 'مكتب اللجنة', sub: 'العضوية والفعاليات', signinH: 'دخول أعضاء اللجنة', signinP: 'أدخل بريدك في اللجنة وسنرسل لك رابط دخول.', email: 'البريد الإلكتروني', send: 'أرسل لي رابط الدخول', sent: 'تحقّق من بريدك', notStaff: 'هذا البريد ليس في قائمة الموظفين. اطلب من المشرف العام إضافتك.',
+      tabs: { membership: 'العضوية', overview: 'الفعاليات', checkin: 'تسجيل الحضور', mail: 'قائمة البريد', members: 'الأعضاء', staff: 'الموظفون', audit: 'سجل التدقيق' }, back: '→ البرنامج',
       th: { event: 'الفعالية', when: 'الموعد', status: 'الحالة', mode: 'التسجيل', cap: 'السعة', interested: 'اهتمام', confirmed: 'مؤكد', waitlist: 'انتظار', checkedIn: 'حضر', actions: '' },
       st: { proposed: 'مقترحة', confirmed: 'مؤكدة', postponed: 'مؤجلة', cancelled: 'ملغاة', completed: 'منتهية' },
       mode: { none: 'بلا حجز', interest_only: 'اهتمام فقط', open: 'مفتوح', waitlist_only: 'قائمة انتظار فقط', closed: 'مغلق' },
@@ -75,7 +75,7 @@
   }
 
   function shell(tab, inner) {
-    var tabs = ['overview', 'checkin', 'mail', 'members', 'staff', 'audit'].filter(function (t) { if (t === 'staff') return me.role === 'super_admin'; if (t === 'mail' || t === 'members' || t === 'audit') return canEdit(); return true; });
+    var tabs = ['membership', 'overview', 'checkin', 'mail', 'staff', 'audit'].filter(function (t) { if (t === 'staff') return me.role === 'super_admin'; if (t === 'mail' || t === 'membership' || t === 'audit') return canEdit(); return true; });
     app.innerHTML = '<div class="app-head"><div><p class="eyebrow">' + esc(s.sub) + '</p><h1>' + esc(s.title) + '</h1><p class="who">' + esc(s.who) + ' <b dir="ltr">' + esc(me.email) + '</b> · ' + esc(me.role) + '</p></div><div class="rowc">' + (canEdit() ? '<button class="btn btn-s btn-sm" id="publish" title="' + esc(s.publishHint) + '">' + esc(s.publish) + '</button>' : '') + '<button class="btn btn-s btn-sm" id="signout">' + esc(s.signout) + '</button></div></div>' +
       '<div class="tabs" role="tablist">' + tabs.map(function (t) { return '<a class="chip" role="tab" href="#' + t + '" aria-selected="' + (t === tab) + '">' + esc(s.tabs[t]) + '</a>'; }).join('') + '</div><div id="flash"></div><div id="view">' + inner + '</div>';
     $('signout').addEventListener('click', async function () { try { await O.api('/auth/logout', { method: 'POST' }); } catch (e) { /* ignore */ } location.reload(); });
@@ -189,7 +189,7 @@
         var cls = r.result === 'admitted' ? 'admitted' : r.result === 'duplicate' ? 'duplicate' : 'bad';
         $('ci-res').className = 'scan-result ' + cls;
         $('ci-res').innerHTML = '<b>' + esc(s.res[r.result] || r.result) + '</b>' + (r.name ? '<span class="nm">' + esc(r.name) + '</span>' : '') + (r.checkedInAt ? '<span class="ln">' + esc(s.at.replace('{t}', O.fmtStamp(r.checkedInAt))) + '</span>' : '');
-        if (r.result === 'admitted') { ev.counts.checked_in++; var t = $('tally'); if (t) t.textContent = s.tally.replace('{a}', O.num(ev.counts.checked_in)).replace('{c}', O.num(ev.counts.confirmed + ev.counts.checked_in)); if (navigator.vibrate) navigator.vibrate(80); }
+        if (r.result === 'admitted') { ev.counts.checked_in++; if (ev.counts.confirmed > 0) ev.counts.confirmed--; var t = $('tally'); if (t) t.textContent = s.tally.replace('{a}', O.num(ev.counts.checked_in)).replace('{c}', O.num(ev.counts.confirmed + ev.counts.checked_in)); if (navigator.vibrate) navigator.vibrate(80); }
         return r;
       } catch (e) { $('ci-res').className = 'scan-result bad'; $('ci-res').innerHTML = '<b>' + esc(errText(e)) + '</b>'; }
     }
@@ -248,7 +248,7 @@
   async function showMembers(q) {
     var d = await O.api('/admin/members' + (q ? '?q=' + encodeURIComponent(q) : ''));
     var rows = d.members.map(function (m) { return '<tr><td dir="ltr">' + esc(m.email) + '</td><td>' + esc(m.name || '') + '</td><td><span class="badge ' + (m.status === 'approved' ? 'confirmed' : m.status === 'pending' ? 'waitlisted' : 'cancelled') + '">' + esc(s.mst[m.status] || m.status) + '</span></td><td>' + esc(m.tier || '') + '</td><td>' + (m.valid_until ? esc(String(m.valid_until).slice(0, 10)) : '') + '</td><td class="ln">' + esc(m.approved_by || '') + '</td></tr>'; }).join('');
-    shell('members', '<div class="app-head"><div><p class="eyebrow">' + esc(s.tabs.members) + '</p><h1 style="font-size:30px">' + esc(s.membersH) + '</h1><p class="who">' + Object.keys(d.totals).map(function (k) { return esc(s.mst[k] || k) + ' ' + O.num(d.totals[k]); }).join(' · ') + '</p></div></div><p class="muted" style="font-size:14px;max-width:70ch">' + esc(s.membersP) + '</p>' +
+    shell('membership', '<p><a class="lnk" href="#membership">' + esc(MS.d.back) + '</a></p><div class="app-head"><div><p class="eyebrow">' + esc(s.tabs.members) + '</p><h1 style="font-size:30px">' + esc(s.membersH) + '</h1><p class="who">' + Object.keys(d.totals).map(function (k) { return esc(s.mst[k] || k) + ' ' + O.num(d.totals[k]); }).join(' · ') + '</p></div></div><p class="muted" style="font-size:14px;max-width:70ch">' + esc(s.membersP) + '</p>' +
       '<div class="grid2" style="margin-bottom:18px"><form id="mf" class="pane"><h3>' + esc(s.addH) + '</h3><div class="f"><label class="lbl" for="m-email">' + esc(s.email) + '</label><input id="m-email" type="email" required dir="ltr"></div><div class="f"><label class="lbl" for="m-name">' + esc(s.name) + '</label><input id="m-name" type="text"></div><div class="rowc"><div class="f"><label class="lbl" for="m-tier">' + esc(s.tier) + '</label><select id="m-tier"><option value="saudi">Saudi student</option><option value="student">Student</option><option value="associate">Associate</option><option value="honorary">Honorary</option></select></div><div class="f"><label class="lbl" for="m-status">' + esc(s.mstatus) + '</label><select id="m-status">' + Object.keys(s.mst).map(function (k) { return '<option value="' + k + '">' + esc(s.mst[k]) + '</option>'; }).join('') + '</select></div></div><div class="f"><label class="lbl" for="m-until">' + esc(s.validUntil) + '</label><input id="m-until" type="date"></div><div class="form-foot"><button class="btn btn-p" type="submit">' + esc(s.add) + '</button></div></form>' +
       '<form id="bf" class="pane"><h3>' + esc(s.bulkH) + '</h3><p class="muted" style="font-size:13.5px;margin:0 0 10px">' + esc(s.bulkP) + '</p><div class="f"><textarea id="b-rows" dir="ltr" placeholder="name@ox.ac.uk, Full Name"></textarea></div><div class="form-foot"><button class="btn btn-s" type="submit">' + esc(s.bulkBtn) + '</button></div></form></div>' +
       '<form id="msf" class="rowc" style="margin-bottom:12px"><div class="f"><input id="ms-q" type="text" placeholder="' + esc(s.search) + '" value="' + esc(q || '') + '"></div><button class="btn btn-s btn-sm" type="submit">' + esc(s.find) + '</button></form>' +
@@ -256,6 +256,112 @@
     $('mf').addEventListener('submit', async function (e) { e.preventDefault(); try { await O.api('/admin/members', { method: 'POST', body: { email: $('m-email').value, name: $('m-name').value, tier: $('m-tier').value, status: $('m-status').value, validUntil: $('m-until').value || null } }); await showMembers(q); flash(esc(s.done)); } catch (e2) { flash(esc(errText(e2)), 'bad'); } });
     $('bf').addEventListener('submit', async function (e) { e.preventDefault(); var rowsIn = $('b-rows').value.split(/\n+/).map(function (l) { var p = l.split(/[,;\t]/); return { email: (p[0] || '').trim(), name: (p[1] || '').trim(), status: 'approved' }; }).filter(function (r) { return r.email; }); if (!rowsIn.length) return; try { var r = await O.api('/admin/members', { method: 'POST', body: { rows: rowsIn } }); await showMembers(q); flash(esc(s.imported.replace('{n}', O.num(r.count)))); } catch (e2) { flash(esc(errText(e2)), 'bad'); } });
     $('msf').addEventListener('submit', function (e) { e.preventDefault(); showMembers($('ms-q').value.trim()); });
+  }
+
+  /* ── membership: queue, register, decisions ───────────────────── */
+  var MS = {
+    en: { h: 'Membership applications', hAll: 'Membership register', p: 'Applications are reviewed in order. Approving gives the person an active membership (members-only events open to them) and emails them; every decision is logged.',
+      views: { queue: 'Review queue', approved: 'Active members', info_requested: 'Waiting for applicant', declined: 'Declined', revoked: 'Ended', all: 'Everyone' },
+      th: { pos: '#', no: 'Membership no.', name: 'Name', type: 'Type', college: 'College / status', applied: 'Applied', email: 'Email', pay: 'Payment', nat: 'Nationality', status: 'Status' },
+      st: { pending: 'Pending', info_requested: 'Question sent', approved: 'Active', declined: 'Declined', revoked: 'Ended', expired: 'Expired' },
+      pay: { not_required: '—', due: 'Due', received: 'Received', waived: 'Waived' }, nat: { not_required: '—', pending: 'To check', verified: 'Verified' },
+      verified: 'verified', unverified: 'not verified yet', empty: 'Nothing here.', search: 'Search name, email or number', add: 'Add members manually',
+      d: { back: '← Membership', email: 'Email', phone: 'Mobile', college: 'College / department', uni: 'University status', vol: 'Volunteering', heard: 'Heard about us', news: 'Event news by email', privacy: 'Privacy notice accepted', applied: 'Applied', verifiedAt: 'Email verified', decided: 'Decided', by: 'by', queue: 'Place in queue', valid: 'Valid until', yes: 'yes', no: 'no',
+        qSent: 'Question sent', answer: 'Applicant’s answer', checks: 'Checks', payment: 'Payment', nationality: 'Saudi nationality', notes: 'Internal notes (not shown to the applicant)', save: 'Save checks & notes', saved: 'Saved.',
+        actions: 'Decision', approve: 'Approve membership', approveP: 'Membership becomes active immediately and the applicant is emailed their confirmation.', validUntil: 'Valid until (optional)',
+        ask: 'Request more information', askP: 'The applicant is emailed this message and can answer from their account. Their place in the queue is kept.', templates: 'Templates', tNat: 'Proof of nationality', tPay: 'Payment', tUni: 'University status',
+        decline: 'Decline', declineP: 'The applicant is told by email. They can apply again later and keep the same number.', revoke: 'End membership', revokeP: 'Members-only access stops immediately; the member is told by email.', reinstate: 'Reinstate membership',
+        reason: 'Reason (included in the email)', message: 'Message to the applicant', notify: 'Email the applicant', history: 'History', warnPay: 'The fee is not marked as received.', warnNat: 'Nationality is not marked as verified.', warnEmail: 'The applicant has not confirmed their email address yet.', confirmApprove: 'Approve anyway?' },
+      done: { approve: 'Approved — the member has been emailed.', 'request-info': 'Question sent.', decline: 'Application declined.', revoke: 'Membership ended.' } },
+    ar: { h: 'طلبات العضوية', hAll: 'سجل الأعضاء', p: 'تُراجع الطلبات بحسب ترتيبها. الموافقة تفعّل العضوية (وتفتح فعاليات الأعضاء) وتُرسل بريدًا للعضو، وتُسجَّل كل الإجراءات.',
+      views: { queue: 'قائمة المراجعة', approved: 'الأعضاء الفعّالون', info_requested: 'بانتظار ردّ المتقدم', declined: 'المرفوضون', revoked: 'المنتهية عضويتهم', all: 'الجميع' },
+      th: { pos: '#', no: 'رقم العضوية', name: 'الاسم', type: 'النوع', college: 'الكلية / الصفة', applied: 'تاريخ الطلب', email: 'البريد', pay: 'الدفع', nat: 'الجنسية', status: 'الحالة' },
+      st: { pending: 'قيد المراجعة', info_requested: 'أُرسل سؤال', approved: 'فعّال', declined: 'مرفوض', revoked: 'منتهية', expired: 'منتهية الصلاحية' },
+      pay: { not_required: '—', due: 'مستحق', received: 'مستلم', waived: 'معفى' }, nat: { not_required: '—', pending: 'للتحقق', verified: 'تم التحقق' },
+      verified: 'مؤكد', unverified: 'لم يُؤكَّد بعد', empty: 'لا يوجد شيء هنا.', search: 'ابحث بالاسم أو البريد أو الرقم', add: 'إضافة أعضاء يدويًا',
+      d: { back: '→ العضوية', email: 'البريد', phone: 'الجوال', college: 'الكلية / القسم', uni: 'الصفة الجامعية', vol: 'التطوّع', heard: 'كيف عرف بنا', news: 'أخبار الفعاليات بالبريد', privacy: 'إشعار الخصوصية المقبول', applied: 'تاريخ الطلب', verifiedAt: 'تأكيد البريد', decided: 'تاريخ القرار', by: 'بواسطة', queue: 'الترتيب في القائمة', valid: 'صالحة حتى', yes: 'نعم', no: 'لا',
+        qSent: 'السؤال المرسل', answer: 'إجابة المتقدم', checks: 'التحقق', payment: 'الدفع', nationality: 'الجنسية السعودية', notes: 'ملاحظات داخلية (لا تظهر للمتقدم)', save: 'حفظ التحقق والملاحظات', saved: 'تم الحفظ.',
+        actions: 'القرار', approve: 'الموافقة على العضوية', approveP: 'تُفعّل العضوية فورًا ويُرسل للمتقدم بريد التأكيد.', validUntil: 'صالحة حتى (اختياري)',
+        ask: 'طلب معلومات إضافية', askP: 'تُرسل هذه الرسالة للمتقدم بالبريد ويمكنه الرد من حسابه، ويحتفظ بترتيبه في القائمة.', templates: 'نماذج', tNat: 'إثبات الجنسية', tPay: 'الدفع', tUni: 'الصفة الجامعية',
+        decline: 'رفض', declineP: 'يُبلَّغ المتقدم بالبريد، ويمكنه التقديم لاحقًا بالرقم نفسه.', revoke: 'إنهاء العضوية', revokeP: 'يتوقف الوصول لفعاليات الأعضاء فورًا ويُبلَّغ العضو بالبريد.', reinstate: 'إعادة تفعيل العضوية',
+        reason: 'السبب (يُذكر في البريد)', message: 'الرسالة إلى المتقدم', notify: 'إرسال بريد للمتقدم', history: 'السجل', warnPay: 'لم تُسجَّل الرسوم كمستلمة.', warnNat: 'لم يُسجَّل التحقق من الجنسية.', warnEmail: 'لم يؤكد المتقدم بريده الإلكتروني بعد.', confirmApprove: 'الموافقة على أي حال؟' },
+      done: { approve: 'تمت الموافقة وأُرسل بريد للعضو.', 'request-info': 'أُرسل السؤال.', decline: 'رُفض الطلب.', revoke: 'أُنهيت العضوية.' } }
+  }[lang];
+  var UNI = { undergraduate: ['Undergraduate', 'بكالوريوس'], masters: ["Master's", 'ماجستير'], dphil: ['DPhil', 'دكتوراه'], visiting: ['Visiting', 'زائر'], staff: ['Staff', 'موظف'], alumni: ['Alumni', 'خريج'], other: ['Other', 'أخرى'] };
+  var uniL = function (k) { return UNI[k] ? UNI[k][lang === 'ar' ? 1 : 0] : (k || ''); };
+  var TIERL = { saudi: ['Saudi student', 'طالب سعودي'], student: ['Student', 'طالب'], associate: ['Associate', 'منتسب'], friend: ['Friend', 'صديق'] };
+  var tierL = function (k) { return TIERL[k] ? TIERL[k][lang === 'ar' ? 1 : 0] : (k || ''); };
+  var badgeCls = { pending: 'waitlisted', info_requested: 'offered', approved: 'confirmed', declined: 'cancelled', revoked: 'cancelled', expired: 'cancelled' };
+  async function showMembership(view, q) {
+    var d = await O.api('/admin/membership?view=' + encodeURIComponent(view) + (q ? '&q=' + encodeURIComponent(q) : ''));
+    var tot = d.totals || {}; var cnt = function (k) { return k === 'queue' ? (tot.pending || 0) + (tot.info_requested || 0) : k === 'all' ? Object.keys(tot).reduce(function (a, x) { return a + tot[x]; }, 0) : (tot[k] || 0); };
+    var chips = Object.keys(MS.views).map(function (k) { return '<a class="chip" href="#membership/' + k + '" aria-selected="' + (k === view) + '">' + esc(MS.views[k]) + ' <span class="ln">' + O.num(cnt(k)) + '</span></a>'; }).join('');
+    var rows = d.members.map(function (r) {
+      return '<tr class="mrow" data-no="' + esc(r.member_no) + '" tabindex="0"><td class="num">' + (r.position ? '<b>' + O.num(r.position) + '</b>' : '') + '</td><td class="mono" dir="ltr">' + esc(r.member_no) + '</td><td><b>' + esc(r.name) + '</b>' + (r.name_ar ? '<div class="ln" dir="rtl">' + esc(r.name_ar) + '</div>' : '') + '</td><td>' + esc(tierL(r.tier)) + '</td><td>' + esc(r.college || '') + '<div class="ln">' + esc(uniL(r.uni_status)) + '</div></td><td class="nowrap">' + esc(r.applied_at ? O.fmtShort(r.applied_at) : '') + '</td>' +
+        '<td>' + (r.email_verified_at ? '✓' : '<span class="ln">—</span>') + '</td><td>' + esc(MS.pay[r.payment_status] || r.payment_status) + '</td><td>' + esc(MS.nat[r.nationality_status] || r.nationality_status) + '</td><td><span class="badge ' + (badgeCls[r.status] || '') + '">' + esc(MS.st[r.status] || r.status) + '</span></td></tr>';
+    }).join('');
+    shell('membership', '<div class="app-head"><div><p class="eyebrow">' + esc(s.tabs.membership) + '</p><h1 style="font-size:30px">' + esc(view === 'queue' ? MS.h : MS.hAll) + '</h1><p class="muted" style="font-size:14px;max-width:70ch;margin:6px 0 0">' + esc(MS.p) + '</p></div><div class="rowc"><a class="btn btn-s btn-sm" href="#membership-add">' + esc(MS.add) + '</a></div></div>' +
+      '<div class="tabs sub">' + chips + '</div><form id="ms-f" class="rowc" style="margin-bottom:12px"><div class="f"><input id="ms-q" type="text" placeholder="' + esc(MS.search) + '" value="' + esc(q || '') + '"></div><button class="btn btn-s btn-sm" type="submit">' + esc(s.find) + '</button></form>' +
+      (d.members.length ? '<div class="tbl-wrap"><table class="tbl mtbl"><thead><tr><th class="num">' + esc(MS.th.pos) + '</th><th>' + esc(MS.th.no) + '</th><th>' + esc(MS.th.name) + '</th><th>' + esc(MS.th.type) + '</th><th>' + esc(MS.th.college) + '</th><th>' + esc(MS.th.applied) + '</th><th>' + esc(MS.th.email) + '</th><th>' + esc(MS.th.pay) + '</th><th>' + esc(MS.th.nat) + '</th><th>' + esc(MS.th.status) + '</th></tr></thead><tbody>' + rows + '</tbody></table></div>' : '<p class="dir-empty">' + esc(MS.empty) + '</p>'));
+    $('ms-f').addEventListener('submit', function (e) { e.preventDefault(); showMembership(view, $('ms-q').value.trim()); });
+    view_().querySelectorAll('.mrow').forEach(function (tr) { var go = function () { location.hash = '#membership/' + encodeURIComponent(tr.getAttribute('data-no')); }; tr.addEventListener('click', go); tr.addEventListener('keydown', function (e) { if (e.key === 'Enter') go(); }); });
+  }
+  var view_ = function () { return $('view'); };
+  function defaultValid() { var n = new Date(), y = n.getUTCFullYear() + (n.getUTCMonth() >= 9 ? 1 : 0); return y + '-09-30'; }
+  function templates(mm) {
+    var ar = mm.lang === 'ar', mail = SITE_EMAILS.membership, fee = '£' + (mm.amount_gbp || 0);
+    return {
+      nat: ar ? 'شكرًا لتقديمك. لتأكيد عضوية الطلبة السعوديين المجانية، يرجى إرسال صورة من جواز سفرك السعودي أو هويتك الوطنية (أو تأكيد الابتعاث من الملحقية الثقافية) إلى ' + mail + ' مع ذكر رقم عضويتك ' + mm.member_no + '. نحذف الصورة فور التحقق.' : 'Thank you for applying. To confirm free Saudi student membership, please email a photo of your Saudi passport or national ID (or your Cultural Bureau scholarship confirmation) to ' + mail + ', quoting ' + mm.member_no + '. We delete it as soon as it has been checked.',
+      pay: ar ? 'لم نتمكن بعد من مطابقة رسوم العضوية (' + fee + '). يرجى الدفع بالتحويل البنكي مع ذكر الرقم ' + mm.member_no + ' مرجعًا، أو أخبرنا هنا إن كنت قد دفعت بالفعل.' : 'We have not yet matched your membership fee of ' + fee + '. Please pay by bank transfer quoting ' + mm.member_no + ' as the reference, or tell us here if you have already paid.',
+      uni: ar ? 'هل يمكنك تأكيد كليتك أو قسمك وبرنامجك الدراسي؟ يرجى الرد مع ذكر بريدك الجامعي.' : 'Could you confirm your college or department and your course? Please reply with your University email address.'
+    };
+  }
+  var SITE_EMAILS = { membership: '' };
+  try { var st0 = JSON.parse((document.getElementById('site-settings') || {}).textContent || '{}'); SITE_EMAILS.membership = st0.membershipEmail || st0.email || ''; } catch (e) { /* none on the desk page */ }
+  async function showMemberDetail(no) {
+    var d = await O.api('/admin/membership/' + encodeURIComponent(no)), mm = d.member, D = MS.d;
+    if (!SITE_EMAILS.membership) SITE_EMAILS.membership = (me && me.membershipEmail) || '';
+    var open = mm.status === 'pending' || mm.status === 'info_requested';
+    var kv = function (k, v) { return '<dt>' + esc(k) + '</dt><dd>' + v + '</dd>'; };
+    var info = '<dl class="kv mkv">' + kv(D.email, '<span dir="ltr">' + esc(mm.email) + '</span> ' + (mm.email_verified_at ? '<span class="badge confirmed">' + esc(MS.verified) + '</span>' : '<span class="badge waitlisted">' + esc(MS.unverified) + '</span>')) +
+      (mm.phone ? kv(D.phone, '<span dir="ltr">' + esc(mm.phone) + '</span>') : '') + kv(D.college, esc(mm.college || '—')) + kv(D.uni, esc(uniL(mm.uni_status))) +
+      kv(D.vol, esc((mm.volunteer || []).join(', ') || '—')) + kv(D.heard, esc(mm.heard || '—')) + kv(D.news, esc(mm.consent_news ? D.yes : D.no)) + kv(D.privacy, esc(mm.consent_privacy_version || '—')) +
+      kv(D.applied, esc(mm.applied_at ? O.fmtStamp(mm.applied_at) : '—')) + (mm.position ? kv(D.queue, '<b>' + O.num(mm.position) + '</b>') : '') +
+      (mm.decided_at ? kv(D.decided, esc(O.fmtStamp(mm.decided_at)) + ' ' + esc(D.by) + ' <span dir="ltr">' + esc(mm.decided_by || '') + '</span>') : '') + (mm.valid_until ? kv(D.valid, esc(O.fmtShort(mm.valid_until))) : '') +
+      (mm.decision_reason ? kv(D.reason, esc(mm.decision_reason)) : '') + '</dl>';
+    var qa = '';
+    if (mm.info_request) qa += '<div class="pane"><h3>' + esc(D.qSent) + ' <span class="ln">' + esc(mm.info_requested_at ? O.fmtStamp(mm.info_requested_at) : '') + '</span></h3><p class="preview">' + esc(mm.info_request) + '</p>' + (mm.info_response ? '<h3 style="margin-top:12px">' + esc(D.answer) + ' <span class="ln">' + esc(O.fmtStamp(mm.info_response_at)) + '</span></h3><p class="preview">' + esc(mm.info_response) + '</p>' : '') + '</div>';
+    var opt = function (obj, cur) { return Object.keys(obj).map(function (k) { return '<option value="' + k + '"' + (k === cur ? ' selected' : '') + '>' + esc(obj[k] === '—' ? (lang === 'ar' ? 'غير مطلوب' : 'Not required') : obj[k]) + '</option>'; }).join(''); };
+    var checks = '<form class="pane" id="mchecks"><h3>' + esc(D.checks) + '</h3><div class="rowc"><div class="f"><label class="lbl" for="mc-pay">' + esc(D.payment) + (mm.amount_gbp ? ' (£' + mm.amount_gbp + ')' : '') + '</label><select id="mc-pay">' + opt(MS.pay, mm.payment_status) + '</select></div><div class="f"><label class="lbl" for="mc-nat">' + esc(D.nationality) + '</label><select id="mc-nat">' + opt(MS.nat, mm.nationality_status) + '</select></div></div>' +
+      '<div class="f"><label class="lbl" for="mc-notes">' + esc(D.notes) + '</label><textarea id="mc-notes" maxlength="2000">' + esc(mm.notes || '') + '</textarea></div><div class="form-foot"><button class="btn btn-s" type="submit">' + esc(D.save) + '</button></div></form>';
+    var acts = '<div class="pane mact"><h3>' + esc(D.actions) + '</h3>';
+    if (open || mm.status === 'declined' || mm.status === 'revoked' || mm.status === 'expired') acts += '<details class="mact-d" open><summary>' + esc(mm.status === 'revoked' || mm.status === 'expired' ? D.reinstate : D.approve) + '</summary><p class="muted">' + esc(D.approveP) + '</p><div class="f"><label class="lbl" for="ma-until">' + esc(D.validUntil) + '</label><input id="ma-until" type="date" value="' + esc(mm.valid_until ? String(mm.valid_until).slice(0, 10) : defaultValid()) + '"></div><div class="form-foot"><button class="btn btn-p" data-act="approve">' + esc(mm.status === 'revoked' || mm.status === 'expired' ? D.reinstate : D.approve) + '</button></div></details>';
+    if (open) acts += '<details class="mact-d"><summary>' + esc(D.ask) + '</summary><p class="muted">' + esc(D.askP) + '</p><div class="rowc" style="margin-bottom:8px"><span class="ln">' + esc(D.templates) + ':</span><button type="button" class="btn btn-s btn-sm" data-tpl="nat">' + esc(D.tNat) + '</button><button type="button" class="btn btn-s btn-sm" data-tpl="pay">' + esc(D.tPay) + '</button><button type="button" class="btn btn-s btn-sm" data-tpl="uni">' + esc(D.tUni) + '</button></div><div class="f"><label class="lbl" for="ma-msg">' + esc(D.message) + '</label><textarea id="ma-msg" maxlength="2000" dir="' + (mm.lang === 'ar' ? 'rtl' : 'ltr') + '"></textarea></div><div class="form-foot"><button class="btn btn-p" data-act="request-info">' + esc(D.ask) + '</button></div></details>';
+    if (open) acts += '<details class="mact-d"><summary>' + esc(D.decline) + '</summary><p class="muted">' + esc(D.declineP) + '</p><div class="f"><label class="lbl" for="ma-dec">' + esc(D.reason) + '</label><textarea id="ma-dec" maxlength="2000"></textarea></div><div class="form-foot"><button class="btn btn-s btn-danger" data-act="decline">' + esc(D.decline) + '</button></div></details>';
+    if (mm.status === 'approved') acts += '<details class="mact-d"><summary>' + esc(D.revoke) + '</summary><p class="muted">' + esc(D.revokeP) + '</p><div class="f"><label class="lbl" for="ma-rev">' + esc(D.reason) + '</label><textarea id="ma-rev" maxlength="2000"></textarea></div><div class="form-foot"><button class="btn btn-s btn-danger" data-act="revoke">' + esc(D.revoke) + '</button></div></details>';
+    acts += '<label class="chk-l" style="margin-top:10px"><input type="checkbox" id="ma-notify" checked><span>' + esc(D.notify) + '</span></label></div>';
+    var hist = '<div class="pane"><h3>' + esc(D.history) + '</h3><ul class="results">' + d.history.map(function (h) { return '<li><span>' + esc(h.action.replace('membership.', '').replace(/_/g, ' ')) + (h.meta && h.meta.reason ? ' — ' + esc(h.meta.reason) : '') + '</span><span class="ln">' + esc(O.fmtStamp(h.at)) + ' · <span dir="ltr">' + esc(h.actor) + '</span></span></li>'; }).join('') + '</ul></div>';
+    shell('membership', '<p><a class="lnk" href="#membership">' + esc(D.back) + '</a></p><div class="app-head"><div><p class="eyebrow mono" dir="ltr">' + esc(mm.member_no) + '</p><h1 style="font-size:30px">' + esc(mm.name) + (mm.name_ar ? ' <span class="ln" dir="rtl" style="font-size:20px">' + esc(mm.name_ar) + '</span>' : '') + '</h1><p class="who"><span class="badge ' + (badgeCls[mm.status] || '') + '">' + esc(MS.st[mm.status] || mm.status) + '</span> · ' + esc(mm.tierLabel) + '</p></div></div>' +
+      '<div class="grid2 mgrid"><div class="stack"><div class="pane">' + info + '</div>' + qa + checks + '</div><div class="stack">' + acts + hist + '</div></div>');
+    $('mchecks').addEventListener('submit', async function (e) { e.preventDefault(); try { await O.api('/admin/membership/' + encodeURIComponent(no) + '/update', { method: 'POST', body: { paymentStatus: $('mc-pay').value, nationalityStatus: $('mc-nat').value, notes: $('mc-notes').value } }); await showMemberDetail(no); flash(esc(D.saved)); } catch (ex) { flash(esc(errText(ex)), 'bad'); } });
+    var tpl = templates(mm);
+    view_().querySelectorAll('[data-tpl]').forEach(function (b) { b.addEventListener('click', function () { $('ma-msg').value = tpl[b.getAttribute('data-tpl')]; $('ma-msg').focus(); }); });
+    view_().querySelectorAll('[data-act]').forEach(function (b) {
+      b.addEventListener('click', async function (e) {
+        e.preventDefault(); var act = b.getAttribute('data-act'), body = { notify: $('ma-notify').checked };
+        if (act === 'approve') {
+          body.validUntil = $('ma-until').value || null;
+          var warns = []; if (mm.payment_status === 'due') warns.push(D.warnPay); if (mm.nationality_status === 'pending') warns.push(D.warnNat); if (!mm.email_verified_at) warns.push(D.warnEmail);
+          if (warns.length && !(await O.confirm(D.confirmApprove, warns.join(' '), D.approve))) return;
+        }
+        if (act === 'request-info') { body.message = $('ma-msg').value.trim(); if (body.message.length < 5) { $('ma-msg').focus(); return; } }
+        if (act === 'decline') body.reason = $('ma-dec').value.trim();
+        if (act === 'revoke') { body.reason = $('ma-rev').value.trim(); if (!(await O.confirm(D.revoke + '?', D.revokeP, D.revoke))) return; }
+        b.disabled = true;
+        try { await O.api('/admin/membership/' + encodeURIComponent(no) + '/' + act, { method: 'POST', body: body }); await showMemberDetail(no); flash(esc(MS.done[act])); }
+        catch (ex) { b.disabled = false; flash(esc(errText(ex)), 'bad'); }
+      });
+    });
   }
 
   /* ── staff ────────────────────────────────────────────────────── */
@@ -289,9 +395,12 @@
       if (v === 'checkin') return await showCheckin(id);
       if (v === 'comms' && id) return await showComms(id);
       if (v === 'mail') return await showMail('');
-      if (v === 'members') return await showMembers('');
+      if (v === 'members') { location.hash = '#membership'; return; }
+      if (v === 'membership-add') return await showMembers('');
+      if (v === 'membership') return id && /^OSS-/i.test(id) ? await showMemberDetail(decodeURIComponent(id)) : await showMembership(id || 'queue', '');
       if (v === 'staff') return await showStaff();
       if (v === 'audit') return await showAudit();
+      if (!h && canEdit()) return await showMembership('queue', '');
       return await showOverview();
     } catch (e) {
       if (e.status === 401) return signin();

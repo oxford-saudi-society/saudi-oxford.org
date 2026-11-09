@@ -2,15 +2,16 @@
    Staff roles come from oss_staff on every request (never from the cookie). */
 import { createHmac, randomBytes, timingSafeEqual } from 'node:crypto';
 import { cookies, fail, sha256, ipHash, clientIp } from './http.mjs';
+import { SETTINGS } from './content.generated.mjs';
 
 const COOKIE = 'oss_session';
 const SESSION_DAYS = 30;
 
 function secret() {
   const s = process.env.AUTH_SECRET || '';
-  if (s.length >= 32 && !/^dev-secret/.test(s)) return s;
-  if (process.env.NETLIFY || process.env.NODE_ENV === 'production') throw Object.assign(new Error('auth_secret_missing'), { status: 503 });
-  return 'dev-only-secret-not-for-production-use-0123456789';
+  if (s.length >= 32) return s;
+  if (process.env.OSS_DB_SECRET) return process.env.OSS_DB_SECRET; // generated and stored by db.ready()
+  throw Object.assign(new Error('auth_secret_missing'), { status: 503 });
 }
 const b64u = (buf) => Buffer.from(buf).toString('base64url');
 const sign = (payload) => createHmac('sha256', secret()).update(payload).digest('base64url');
@@ -50,7 +51,7 @@ export async function staffFor(q, email) {
   const r = await q.query('SELECT email, name, role, event_ids, disabled FROM oss_staff WHERE email = $1', [email]);
   if (r.rows.length && !r.rows[0].disabled) return r.rows[0];
   // bootstrap: addresses listed in ADMIN_BOOTSTRAP_EMAILS become super admins on first sign-in
-  const boot = (process.env.ADMIN_BOOTSTRAP_EMAILS || '').split(',').map((s) => s.trim().toLowerCase()).filter(Boolean);
+  const boot = (process.env.ADMIN_BOOTSTRAP_EMAILS || '').split(',').concat(SETTINGS.adminEmails || []).map((s) => String(s).trim().toLowerCase()).filter(Boolean);
   if (boot.includes(email)) {
     await q.query("INSERT INTO oss_staff (email, role, created_by) VALUES ($1, 'super_admin', 'bootstrap') ON CONFLICT (email) DO UPDATE SET disabled = false, role = 'super_admin'", [email]);
     return { email, role: 'super_admin', event_ids: null, disabled: false };

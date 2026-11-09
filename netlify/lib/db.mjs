@@ -83,6 +83,15 @@ export function ready() {
           await q.query('INSERT INTO oss_migrations (id) VALUES ($1)', [m.id]);
         });
       }
+      // Signing key for sessions and one-time links: AUTH_SECRET if set, otherwise a random key kept in the
+      // database (created once). Anyone who can read the database could forge sessions — the same people who
+      // could already read every record, so nothing is weakened; it removes a manual setup step.
+      if (!process.env.AUTH_SECRET || process.env.AUTH_SECRET.length < 32) {
+        const { randomBytes } = await import('node:crypto');
+        await db.query("INSERT INTO oss_settings (key, value, updated_by) VALUES ('auth_secret', $1, 'system') ON CONFLICT (key) DO NOTHING", [JSON.stringify(randomBytes(48).toString('base64url'))]);
+        const r = await db.query("SELECT value FROM oss_settings WHERE key = 'auth_secret'");
+        process.env.OSS_DB_SECRET = JSON.parse(JSON.stringify(r.rows[0].value));
+      }
       return db;
     })().catch((e) => { readyPromise = null; throw e; });
   }

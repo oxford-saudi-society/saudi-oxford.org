@@ -8,6 +8,7 @@ import { sessionFrom, sessionCookie, clearSessionCookie, staffFor, isMember, lim
 import { enqueue, processOutbox } from '../lib/mail.mjs';
 import * as E from '../lib/events.mjs';
 import * as A from '../lib/admin.mjs';
+import * as M from '../lib/membership.mjs';
 
 export const config = { path: ['/api', '/api/*'] };
 
@@ -108,6 +109,28 @@ async function route(req, context, db) {
     return json(result.body, result.status || 200);
   }
 
+  /* ── membership ──────────────────────────────────────────────── */
+  if (a === 'membership' && b === 'apply' && m === 'POST') {
+    assertSameOrigin(req);
+    const body = await readJson(req);
+    if (body.website) return json({ result: 'received', member: null, honeypot: true }); // bots get a polite nothing
+    await limitByIp(db, 'apply_ip', req, context, 12, 3600);
+    if (validEmail(normEmail(body.email))) await limitByEmail(db, 'apply_email', normEmail(body.email), 5, 3600);
+    const out = await db.tx((q) => M.apply(q, body, site));
+    return json(out);
+  }
+  if (a === 'membership' && b === 'me' && m === 'GET') {
+    if (!session) fail(401, 'sign_in_required');
+    return json({ email: session.email, member: await M.mine(db, session.email) });
+  }
+  if (a === 'membership' && b === 'respond' && m === 'POST') {
+    assertSameOrigin(req);
+    if (!session) fail(401, 'sign_in_required');
+    await rateLimit(db, 'respond', session.email, 10, 3600);
+    const body = await readJson(req);
+    return json({ member: await db.tx((q) => M.respond(q, session.email, body, site)) });
+  }
+
   /* ── email links ──────────────────────────────────────────────── */
   if (a === 'verify' && m === 'GET') {
     await limitByIp(db, 'verify_ip', req, context, 60, 3600);
@@ -122,6 +145,7 @@ async function route(req, context, db) {
       }
       const p = pending.payload || {};
       if (pending.kind === 'login') {
+        await q.query('UPDATE oss_members SET email_verified_at = COALESCE(email_verified_at, now()) WHERE email = $1', [pending.email]);
         const to = safePath(p.redirect || '/account/');
         return { to: site + to + (to.indexOf('?') === -1 ? '?' : '&') + 'verified=signed_in', cookie: sessionCookie(pending.email, req) };
       }
@@ -173,7 +197,7 @@ async function route(req, context, db) {
     const rows = (await db.query(`SELECT r.id, r.status, r.kind, r.lang, r.created_at, r.confirmed_at, r.checked_in_at, r.offered_at, r.claim_expires_at, e.id AS event_id, e.slug, e.content, e.start_utc, e.end_utc, e.event_status, e.venue_key, e.version
       FROM oss_registrations r JOIN oss_events e ON e.id = r.event_id WHERE r.email = $1 ORDER BY e.start_utc`, [session.email])).rows;
     const staff = await staffFor(db, session.email);
-    return json({ email: session.email, member: await isMember(db, session.email), staff: staff ? { role: staff.role } : null, registrations: rows.map((r) => ({ id: r.id, status: r.status, kind: r.kind, createdAt: r.created_at, confirmedAt: r.confirmed_at, checkedInAt: r.checked_in_at, claimExpiresAt: r.claim_expires_at,
+    return json({ email: session.email, member: await isMember(db, session.email), membership: await M.mine(db, session.email), staff: staff ? { role: staff.role } : null, registrations: rows.map((r) => ({ id: r.id, status: r.status, kind: r.kind, createdAt: r.created_at, confirmedAt: r.confirmed_at, checkedInAt: r.checked_in_at, claimExpiresAt: r.claim_expires_at,
       event: { id: r.event_id, slug: r.slug, title: r.content.title, image: r.content.image ? r.content.image.thumb : null, startUtc: r.start_utc, endUtc: r.end_utc, eventStatus: r.event_status, venue: { en: E.venueName({ venue_key: r.venue_key }, 'en'), ar: E.venueName({ venue_key: r.venue_key }, 'ar') }, version: r.version } })) });
   }
   if (a === 'registrations' && b && c === 'cancel' && m === 'POST') {
@@ -235,7 +259,7 @@ async function route(req, context, db) {
     if (m !== 'GET') assertSameOrigin(req);
     const body = m === 'GET' ? null : await readJson(req);
     const P = url.searchParams;
-    if (b === 'me' && m === 'GET') return json({ email: staff.email, role: staff.role, eventIds: staff.event_ids, name: staff.name });
+    if (b === 'me' && m === 'GET') return json({ email: staff.email, role: staff.role, eventIds: staff.event_ids, name: staff.name, membershipEmail: E.SETTINGS.membershipEmail || E.SETTINGS.email || '' });
     if (b === 'overview' && m === 'GET') return json(await A.overview(db, staff));
     if (b === 'events' && c && !d && m === 'GET') return json(await A.eventDetail(db, staff, c));
     if (b === 'events' && c && !d && m === 'PATCH') return json(await db.tx((q) => A.updateEvent(q, staff, c, body, site)));
@@ -253,8 +277,12 @@ async function route(req, context, db) {
     if (b === 'staff' && m === 'GET') return json(await A.staffList(db, staff));
     if (b === 'staff' && m === 'POST') return json(await A.staffUpsert(db, staff, body));
     if (b === 'staff' && c && m === 'DELETE') return json(await A.staffDisable(db, staff, decodeURIComponent(c)));
-    if (b === 'members' && m === 'GET') return json(await A.membersList(db, staff, P));
-    if (b === 'members' && m === 'POST') return json(await A.memberUpsert(db, staff, body));
+    if (b === 'members' && m === 'GET') { P.set('view', P.get('view') || 'all'); return json(await M.list(db, staff, P)); }
+    if (b === 'members' && m === 'POST') return json(await db.tx((q) => M.addManual(q, staff, Array.isArray(body.rows) ? body.rows.slice(0, 500) : [body])));
+    if (b === 'membership' && !c && m === 'GET') return json(await M.list(db, staff, P));
+    if (b === 'membership' && c && !d && m === 'GET') return json(await M.detail(db, staff, decodeURIComponent(c)));
+    if (b === 'membership' && c && ['approve', 'request-info', 'decline', 'revoke'].includes(d) && m === 'POST') return json(await db.tx((q) => M.decide(q, staff, decodeURIComponent(c), d, body, site)));
+    if (b === 'membership' && c && d === 'update' && m === 'POST') return json(await db.tx((q) => M.update(q, staff, decodeURIComponent(c), body)));
     if (b === 'publish' && m === 'POST') return json(await A.triggerPublish(db, staff));
     fail(404, 'not_found');
   }

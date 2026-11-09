@@ -56,6 +56,7 @@ const USER = `user-${uniq}@example.org`, ADMIN = 'admin@example.org', MEMBER = `
   await pd.fill('#si-email', ADMIN); await pd.click('#si-btn'); await pd.waitForTimeout(1200);
   const alink = lastLink(ADMIN, 'login_link'); ok(!!alink, 'staff sign-in link emailed');
   await pd.goto(alink); await pd.waitForTimeout(1500);
+  await pd.goto(BASE + '/admin/events/#overview'); await pd.waitForTimeout(1200);
   const ov = await pd.evaluate(() => ({ path: location.pathname, rows: document.querySelectorAll('.tbl tbody tr').length, role: (document.querySelector('.who') || {}).textContent }));
   ok(/\/admin\/events\/$/.test(ov.path) && ov.rows === 11 && /super_admin/.test(ov.role), 'desk overview after sign-in: ' + JSON.stringify(ov));
   await shot(pd, 'e2e-desk-overview');
@@ -104,7 +105,7 @@ const USER = `user-${uniq}@example.org`, ADMIN = 'admin@example.org', MEMBER = `
   await shot(pd, 'e2e-desk-roster');
   const csv = await pd.evaluate(async () => { const r = await fetch('/api/admin/events/oss-002/registrations.csv'); return { status: r.status, text: await r.text() }; });
   ok(csv.status === 200 && /name,email,kind,status/.test(csv.text) && /Phone Person/.test(csv.text), 'CSV export via session');
-  await pd.goto(BASE + '/admin/events/#members'); await pd.waitForTimeout(1000);
+  await pd.goto(BASE + '/admin/events/#membership-add'); await pd.waitForTimeout(1000);
   await pd.fill('#m-email', MEMBER); await pd.fill('#m-name', 'Member Test'); await pd.click('#mf button[type=submit]'); await pd.waitForTimeout(1000);
   ok(await pd.evaluate((m) => document.body.textContent.includes(m), MEMBER), 'member added appears in the list');
   await shot(pd, 'e2e-desk-members');
@@ -117,7 +118,7 @@ const USER = `user-${uniq}@example.org`, ADMIN = 'admin@example.org', MEMBER = `
   await shot(pd, 'e2e-desk-comms');
   await pd.goto(BASE + '/admin/events/#audit'); await pd.waitForTimeout(1000);
   ok(await pd.evaluate(() => document.querySelectorAll('.tbl tbody tr').length) >= 5, 'audit log renders');
-  await pd.goto(BASE + '/ar/admin/events/'); await pd.waitForTimeout(1200);
+  await pd.goto(BASE + '/ar/admin/events/#overview'); await pd.waitForTimeout(1200);
   ok(await pd.evaluate(() => document.documentElement.dir === 'rtl' && document.querySelectorAll('.tbl tbody tr').length === 11), 'Arabic desk overview');
   await shot(pd, 'e2e-desk-overview-ar');
   // check-in staff scoped role cannot edit

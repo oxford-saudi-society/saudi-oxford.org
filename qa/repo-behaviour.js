@@ -50,8 +50,8 @@ const routes = ['', 'about', 'events', 'community', 'ideas', 'join', 'faq', 'pri
         const sc = await p.evaluate(() => ({ s: document.querySelector('header.site').classList.contains('scrolled'), tall: document.documentElement.scrollHeight > 1400 }));
         c(!sc.tall || sc.s, `${tag} header did not compact on scroll`);
       }
-      // join form: validation then a submit that posts to Netlify-style endpoint
-      await p.route(`${BASE}/`, route => { if (route.request().method() === 'POST') { R.posted = route.request().postData(); route.fulfill({ status: 200, body: 'ok' }); } else route.continue(); });
+      // join form: validation, then a submit to the membership API (mocked here; the real API is tested in tests/)
+      await p.route(`${BASE}/api/membership/apply`, route => { R.posted = route.request().postData(); route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ result: 'received', member: { memberNo: 'OSS-2026-0042', status: 'pending', tier: 'student', tierLabel: { en: 'Student membership', ar: 'عضوية الطلبة' }, name: 'Test Person', appliedAt: new Date().toISOString(), position: 3, amountGbp: 10, paymentStatus: 'due', nationalityStatus: 'not_required' } }) }); });
       await p.goto(`${BASE}/${lang === 'ar' ? 'ar/' : ''}join/`); await p.waitForTimeout(150);
       await p.evaluate(() => document.getElementById('join-form').requestSubmit()); await p.waitForTimeout(200);
       const v = await p.evaluate(() => ({ tierErr: document.getElementById('tiers').classList.contains('err'), errs: document.querySelectorAll('#join-form .f.err').length, done: document.getElementById('join-done').hidden }));
@@ -65,9 +65,9 @@ const routes = ['', 'about', 'events', 'community', 'ideas', 'join', 'faq', 'pri
       await p.waitForTimeout(900);
       const d = await p.evaluate(() => ({ shown: !document.getElementById('join-done').hidden, text: document.getElementById('join-done').innerText.slice(0, 400), formHidden: document.getElementById('join-form').hidden }));
       c(d.shown && d.formHidden, `[${w}/${lang}] join confirmation not shown`);
-      c(/OSS-[A-Z0-9]{7}/.test(d.text), `[${w}/${lang}] reference missing in confirmation`);
-      c(R.posted && /form-name=join/.test(R.posted) && /name=Test\+Person/.test(R.posted), `[${w}/${lang}] Netlify post payload: ${String(R.posted).slice(0, 120)}`);
-      await p.unroute(`${BASE}/`);
+      c(/OSS-2026-0042/.test(d.text) && /(3|٣)/.test(d.text), `[${w}/${lang}] membership number and queue place missing in confirmation`);
+      c(R.posted && JSON.parse(R.posted).name === 'Test Person' && JSON.parse(R.posted).tier === 'student' && JSON.parse(R.posted).consent_privacy === true, `[${w}/${lang}] API payload: ${String(R.posted).slice(0, 120)}`);
+      await p.unroute(`${BASE}/api/membership/apply`);
       // directory search box exists and filters do not throw
       await p.goto(`${BASE}/${lang === 'ar' ? 'ar/' : ''}community/`); await p.waitForTimeout(150);
       await p.click('#dir-filters .chip[data-g="alumni"]'); await p.waitForTimeout(100);

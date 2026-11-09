@@ -1,4 +1,14 @@
-# Events system — how it works and how to run it
+# Membership & events system — how it works and how to run it
+
+## Membership
+
+* Applying on `/join/` saves the application in the society's database and immediately gives the applicant a **permanent membership number** (`OSS-<year>-<sequence>`, e.g. `OSS-2026-0007`) and their **place in the review queue**. They get a confirmation email whose link signs them in and confirms their email address.
+* The number is theirs for good: it is the payment reference for paid tiers, it is quoted on members-only bookings, and a re-application after a decline keeps it. It becomes an **active** membership only when the committee approves.
+* Committee desk → **Membership**: the review queue in order (place, number, name, type, college, email confirmed, payment, nationality). Open an application to **approve** (optional "valid until" date), **request more information** (templates for proof of nationality, payment, university status — the applicant answers from *My account* and keeps their place), **decline** (with reason; they may re-apply), or later **end** a membership (members-only access stops at once). Payment and nationality checks and internal notes are recorded per applicant; every action is in the history and the audit log. Applicants are emailed at each step (can be switched off per action).
+* New applications and applicants' answers are announced to the committee inbox in `settings → committeeNotifyEmail`.
+* Proof of nationality is never uploaded to the site: the committee requests it by email, checks it, deletes it, and ticks "verified".
+
+# Events
 
 The events section is two things working together:
 

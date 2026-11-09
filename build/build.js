@@ -181,7 +181,7 @@ function renderLang(lang) {
     if (ig) { const handle = ig.replace(/^https?:\/\/(www\.)?instagram\.com\//, '').replace(/\/$/, '').replace(/^@/, ''); $(el).attr('href', 'https://instagram.com/' + handle).text('Instagram @' + handle); }
   });
   // settings for the script
-  const site = { lang, email: settings.email || '', treasurerEmail: settings.treasurerEmail || '', membershipEmail: settings.membershipEmail || settings.email || '', fees: settings.fees || {}, payLinks: settings.payLinks || {}, bank: settings.bank || {}, ideas: settings.ideas || {}, formEndpoint: '/', privacyVersion: (settings.privacy && settings.privacy.version) || '2026-11', apiBase: settings.apiBase || '/api' };
+  const site = { lang, email: settings.email || '', treasurerEmail: settings.treasurerEmail || '', membershipEmail: settings.membershipEmail || settings.email || '', fees: settings.fees || {}, payLinks: settings.payLinks || {}, bank: settings.bank || {}, ideas: settings.ideas || {}, privacyVersion: (settings.privacy && settings.privacy.version) || '2026-11', apiBase: settings.apiBase || '/api' };
   $('#site-settings').text(JSON.stringify(site).replace(/</g, '\\u003c'));
   // Cloudflare Web Analytics (cookie-free) — only when a token is set in settings
   if (settings.analytics && settings.analytics.cloudflareToken) {

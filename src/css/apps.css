@@ -88,3 +88,20 @@ dialog.confirm p{color:var(--ink-2);font-size:14.5px}
   .app-main{padding:0}.app-main .wrap{box-shadow:none;background:none}
   .ticket{box-shadow:none;border:1px solid #ccc}
 }
+.mem-pane{display:grid;gap:12px;max-width:620px;margin-bottom:6px}
+.mem-pane .mcard{margin-top:0;max-width:none}
+.mem-pane .alert{margin:0}
+.mem-q h3{font-size:20px;margin:0 0 8px}
+.mem-q .preview{margin:0 0 12px}
+.tabs.sub .chip{font-size:13px;padding:8px 13px}
+.tabs.sub .chip .ln{margin-inline-start:6px}
+.mtbl .mrow{cursor:pointer}
+.mtbl .mrow:focus-visible{outline:2px solid var(--gold-lt);outline-offset:-2px}
+.mgrid{align-items:start}
+.mkv{display:grid;grid-template-columns:minmax(120px,auto) 1fr;gap:8px 16px;margin:0;font-size:14px}
+.mkv dt{color:var(--ink-3)}.mkv dd{margin:0;overflow-wrap:anywhere}
+.mact-d{padding:12px 14px;margin:8px 0 0;border-radius:var(--r-sm);background:rgba(255,255,255,.05)}
+.mact-d summary{font-family:var(--sans);font-size:15px;font-weight:600;cursor:pointer}
+.mact-d summary::before{display:none}
+.mact-d p.muted{font-size:13.5px;margin:8px 0}
+.mact-d[open]{background:rgba(255,255,255,.08)}
