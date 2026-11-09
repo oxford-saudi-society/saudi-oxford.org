@@ -9,6 +9,7 @@
   "founded": "2008",
   "fees": {
     "student": 10,
+    "external": 10,
     "associate": 15,
     "confirmed": false
   },

@@ -41,7 +41,8 @@ collections:
             name: "fees"
             widget: "object"
             fields:
-              - { label: "Student fee (£)", name: "student", widget: "number", value_type: "int", min: 0 }
+              - { label: "Oxford University student fee (£)", name: "student", widget: "number", value_type: "int", min: 0 }
+              - { label: "Non-Oxford University student fee (£)", name: "external", widget: "number", value_type: "int", min: 0 }
               - { label: "Associate fee (£)", name: "associate", widget: "number", value_type: "int", min: 0 }
               - { label: "Fees confirmed (removes the [brackets])", name: "confirmed", widget: "boolean", default: false }
           - label: "Stripe payment links"

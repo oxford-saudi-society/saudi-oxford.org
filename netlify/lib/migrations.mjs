@@ -253,4 +253,14 @@ CREATE TABLE IF NOT EXISTS oss_fee_codes (
 ALTER TABLE oss_members ADD COLUMN IF NOT EXISTS fee_code text;
 `,
   },
+  {
+    /* Students of other universities give their university and subject (not an Oxford college or SSO username);
+       an exemption code can be reserved for one email address. */
+    id: '0007_external_students_personal_codes',
+    sql: `
+ALTER TABLE oss_members ADD COLUMN IF NOT EXISTS university text;
+ALTER TABLE oss_members ADD COLUMN IF NOT EXISTS subject text;
+ALTER TABLE oss_fee_codes ADD COLUMN IF NOT EXISTS email text;
+`,
+  },
 ];

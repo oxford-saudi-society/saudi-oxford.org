@@ -154,8 +154,8 @@ test('sending the form again with a different membership type updates the open a
   assert.equal(again.body.member.tier, 'student'); assert.equal(again.body.member.nationalityStatus, 'not_required', 'nothing about nationality for a non-Saudi membership');
   assert.equal(again.body.member.amountGbp, 10); assert.equal(again.body.member.paymentStatus, 'due');
   const changed = C.lastMail('switch@example.org', 'membership_changed');
-  assert.match(changed.subject, /application was updated/); assert.match(changed.body_text, /Student membership/); assert.doesNotMatch(changed.body_text, /nationality/i);
-  assert.match(C.lastMail(COMMITTEE, 'membership_committee').subject, /Application changed to Student membership/);
+  assert.match(changed.subject, /application was updated/); assert.match(changed.body_text, /Oxford University students membership/); assert.doesNotMatch(changed.body_text, /nationality/i);
+  assert.match(C.lastMail(COMMITTEE, 'membership_committee').subject, /Application changed to Oxford University students membership/);
   assert.equal((await q(db, "SELECT count(*)::int AS n FROM oss_members WHERE email = 'switch@example.org'"))[0].n, 1);
   // once the address is confirmed, only its owner (signed in) can change the application
   const me = await C.signIn('switch@example.org');
@@ -203,9 +203,9 @@ test('fee codes: the committee issues one; a valid code waives the fee, a wrong 
   assert.equal((await C.call('POST', '/api/admin/fee-codes', { cookie: outsider, body: { label: 'x' } })).status, 403);
   const made = await C.call('POST', '/api/admin/fee-codes', { cookie: root, body: { label: 'Partner scholars', maxUses: 1 } });
   assert.equal(made.status, 200); const code = made.body.created;
-  assert.match(code, /^OSS-[A-HJKMNP-Z2-9]{4}-[A-HJKMNP-Z2-9]{4}$/); assert.equal(made.body.codes[0].used, 0); assert.equal(made.body.codes[0].label, 'Partner scholars');
+  assert.match(code, /^OSS-X\d{2}-[0-9A-HJKMNP-TV-Z]{5}-[0-9A-HJKMNP-TV-Z]{5}$/, 'issuer, type + year, nine random characters and a check character'); assert.equal(made.body.codes[0].used, 0); assert.equal(made.body.codes[0].label, 'Partner scholars');
   // "Check code": accepted or declined, and typing it in lower case with spaces still works
-  assert.deepEqual((await check(' ' + code.toLowerCase() + ' ')).body, { ok: true });
+  assert.deepEqual((await check(' ' + code.toLowerCase() + ' ')).body, { ok: true, personal: false });
   assert.deepEqual((await check('OSS-NOPE-NOPE')).body, { ok: false, reason: 'invalid' });
   assert.deepEqual((await check(code, 'saudi')).body, { ok: false, reason: 'not_needed' }, 'free types need no code');
   // a wrong code stops the form: nothing is saved
@@ -239,5 +239,70 @@ test('fee codes: the committee issues one; a valid code waives the fee, a wrong 
   await C.call('POST', '/api/admin/fee-codes/' + open + '/disable', { cookie: root, body: {} });
   assert.deepEqual((await check(open)).body, { ok: false, reason: 'invalid' });
   await C.call('POST', '/api/admin/fee-codes/' + open + '/enable', { cookie: root, body: {} });
-  assert.deepEqual((await check(open, 'associate')).body, { ok: true });
+  assert.deepEqual((await check(open, 'associate')).body, { ok: true, personal: false });
+});
+
+test('exemption code format: self-checking, tolerant of how it is typed, and optionally reserved for one person', async () => {
+  const check = (code, email) => C.call('POST', '/api/membership/code', { body: { code, tier: 'student', email } });
+  const code = (await C.call('POST', '/api/admin/fee-codes', { cookie: root, body: { label: 'Format test' } })).body.created;
+  // typed in lower case, without dashes, with spaces, or with O for 0 / I or L for 1 — all the same code
+  assert.deepEqual((await check(code.toLowerCase().replace(/-/g, ''))).body, { ok: true, personal: false });
+  assert.deepEqual((await check('  ' + code.replace(/-/g, ' ') + ' ')).body, { ok: true, personal: false });
+  const body = code.slice(8), lookalike = code.slice(0, 8) + body.replace(/0/g, 'O').replace(/1/g, 'L');
+  assert.deepEqual((await check(lookalike)).body, { ok: true, personal: false });
+  // any single wrong character is caught by the check character, without a database lookup
+  const B32 = '0123456789ABCDEFGHJKMNPQRSTVWXYZ';
+  for (const pos of [8, 10, 12, 14, 18]) {
+    const wrong = code.slice(0, pos) + B32[(B32.indexOf(code[pos]) + 7) % 32] + code.slice(pos + 1);
+    assert.deepEqual((await check(wrong)).body, { ok: false, reason: 'typo' }, wrong);
+  }
+  const swapped = code.slice(0, 14) + code[15] + code[14] + code.slice(16); // two neighbouring characters swapped
+  if (code[14] !== code[15]) assert.equal((await check(swapped)).body.ok, false);
+  // every generated code is different and passes its own check
+  const many = new Set(); for (let i = 0; i < 25; i++) many.add((await C.call('POST', '/api/admin/fee-codes', { cookie: root, body: {} })).body.created);
+  assert.equal(many.size, 25); for (const c of many) assert.equal((await check(c)).body.ok, true, c);
+  // a personal code: only the named email address can use it, once
+  const made = await C.call('POST', '/api/admin/fee-codes', { cookie: root, body: { label: 'For Reem', email: ' Reem@Example.org ' } });
+  const mine = made.body.created; const row = made.body.codes.find((c) => c.code === mine);
+  assert.equal(row.email, 'reem@example.org'); assert.equal(row.max_uses, 1);
+  assert.deepEqual((await check(mine)).body, { ok: true, personal: true }, 'before an email is typed the code is recognised');
+  assert.deepEqual((await check(mine, 'someone@example.org')).body, { ok: false, reason: 'not_yours' });
+  assert.deepEqual((await check(mine, 'reem@example.org')).body, { ok: true, personal: true });
+  const app = { name: 'Reem Person', college: 'Hertford College', status: 'masters', consent_privacy: true, lang: 'en', sso: 'hert1234', tier: 'student', feeCode: mine };
+  const other = await C.call('POST', '/api/membership/apply', { body: Object.assign({}, app, { email: 'someone@example.org' }) });
+  assert.equal(other.status, 400); assert.equal(other.body.fields.feeCode, 'not_yours');
+  const reem = await C.call('POST', '/api/membership/apply', { body: Object.assign({}, app, { email: 'reem@example.org' }) });
+  assert.equal(reem.status, 200); assert.equal(reem.body.member.feeWaived, true);
+  assert.equal((await C.call('POST', '/api/admin/fee-codes', { cookie: root, body: { email: 'not-an-email' } })).status, 400);
+});
+
+test('five membership types: Oxford types need SSO and college; non-Oxford students give university and subject', async () => {
+  const send = (over) => C.call('POST', '/api/membership/apply', { body: Object.assign({ name: 'Type Person', consent_privacy: true, lang: 'en' }, over) });
+  // Oxford types: SSO username and college are both required
+  for (const tier of ['saudi', 'student']) {
+    const r = await send({ tier, email: tier + '-bare@example.org', status: 'masters' });
+    assert.equal(r.status, 400); assert.deepEqual(Object.keys(r.body.fields).sort(), ['college', 'sso'], tier);
+    assert.equal((await send({ tier, email: tier + '-ext@example.org', status: 'brookes', sso: 'hert1234', college: 'Hertford College' })).body.fields.status, 'required', 'an Oxford type cannot take a non-Oxford status');
+  }
+  // non-Oxford students: university + subject, one of the three places of study; no SSO or college asked or kept
+  const bare = await send({ tier: 'external', email: 'ext-bare@example.org', status: 'masters', college: 'Hertford College', sso: 'hert1234' });
+  assert.equal(bare.status, 400); assert.deepEqual(Object.keys(bare.body.fields).sort(), ['status', 'subject', 'university']);
+  for (const [i, st] of ['brookes', 'uk_university', 'global_university'].entries()) {
+    const r = await send({ tier: 'external', email: 'ext' + i + '@example.org', status: st, university: st === 'brookes' ? 'Oxford Brookes University' : 'Some University', subject: 'Computer Science', sso: 'hert1234', college: 'ignored' });
+    assert.equal(r.status, 200, st + ' ' + JSON.stringify(r.body));
+    assert.equal(r.body.member.amountGbp, 10); assert.equal(r.body.member.paymentStatus, 'due'); assert.equal(r.body.member.nationalityStatus, 'not_required');
+    assert.deepEqual(r.body.member.tierLabel, { en: 'Non-Oxford University students', ar: 'طلبة الجامعات الأخرى' });
+  }
+  const row = (await q(db, "SELECT university, subject, college, sso_username, uni_status, amount_gbp FROM oss_members WHERE email = 'ext0@example.org'"))[0];
+  assert.deepEqual(row, { university: 'Oxford Brookes University', subject: 'Computer Science', college: null, sso_username: null, uni_status: 'brookes', amount_gbp: 10 });
+  assert.match(C.lastMail(COMMITTEE, 'membership_committee').body_text, /Non-Oxford University students · Some University — Computer Science · Global university/);
+  // the fees: Oxford Saudi free, Oxford student £10, non-Oxford student £10, associate £15, mailing list free
+  const fee = async (tier, extra) => (await send(Object.assign({ tier, email: 'fee-' + tier + '@example.org', status: 'masters', sso: 'hert1234', college: 'Hertford College' }, extra))).body.member;
+  assert.equal((await fee('saudi')).amountGbp, 0); assert.equal((await fee('student')).amountGbp, 10);
+  assert.equal((await fee('associate', { status: 'staff' })).amountGbp, 15); assert.equal((await fee('friend', { status: 'alumni' })).amountGbp, 0);
+  assert.deepEqual((await fee('saudi')).tierLabel, { en: 'Oxford University Saudi students', ar: 'الطلبة السعوديون في جامعة أكسفورد' });
+  // an exemption code works for the non-Oxford student type too
+  const code = (await C.call('POST', '/api/admin/fee-codes', { cookie: root, body: {} })).body.created;
+  const waived = await send({ tier: 'external', email: 'ext-code@example.org', status: 'uk_university', university: 'University of Reading', subject: 'Law', feeCode: code });
+  assert.equal(waived.body.member.amountGbp, 0); assert.equal(waived.body.member.feeWaived, true);
 });

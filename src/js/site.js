@@ -11,8 +11,8 @@
       sumPaid: 'Fee: <b>{amount}</b> — payment details follow after you apply', sumFree: 'Nothing to pay',
       sumVerify: 'Free — the secretary will email you later if proof of nationality is needed',
       sumWaived: 'Nothing to pay — your fee is waived with your code',
-      codeOk: 'Code accepted — your membership fee is waived.', codeChecking: 'Checking…', codeEmpty: 'Type the code first.',
-      codeBad: { invalid: 'Code declined — this code is not valid.', expired: 'Code declined — this code has expired.', used_up: 'Code declined — this code has already been used.', not_needed: 'This membership type is free, so no code is needed.', rate: 'Too many attempts. Please wait a few minutes and try again.', net: 'The code could not be checked just now. It is checked again when you send the form.' }, sumNone: 'Choose a membership type above',
+      codeOk: 'Exemption code accepted — your membership fee is waived.', codeOkPersonal: 'Exemption code accepted. It is reserved for one email address, which is checked when you send the form.', codeChecking: 'Checking…', codeEmpty: 'Type the code first.',
+      codeBad: { typo: 'That code has a typing mistake — please check it against the one you were given.', not_yours: 'Code declined — this code is reserved for a different email address.', invalid: 'Code declined — this code is not valid.', expired: 'Code declined — this code has expired.', used_up: 'Code declined — this code has already been used.', not_needed: 'This membership type is free, so no code is needed.', rate: 'Too many attempts. Please wait a few minutes and try again.', net: 'The code could not be checked just now. It is checked again when you send the form.' }, sumNone: 'Choose a membership type above',
       sending: 'Sending…',
       cardTitle: 'Pay by card', cardBtn: 'Pay {amount} by card',
       cardNote: 'Secure checkout opens in a new tab, handled by the payment provider. The Society never sees your card details.',
@@ -23,8 +23,8 @@
       sumPaid: 'الرسوم: <b>{amount}</b> — تصلك تفاصيل الدفع بعد التقديم', sumFree: 'لا توجد رسوم',
       sumVerify: 'مجاناً — سيراسلك أمين السر لاحقاً إن لزم إثبات الجنسية',
       sumWaived: 'لا توجد رسوم — أُعفيت منها بموجب الرمز',
-      codeOk: 'تم قبول الرمز — أُعفيت من رسوم العضوية.', codeChecking: 'جارٍ التحقق…', codeEmpty: 'اكتب الرمز أولاً.',
-      codeBad: { invalid: 'رُفض الرمز — هذا الرمز غير صحيح.', expired: 'رُفض الرمز — انتهت صلاحية هذا الرمز.', used_up: 'رُفض الرمز — استُخدم هذا الرمز من قبل.', not_needed: 'هذا النوع من العضوية مجاني، فلا حاجة إلى رمز.', rate: 'محاولات كثيرة. انتظر بضع دقائق ثم حاول مجدداً.', net: 'تعذّر التحقق من الرمز الآن. سيُتحقق منه مرة أخرى عند إرسال النموذج.' }, sumNone: 'اختر نوع العضوية أعلاه',
+      codeOk: 'تم قبول رمز الإعفاء — أُعفيت من رسوم العضوية.', codeOkPersonal: 'تم قبول رمز الإعفاء. هذا الرمز مخصّص لبريد إلكتروني واحد، ويُتحقق منه عند إرسال النموذج.', codeChecking: 'جارٍ التحقق…', codeEmpty: 'اكتب الرمز أولاً.',
+      codeBad: { typo: 'في الرمز خطأ كتابي — راجعه وقارنه بالرمز الذي استلمته.', not_yours: 'رُفض الرمز — هذا الرمز مخصّص لبريد إلكتروني آخر.', invalid: 'رُفض الرمز — هذا الرمز غير صحيح.', expired: 'رُفض الرمز — انتهت صلاحية هذا الرمز.', used_up: 'رُفض الرمز — استُخدم هذا الرمز من قبل.', not_needed: 'هذا النوع من العضوية مجاني، فلا حاجة إلى رمز.', rate: 'محاولات كثيرة. انتظر بضع دقائق ثم حاول مجدداً.', net: 'تعذّر التحقق من الرمز الآن. سيُتحقق منه مرة أخرى عند إرسال النموذج.' }, sumNone: 'اختر نوع العضوية أعلاه',
       sending: 'جارٍ الإرسال…',
       cardTitle: 'الدفع بالبطاقة', cardBtn: 'ادفع {amount} بالبطاقة',
       cardNote: 'تُفتح صفحة دفع آمنة في تبويب جديد عبر مزوّد الدفع. لا تطّلع الجمعية على بيانات بطاقتك أبداً.',
@@ -152,8 +152,9 @@
   var form = $('join-form'); if (!form) return;
   var done = $('join-done');
   var TIERS = [
-    { id: 'saudi', price: 0, verify: true, en: 'Saudi student membership', ar: 'عضوية الطلبة السعوديين' },
-    { id: 'student', price: SITE.fees.student != null ? SITE.fees.student : 10, en: 'Student membership', ar: 'عضوية الطلبة' },
+    { id: 'saudi', price: 0, verify: true, en: 'Oxford University Saudi students', ar: 'الطلبة السعوديون في جامعة أكسفورد' },
+    { id: 'student', price: SITE.fees.student != null ? SITE.fees.student : 10, en: 'Oxford University students membership', ar: 'عضوية طلبة جامعة أكسفورد' },
+    { id: 'external', price: SITE.fees.external != null ? SITE.fees.external : 10, en: 'Non-Oxford University students', ar: 'طلبة الجامعات الأخرى' },
     { id: 'associate', price: SITE.fees.associate != null ? SITE.fees.associate : 15, en: 'Associate membership', ar: 'عضوية غير الطلبة' },
     { id: 'friend', price: 0, en: 'Mailing list & volunteering', ar: 'القائمة البريدية والتطوّع' }
   ];
@@ -225,6 +226,14 @@
     var tier = selectedTier();
     document.querySelectorAll('#tiers .tier').forEach(function (l) { l.classList.toggle('sel', l.querySelector('input').checked); });
     $('email-hint').hidden = !(tier && (tier.id === 'student' || tier.id === 'saudi'));
+    // A student of another university gives their university and subject; everyone else gives an Oxford college or
+    // department (and, for the two Oxford student types, the SSO username). Step 2 offers the matching choices.
+    var ext = isExternal(tier);
+    [['sso', ext], ['college', ext], ['university', !ext], ['subject', !ext]].forEach(function (p) { var f = form.querySelector('[data-f="' + p[0] + '"]'); if (f) { f.hidden = p[1]; if (p[1]) setErr(p[0], false); } });
+    $('f-college').required = !ext; $('f-university').required = ext; $('f-subject').required = ext;
+    document.querySelectorAll('#statuses .stat').forEach(function (l) { var mine = (l.getAttribute('data-for') === 'external') === ext; l.hidden = !mine; var r = l.querySelector('input[name="status"]'); if (!mine && r.checked) r.checked = false; });
+    var sh = $('status-h'); if (sh) sh.textContent = sh.getAttribute((lang === 'ar' ? 'data-ar-' : 'data-') + (ext ? 'external' : 'oxford')) || sh.textContent;
+    syncStatus(false);
     var paidTier = !!(tier && tier.price), fc = $('fee-code');
     if (fc) { fc.hidden = !paidTier; if (!paidTier) codeState(null); }
     $('sum').innerHTML = !tier ? t('sumNone') : tier.price ? (feeOk ? t('sumWaived') : t('sumPaid', { amount: amountHtml(tier) })) : tier.verify ? t('sumVerify') : t('sumFree');
@@ -236,18 +245,35 @@
   /* Fee code: a code from the committee waives the fee on the fee-paying membership types. "Check code" answers at once
      (accepted or declined); the server checks it again when the form is sent, so nothing depends on this check. */
   var feeOk = false;
+  /* A generated code looks like OSS-X26-7K4MQ-2XPDC: issuer, type and year, nine random characters and a final check
+     character (Luhn mod 32 over an alphabet with no I, L, O or U). The page puts the dashes in as you type, reads a
+     typed O as 0 and I or L as 1, and spots a typing mistake from the check character before asking the server. */
+  var B32 = '0123456789ABCDEFGHJKMNPQRSTVWXYZ';
+  function codeCanon(v) {
+    var raw = String(v || '').toUpperCase().replace(/[^A-Z0-9-]/g, ''), bare = raw.replace(/-/g, '');
+    if (/^OSSX[0-9]{0,2}[0-9A-Z]{0,10}$/.test(bare) && bare.length > 3) { var body = bare.slice(6).replace(/O/g, '0').replace(/[IL]/g, '1'); return ['OSS', bare.slice(3, 6), body.slice(0, 5), body.slice(5, 10)].filter(function (x) { return x; }).join('-'); }
+    return raw.slice(0, 24);
+  }
+  function codeTypo(code) { // true only for a complete generated-format code whose check character is wrong
+    var bare = String(code).replace(/-/g, ''); if (!/^OSSX[0-9]{2}[0-9A-Z]{10}$/.test(bare)) return false;
+    var p = bare.slice(3), factor = 1, sum = 0;
+    for (var i = p.length - 1; i >= 0; i--) { var cp = B32.indexOf(p.charAt(i)); if (cp < 0) return true; var add = factor * cp; factor = factor === 2 ? 1 : 2; sum += Math.floor(add / 32) + (add % 32); }
+    return sum % 32 !== 0;
+  }
   function codeState(kind, text) { var p = $('fee-code-state'); if (!p) return; feeOk = kind === 'ok'; p.hidden = !kind; p.className = 'code-state' + (kind ? ' is-' + kind : ''); p.textContent = text || ''; if (kind !== 'bad') setErr('feeCode', false); }
   (function () {
     var inp = $('f-fee-code'), btn = $('fee-code-btn'); if (!inp || !btn) return;
     async function check() {
-      var tier = selectedTier(), code = inp.value.trim();
+      var tier = selectedTier(), code = codeCanon(inp.value); inp.value = code;
       if (!code) { codeState('bad', t('codeEmpty')); inp.focus(); return; }
+      if (codeTypo(code)) { codeState('bad', t('codeBad').typo); return; }
+      var em = $('f-email').value.trim();
       btn.disabled = true; codeState('wait', t('codeChecking'));
       try {
-        var r = await fetch((SITE.apiBase || '/api') + '/membership/code', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify({ code: code, tier: tier ? tier.id : '' }) });
+        var r = await fetch((SITE.apiBase || '/api') + '/membership/code', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify({ code: code, tier: tier ? tier.id : '', email: /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em) ? em : '' }) });
         var d = null; try { d = await r.json(); } catch (e) { /* not json */ }
         if (r.status === 429) codeState('bad', t('codeBad').rate);
-        else if (r.ok && d && d.ok) codeState('ok', t('codeOk'));
+        else if (r.ok && d && d.ok) codeState('ok', t(d.personal && !em ? 'codeOkPersonal' : 'codeOk'));
         else if (r.ok && d) codeState('bad', t('codeBad')[d.reason] || t('codeBad').invalid);
         else codeState('wait', t('codeBad').net);
       } catch (e) { codeState('wait', t('codeBad').net); }
@@ -255,10 +281,11 @@
     }
     btn.addEventListener('click', check);
     inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); check(); } });
-    inp.addEventListener('input', function () { var v = inp.value.toUpperCase().replace(/[^A-Z0-9-]/g, ''); if (v !== inp.value) inp.value = v; if (!$('fee-code-state').hidden) { codeState(null); syncTier(); } });
+    inp.addEventListener('input', function (e) { var del = e && e.inputType && e.inputType.indexOf('delete') === 0; var v = del ? inp.value.toUpperCase().replace(/[^A-Z0-9-]/g, '') : codeCanon(inp.value); if (v !== inp.value) inp.value = v; if (!$('fee-code-state').hidden) { codeState(null); syncTier(); } });
   })();
   var SSO_RE = /^[A-Za-z]{4}[0-9]{4}$/;
   function ssoNeeded(tier) { return !!tier && (tier.id === 'saudi' || tier.id === 'student'); }
+  function isExternal(tier) { return !!tier && tier.id === 'external'; }
   (function () {
     var ssoIn = $('f-sso'); if (!ssoIn) return;
     // letters and digits only, lower case, as the username is written by the University
@@ -274,6 +301,7 @@
     other.required = st === 'other';
     if (st === 'other' && fromUser) setTimeout(function () { other.focus(); }, 30);
     if (st && (st !== 'other' || other.value.trim())) setErr('status', false);
+    var uni = $('f-university'); if (uni && fromUser) { var BR = 'Oxford Brookes University'; if (st === 'brookes' && !uni.value.trim()) { uni.value = BR; setErr('university', false); } else if (st !== 'brookes' && uni.value === BR) uni.value = ''; }
   }
   $('f-status-other').addEventListener('input', function () { if (this.value.trim()) setErr('status', false); });
   // typing in the Other box selects the Other card (and a click in the box must not be swallowed by the card)
@@ -285,9 +313,12 @@
     var name = $('f-name').value.trim(), email = $('f-email').value.trim(), college = $('f-college').value.trim(), status = selectedStatus(), statusOther = $('f-status-other').value.trim(), consent = $('f-consent').checked;
     setErr('name', !name); if (!name) bad.push('f-name');
     var okMail = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email); setErr('email', !okMail); if (!okMail) bad.push('f-email');
-    var sso = $('f-sso').value.trim(), ssoBad = (ssoNeeded(tier) && !sso) || (!!sso && !SSO_RE.test(sso));
+    var ext = isExternal(tier);
+    var sso = ext ? '' : $('f-sso').value.trim(), ssoBad = !ext && ((ssoNeeded(tier) && !sso) || (!!sso && !SSO_RE.test(sso)));
     setErr('sso', ssoBad); if (ssoBad) bad.push('f-sso');
-    setErr('college', !college); if (!college) bad.push('f-college');
+    var noCollege = !ext && !college; setErr('college', noCollege); if (noCollege) bad.push('f-college');
+    var noUni = ext && $('f-university').value.trim().length < 2; setErr('university', noUni); if (noUni) bad.push('f-university');
+    var noSubj = ext && $('f-subject').value.trim().length < 2; setErr('subject', noSubj); if (noSubj) bad.push('f-subject');
     var badStatus = !status || (status === 'other' && !statusOther);
     setErr('status', badStatus); if (badStatus) bad.push(status === 'other' ? 'f-status-other' : 'statuses');
     setErr('consent', !consent); if (!consent) bad.push('f-consent');
@@ -295,7 +326,7 @@
     if (bad.length) { var el = $(bad[0]); if (el.focus) el.focus(); el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
     return bad.length === 0;
   }
-  ['f-name', 'f-email', 'f-college', 'f-consent'].forEach(function (id) { var clear = function () { setErr(id.replace('f-', ''), false); }; $(id).addEventListener('input', clear); $(id).addEventListener('change', clear); });
+  ['f-name', 'f-email', 'f-college', 'f-university', 'f-subject', 'f-consent'].forEach(function (id) { var clear = function () { setErr(id.replace('f-', ''), false); }; $(id).addEventListener('input', clear); $(id).addEventListener('change', clear); });
   /* Submission goes to the society's own database (/api/membership/apply), which issues a permanent
      membership number and a place in the review queue. Nothing is claimed until the server answers. */
   var M = {
@@ -343,7 +374,7 @@
   function num(n) { return lang === 'ar' ? new Intl.NumberFormat('ar-SA-u-nu-arab').format(n) : String(n); }
   function collect() {
     var tier = selectedTier();
-    return { tier: tier ? tier.id : '', name: $('f-name').value.trim(), nameAr: $('f-name-ar').value.trim(), email: $('f-email').value.trim(), sso: $('f-sso').value.trim().toLowerCase(), feeCode: (tier && tier.price && $('f-fee-code')) ? $('f-fee-code').value.trim() : '', college: $('f-college').value.trim(), status: selectedStatus(), statusOther: selectedStatus() === 'other' ? $('f-status-other').value.trim() : '', phone: $('f-phone').value.trim(),
+    return { tier: tier ? tier.id : '', name: $('f-name').value.trim(), nameAr: $('f-name-ar').value.trim(), email: $('f-email').value.trim(), sso: isExternal(tier) ? '' : $('f-sso').value.trim().toLowerCase(), feeCode: (tier && tier.price && $('f-fee-code')) ? $('f-fee-code').value.trim() : '', college: isExternal(tier) ? '' : $('f-college').value.trim(), university: isExternal(tier) ? $('f-university').value.trim() : '', subject: isExternal(tier) ? $('f-subject').value.trim() : '', status: selectedStatus(), statusOther: selectedStatus() === 'other' ? $('f-status-other').value.trim() : '', phone: $('f-phone').value.trim(),
       volunteer: Array.prototype.slice.call(form.querySelectorAll('input[name="volunteer"]:checked')).map(function (c) { return c.value; }),
       consent_privacy: $('f-consent').checked, consent_news: form.querySelector('input[name="consent_news"]').checked,
       privacy_version: SITE.privacyVersion || '', lang: lang, website: form.querySelector('input[name="website"]').value };
@@ -362,7 +393,7 @@
     var box = $('join-fail');
     if (!box) { box = document.createElement('div'); box.id = 'join-fail'; box.className = 'err-sum on'; box.setAttribute('role', 'alert'); $('submit-btn').parentNode.parentNode.insertBefore(box, $('submit-btn').parentNode); }
     if (res.status === 400 && res.data && res.data.fields) {
-      var map = { name: 'name', email: 'email', sso: 'sso', college: 'college', status: 'status', statusOther: 'status', consent: 'consent' };
+      var map = { name: 'name', email: 'email', sso: 'sso', college: 'college', university: 'university', subject: 'subject', status: 'status', statusOther: 'status', consent: 'consent' };
       if (res.data.fields.feeCode) { codeState('bad', t('codeBad')[res.data.fields.feeCode] || t('codeBad').invalid); setErr('feeCode', true); syncTier(); $('fee-code').scrollIntoView({ behavior: 'smooth', block: 'center' }); }
       Object.keys(res.data.fields).forEach(function (k) { if (map[k]) setErr(map[k], true); if (k === 'tier') { $('tier-msg').style.display = 'block'; $('tiers').classList.add('err'); } });
       box.hidden = true; $('err-sum').classList.add('on'); return;

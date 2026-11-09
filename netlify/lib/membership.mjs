@@ -8,57 +8,95 @@ import { enqueue } from './mail.mjs';
 import { audit } from './events.mjs';
 
 export const TIERS = {
-  saudi: { en: 'Saudi student membership', ar: 'عضوية الطلبة السعوديين', price: 0, verify: true },
-  student: { en: 'Student membership', ar: 'عضوية الطلبة', price: null, verify: false },
+  saudi: { en: 'Oxford University Saudi students', ar: 'الطلبة السعوديون في جامعة أكسفورد', price: 0, verify: true },
+  student: { en: 'Oxford University students membership', ar: 'عضوية طلبة جامعة أكسفورد', price: null, verify: false },
+  external: { en: 'Non-Oxford University students', ar: 'طلبة الجامعات الأخرى', price: null, verify: false },
   associate: { en: 'Associate membership', ar: 'عضوية غير الطلبة', price: null, verify: false },
   friend: { en: 'Friend of the Society (mailing list & volunteering)', ar: 'صديق الجمعية (القائمة البريدية والتطوّع)', price: 0, verify: false },
 };
+const EXTERNAL_STATUS = ['brookes', 'uk_university', 'global_university']; // where a non-Oxford student studies
 const UNI_STATUS = ['undergraduate', 'masters', 'dphil', 'visiting', 'staff', 'alumni', 'other'];
 const HEARD = ['', 'freshers', 'friend', 'club', 'instagram', 'college', 'bureau', 'other'];
 const VOLUNTEER = ['events', 'media', 'partnerships', 'welfare', 'academic'];
 const SSO_RE = /^[a-z]{4}[0-9]{4}$/; // Oxford Single Sign-On username: four letters then four digits
 const SSO_TIERS = ['saudi', 'student']; // needed for the student membership types only
 const uniText = (row) => (row.uni_status === 'other' && row.uni_status_other ? 'Other: ' + row.uni_status_other : (UNI_LABEL[row.uni_status] || row.uni_status || ''));
-const UNI_LABEL = { undergraduate: 'Undergraduate', masters: "Taught postgraduate (Master's)", dphil: 'Research postgraduate (DPhil)', visiting: 'Visiting student or researcher', staff: 'University staff or researcher', alumni: 'Alumni', other: 'Other' };
+const UNI_LABEL = { brookes: 'Oxford Brookes University', uk_university: 'Other UK university', global_university: 'Global university', undergraduate: 'Undergraduate', masters: "Taught postgraduate (Master's)", dphil: 'Research postgraduate (DPhil)', visiting: 'Visiting student or researcher', staff: 'University staff or researcher', alumni: 'Alumni', other: 'Other' };
 export const OPEN = ['pending', 'info_requested'];
 
 export function priceOf(tier) {
   const t = TIERS[tier]; if (!t) return 0;
   if (t.price !== null) return t.price;
   const fees = SETTINGS.fees || {};
-  return Number(fees[tier] != null ? fees[tier] : tier === 'student' ? 10 : 15) || 0;
+  return Number(fees[tier] != null ? fees[tier] : tier === 'associate' ? 15 : 10) || 0;
 }
 /* ── fee codes ──────────────────────────────────────────────────────────────────────────────────────────────────
    The committee creates a code in the desk and gives it to someone who would normally pay. Entered on the join form
    with a fee-paying membership type, a valid code waives the fee (accepted); a wrong, expired, switched-off or
    used-up code is refused (declined) and the form is not sent. The application itself is still reviewed as usual. */
-const CODE_ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'; // no 0/O or 1/I/L, so a code is easy to read out and type
-export const cleanCode = (v) => String(v || '').toUpperCase().replace(/[^A-Z0-9-]/g, '').slice(0, 24);
-function newCode() { const b = randomBytes(8); const ch = (i) => CODE_ALPHABET[b[i] % CODE_ALPHABET.length]; return 'OSS-' + [0, 1, 2, 3].map(ch).join('') + '-' + [4, 5, 6, 7].map(ch).join(''); }
-async function checkCode(q, raw, lock) {
+/* How a code is built (the usual practice for vouchers, gift cards and licence keys):
+     OSS - X26 - 7K4MQ - 2XPDC
+     │     │     └─────────┴── nine characters from a secure random generator, plus one final check character
+     │     └── X = fee exemption, 26 = year of issue
+     └── issuer (Oxford Saudi Society), so a code is recognisable at a glance
+   · Alphabet: Crockford Base32 — digits and capitals without I, L, O and U, so nothing can be misread or misheard;
+     a typed O is read as 0 and a typed I or L as 1.
+   · Check character: Luhn mod 32 (the same idea as the last digit of a bank card) — a typing mistake is caught at
+     once, before the code is even looked up.
+   · Nine random characters give about 35 million million possibilities; with attempts limited per connection, a code
+     cannot be found by guessing.
+   · Limits live on the server, not in the code: number of uses, expiry date, on/off, and optionally one email address. */
+const B32 = '0123456789ABCDEFGHJKMNPQRSTVWXYZ';
+const GEN_RE = /^OSSX(\d{2})([0-9A-Z]{10})$/; // a generated code with its dashes and spaces removed
+function luhn32(payload) { // the check character for a string over B32
+  let factor = 2, sum = 0;
+  for (let i = payload.length - 1; i >= 0; i--) { let add = factor * B32.indexOf(payload[i]); factor = factor === 2 ? 1 : 2; add = Math.floor(add / 32) + (add % 32); sum += add; }
+  return B32[(32 - (sum % 32)) % 32];
+}
+/* Whatever was typed → the one form a code is stored in (capitals; dashes in the right places; look-alikes mapped). */
+export function cleanCode(v) {
+  const raw = String(v || '').toUpperCase().replace(/[^A-Z0-9-]/g, '').slice(0, 32);
+  const bare = raw.replace(/-/g, '');
+  if (/^OSSX\d{2}[0-9A-Z]{10}$/.test(bare)) { const body = bare.slice(6).replace(/O/g, '0').replace(/[IL]/g, '1'); return 'OSS-' + bare.slice(3, 6) + '-' + body.slice(0, 5) + '-' + body.slice(5); }
+  if (/^OSS[A-Z0-9]{8}$/.test(bare)) return 'OSS-' + bare.slice(3, 7) + '-' + bare.slice(7); // first-generation codes
+  return raw.slice(0, 24);
+}
+/* false only for a generated-format code whose check character does not add up (a typing mistake) */
+export function codeChecksumOk(code) { const m = GEN_RE.exec(String(code).replace(/-/g, '')); if (!m) return true; const p = 'X' + m[1] + m[2]; return ![...p].some((c) => B32.indexOf(c) < 0) && luhn32(p.slice(0, -1)) === p.slice(-1); }
+function newCode(now = new Date()) {
+  const b = randomBytes(9); let body = ''; for (let i = 0; i < 9; i++) body += B32[b[i] & 31];
+  const payload = 'X' + String(now.getUTCFullYear()).slice(-2) + body, full = payload + luhn32(payload);
+  return 'OSS-' + full.slice(0, 3) + '-' + full.slice(3, 8) + '-' + full.slice(8);
+}
+async function checkCode(q, raw, lock, email) {
   const code = cleanCode(raw); if (code.length < 4) return { ok: false, reason: 'invalid' };
-  const r = (await q.query(`SELECT code, max_uses, used, disabled, (expires_on IS NOT NULL AND expires_on < CURRENT_DATE) AS expired FROM oss_fee_codes WHERE code = $1${lock ? ' FOR UPDATE' : ''}`, [code])).rows[0];
+  if (!codeChecksumOk(code)) return { ok: false, reason: 'typo' };
+  const r = (await q.query(`SELECT code, max_uses, used, disabled, email, (expires_on IS NOT NULL AND expires_on < CURRENT_DATE) AS expired FROM oss_fee_codes WHERE code = $1${lock ? ' FOR UPDATE' : ''}`, [code])).rows[0];
   if (!r || r.disabled) return { ok: false, reason: 'invalid' };
   if (r.expired) return { ok: false, reason: 'expired' };
   if (r.max_uses != null && r.used >= r.max_uses) return { ok: false, reason: 'used_up' };
-  return { ok: true, code };
+  if (r.email && email && r.email !== email) return { ok: false, reason: 'not_yours' }; // reserved for one person
+  return { ok: true, code, personal: !!r.email };
 }
 /* The join form's "Check code" button: accepted or declined, nothing is saved or counted here. */
 export async function codeStatus(q, body) {
   const tier = String(body.tier || '');
   if (!TIERS[tier] || !(priceOf(tier) > 0)) return { ok: false, reason: 'not_needed' };
-  const c = await checkCode(q, body.code, false);
-  return c.ok ? { ok: true } : { ok: false, reason: c.reason };
+  const em = normEmail(body.email);
+  const c = await checkCode(q, body.code, false, validEmail(em) ? em : null);
+  return c.ok ? { ok: true, personal: c.personal } : { ok: false, reason: c.reason };
 }
 export async function codesList(q, staff) {
   requireRole(staff, 'events_admin');
-  const rows = (await q.query(`SELECT code, label, max_uses, used, expires_on, disabled, created_at, created_by, (expires_on IS NOT NULL AND expires_on < CURRENT_DATE) AS expired FROM oss_fee_codes ORDER BY created_at DESC, code`)).rows;
+  const rows = (await q.query(`SELECT code, label, email, max_uses, used, expires_on, disabled, created_at, created_by, (expires_on IS NOT NULL AND expires_on < CURRENT_DATE) AS expired FROM oss_fee_codes ORDER BY created_at DESC, code`)).rows;
   return { codes: rows };
 }
 export async function codeCreate(q, staff, body) {
   requireRole(staff, 'events_admin');
   let code = cleanCode(body.code);
-  if (String(body.code || '').trim() && code.length < 4) fail(400, 'validation', { fields: { code: 'invalid' } });
+  if (String(body.code || '').trim() && (code.length < 6 || !codeChecksumOk(code))) fail(400, 'validation', { fields: { code: 'invalid' } });
+  const forEmail = normEmail(body.email); if (forEmail && !validEmail(forEmail)) fail(400, 'validation', { fields: { email: 'invalid' } });
+  if (forEmail && (body.maxUses === '' || body.maxUses == null)) body = Object.assign({}, body, { maxUses: 1 }); // a personal code is for one use unless told otherwise
   const label = String(body.label || '').replace(/[\u0000-\u001f\u007f]/g, '').trim().slice(0, 120) || null;
   let max = body.maxUses === '' || body.maxUses == null ? null : parseInt(body.maxUses, 10);
   if (max !== null && (!Number.isFinite(max) || max < 1 || max > 100000)) fail(400, 'validation', { fields: { maxUses: 'invalid' } });
@@ -66,8 +104,8 @@ export async function codeCreate(q, staff, body) {
   if (exp && (!/^\d{4}-\d{2}-\d{2}$/.test(exp) || isNaN(new Date(exp)))) fail(400, 'validation', { fields: { expiresOn: 'invalid' } });
   for (let tries = 0; ; tries++) {
     const c = code || newCode();
-    const ins = await q.query('INSERT INTO oss_fee_codes (code, label, max_uses, expires_on, created_by) VALUES ($1,$2,$3,$4,$5) ON CONFLICT (code) DO NOTHING RETURNING code', [c, label, max, exp, staff.email]);
-    if (ins.rows.length) { await audit(q, staff.email, 'fee_code.created', 'fee_code:' + c, { label, maxUses: max, expiresOn: exp }); return Object.assign({ created: c }, await codesList(q, staff)); }
+    const ins = await q.query('INSERT INTO oss_fee_codes (code, label, max_uses, expires_on, created_by, email) VALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT (code) DO NOTHING RETURNING code', [c, label, max, exp, staff.email, forEmail || null]);
+    if (ins.rows.length) { await audit(q, staff.email, 'fee_code.created', 'fee_code:' + c, { label, maxUses: max, expiresOn: exp, personal: !!forEmail }); return Object.assign({ created: c }, await codesList(q, staff)); }
     if (code || tries > 4) fail(409, 'code_exists');
   }
 }
@@ -207,17 +245,20 @@ export async function apply(q, body, site, sessionEmail) {
   if (!TIERS[tier]) fields.tier = 'required';
   if (name.length < 2) fields.name = 'required';
   if (!validEmail(email)) fields.email = 'invalid';
-  const college = cleanName(body.college).slice(0, 120); if (college.length < 2) fields.college = 'required';
-  if (!UNI_STATUS.includes(uni)) fields.status = 'required';
+  const external = tier === 'external'; // a student of another university: university + subject instead of college + SSO
+  const college = external ? '' : cleanName(body.college).slice(0, 120); if (!external && college.length < 2) fields.college = 'required';
+  const university = external ? cleanName(body.university).slice(0, 120) : ''; if (external && university.length < 2) fields.university = 'required';
+  const subject = external ? cleanName(body.subject).slice(0, 120) : ''; if (external && subject.length < 2) fields.subject = 'required';
+  if (!(external ? EXTERNAL_STATUS : UNI_STATUS).includes(uni)) fields.status = 'required';
   const uniOther = uni === 'other' ? cleanName(body.statusOther).slice(0, 80) : '';
   if (uni === 'other' && uniOther.length < 2) fields.statusOther = 'required';
-  const sso = String(body.sso || '').trim().toLowerCase();
+  const sso = external ? '' : String(body.sso || '').trim().toLowerCase();
   if (SSO_TIERS.includes(tier) && !sso) fields.sso = 'required'; else if (sso && !SSO_RE.test(sso)) fields.sso = 'invalid';
   if (body.consent_privacy !== true) fields.consent = 'required';
   if (Object.keys(fields).length) fail(400, 'validation', { fields });
   const volunteer = (Array.isArray(body.volunteer) ? body.volunteer : []).map(String).filter((v) => VOLUNTEER.includes(v));
   const rec = {
-    name, name_ar: cleanName(body.nameAr).slice(0, 120) || null, college, uni_status: uni, uni_status_other: uniOther || null, phone: String(body.phone || '').replace(/[^\d+()\s-]/g, '').slice(0, 30) || null,
+    name, name_ar: cleanName(body.nameAr).slice(0, 120) || null, college: college || null, university: university || null, subject: subject || null, uni_status: uni, uni_status_other: uniOther || null, phone: String(body.phone || '').replace(/[^\d+()\s-]/g, '').slice(0, 30) || null,
     volunteer, heard: heard && HEARD.includes(heard) ? heard : null, lang, consent_privacy_version: String(body.privacy_version || SETTINGS.privacyVersion || '2026-11').slice(0, 40),
     sso_username: sso || null, fee_code: null, consent_news: body.consent_news === true, tier, amount_gbp: priceOf(tier), payment_status: priceOf(tier) > 0 ? 'due' : 'not_required', nationality_status: TIERS[tier].verify ? 'pending' : 'not_required',
   };
@@ -226,13 +267,13 @@ export async function apply(q, body, site, sessionEmail) {
   const codeIn = cleanCode(body.feeCode); let countCode = false;
   if (codeIn && priceOf(tier) > 0 && !(existing && existing.status === 'approved')) {
     const held = !!existing && existing.fee_code === codeIn && existing.tier === tier; // already theirs: not checked or counted twice
-    if (!held) { const c = await checkCode(q, codeIn, true); if (!c.ok) fail(400, 'validation', { fields: { feeCode: c.reason } }); countCode = true; }
+    if (!held) { const c = await checkCode(q, codeIn, true, email); if (!c.ok) fail(400, 'validation', { fields: { feeCode: c.reason } }); countCode = true; }
     Object.assign(rec, { amount_gbp: 0, payment_status: 'waived', fee_code: codeIn });
   }
   const useCode = async (no) => { if (!countCode) return; await q.query('UPDATE oss_fee_codes SET used = used + 1 WHERE code = $1', [codeIn]); await audit(q, email, 'membership.fee_code_used', 'member:' + no, { code: codeIn }); };
   if (existing && existing.status === 'approved') return { result: 'already_member', member: Object.assign(await publicView(q, existing), { evidence: null, canUploadProof: false }) };
   if (existing && OPEN.includes(existing.status)) {
-    const same = existing.tier === tier && existing.name === rec.name && (existing.college || '') === rec.college && existing.uni_status === rec.uni_status && (existing.uni_status_other || null) === rec.uni_status_other && (existing.sso_username || null) === rec.sso_username && (rec.fee_code || existing.fee_code || null) === (existing.fee_code || null);
+    const same = existing.tier === tier && existing.name === rec.name && (existing.college || null) === rec.college && (existing.university || null) === rec.university && (existing.subject || null) === rec.subject && existing.uni_status === rec.uni_status && (existing.uni_status_other || null) === rec.uni_status_other && (existing.sso_username || null) === rec.sso_username && (rec.fee_code || existing.fee_code || null) === (existing.fee_code || null);
     if (same) return { result: 'already', member: Object.assign(await publicView(q, existing), { evidence: null, canUploadProof: false }) }; // the public form never says whether a document is held
     // The form was sent again with different answers (most often a different membership type): the open application
     // takes the new answers and keeps its number and its place in the queue, and the address owner is told by email.
@@ -245,7 +286,7 @@ export async function apply(q, body, site, sessionEmail) {
     const nat = !TIERS[tier].verify ? 'not_required' : (tierChanged || existing.nationality_status === 'not_required' ? 'pending' : existing.nationality_status);
     const upd = (await q.query(`UPDATE oss_members SET name=$2, name_ar=$3, college=$4, uni_status=$5, uni_status_other=$6, phone=$7, volunteer=$8, lang=$9, consent_privacy_version=$10, consent_news=$11, tier=$12, amount_gbp=$13,
       payment_status=$14, nationality_status=$15, updated_at=now() WHERE email=$1 RETURNING *`, [email, rec.name, rec.name_ar, rec.college, rec.uni_status, rec.uni_status_other, rec.phone, rec.volunteer, rec.lang, rec.consent_privacy_version, rec.consent_news, rec.tier, rec.amount_gbp, pay, nat])).rows[0];
-    await q.query('UPDATE oss_members SET sso_username = $2, fee_code = $3 WHERE email = $1', [email, rec.sso_username, rec.fee_code]); upd.sso_username = rec.sso_username; upd.fee_code = rec.fee_code;
+    await q.query('UPDATE oss_members SET sso_username = $2, fee_code = $3, university = $4, subject = $5 WHERE email = $1', [email, rec.sso_username, rec.fee_code, rec.university, rec.subject]); Object.assign(upd, { sso_username: rec.sso_username, fee_code: rec.fee_code, university: rec.university, subject: rec.subject });
     await useCode(upd.member_no);
     if (tierChanged) await deleteEvidence(q, email);
     const pos = await positionOf(q, upd), uu = urlsFor(site, lang);
@@ -267,7 +308,7 @@ export async function apply(q, body, site, sessionEmail) {
       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,'pending',now(),'web',$17) RETURNING *`,
       [email, no, rec.name, rec.name_ar, rec.college, rec.uni_status, rec.phone, rec.volunteer, rec.heard, rec.lang, rec.consent_privacy_version, rec.consent_news, rec.tier, rec.amount_gbp, rec.payment_status, rec.nationality_status, rec.uni_status_other])).rows[0];
   }
-  await q.query('UPDATE oss_members SET sso_username = $2, fee_code = $3 WHERE email = $1', [email, rec.sso_username, rec.fee_code]); row.sso_username = rec.sso_username; row.fee_code = rec.fee_code;
+  await q.query('UPDATE oss_members SET sso_username = $2, fee_code = $3, university = $4, subject = $5 WHERE email = $1', [email, rec.sso_username, rec.fee_code, rec.university, rec.subject]); Object.assign(row, { sso_username: rec.sso_username, fee_code: rec.fee_code, university: rec.university, subject: rec.subject });
   await useCode(row.member_no);
   const position = await positionOf(q, row);
   const u = urlsFor(site, lang);
@@ -282,7 +323,7 @@ export async function apply(q, body, site, sessionEmail) {
 async function notifyCommittee(q, row, position, site, headline, response) {
   const to = SETTINGS.committeeNotifyEmail; if (!to) return;
   await enqueue(q, { kind: 'membership_committee', to, lang: 'en', dedupeKey: `committee:${headline}:${row.member_no}:${Date.now()}`,
-    vars: { headline, memberNo: row.member_no, name: row.name, nameAr: row.name_ar, email: row.email, tierLabel: tierLabel(row.tier, 'en'), college: row.college || '', sso: row.sso_username || '', feeCode: row.payment_status === 'waived' ? row.fee_code || '' : '', uniStatus: uniText(row), position: position == null ? '—' : position, response, deskUrl: urlsFor(site, 'en').deskUrl, siteUrl: site } });
+    vars: { headline, memberNo: row.member_no, name: row.name, nameAr: row.name_ar, email: row.email, tierLabel: tierLabel(row.tier, 'en'), college: row.tier === 'external' ? [row.university, row.subject].filter(Boolean).join(' — ') : (row.college || ''), sso: row.sso_username || '', feeCode: row.payment_status === 'waived' ? row.fee_code || '' : '', uniStatus: uniText(row), position: position == null ? '—' : position, response, deskUrl: urlsFor(site, 'en').deskUrl, siteUrl: site } });
 }
 
 /* ── applicant: own record, answer an information request ──────── */
@@ -302,7 +343,7 @@ export async function respond(q, email, body, site) {
 }
 
 /* ── committee desk ─────────────────────────────────────────────── */
-const DESK_FIELDS = 'email, member_no, name, name_ar, sso_username, fee_code, college, uni_status, uni_status_other, phone, volunteer, heard, lang, consent_news, consent_privacy_version, tier, amount_gbp, payment_status, nationality_status, status, applied_at, email_verified_at, info_request, info_requested_at, info_response, info_response_at, decided_at, decided_by, decision_reason, valid_until, approved_at, approved_by, notes, source, created_at, updated_at';
+const DESK_FIELDS = 'email, member_no, name, name_ar, sso_username, fee_code, university, subject, college, uni_status, uni_status_other, phone, volunteer, heard, lang, consent_news, consent_privacy_version, tier, amount_gbp, payment_status, nationality_status, status, applied_at, email_verified_at, info_request, info_requested_at, info_response, info_response_at, decided_at, decided_by, decision_reason, valid_until, approved_at, approved_by, notes, source, created_at, updated_at';
 export async function list(q, staff, params) {
   requireRole(staff, 'events_admin');
   const view = params.get('view') || 'queue';
