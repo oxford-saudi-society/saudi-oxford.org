@@ -47,7 +47,8 @@
   "committeeNotifyEmail": "membership@oxsss.org",
   "adminEmails": [
     "president@oxsss.org",
-    "tech@oxsss.org"
+    "tech@oxsss.org",
+    "oxfordsaudisociety@gmail.com"
   ],
   "nationalityUpload": false
 }
