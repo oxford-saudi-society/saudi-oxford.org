@@ -148,7 +148,7 @@
   var TIERS = [
     { id: 'saudi', price: 0, verify: true, en: 'Saudi student membership', ar: 'عضوية الطلبة السعوديين' },
     { id: 'student', price: SITE.fees.student != null ? SITE.fees.student : 10, en: 'Student membership', ar: 'عضوية الطلبة' },
-    { id: 'associate', price: SITE.fees.associate != null ? SITE.fees.associate : 15, en: 'Associate membership', ar: 'العضوية المنتسبة' },
+    { id: 'associate', price: SITE.fees.associate != null ? SITE.fees.associate : 15, en: 'Associate membership', ar: 'عضوية غير الطلبة' },
     { id: 'friend', price: 0, en: 'Mailing list & volunteering', ar: 'القائمة البريدية والتطوّع' }
   ];
   var STATUS = { undergraduate: 'Undergraduate', masters: "Taught postgraduate (Master's)", dphil: 'Research postgraduate (DPhil)', visiting: 'Visiting student or researcher', staff: 'University staff or researcher', alumni: 'Alumni', other: 'Other' };

@@ -298,7 +298,7 @@
   var UNI = { undergraduate: ['Undergraduate', 'بكالوريوس'], masters: ["Master's", 'ماجستير'], dphil: ['DPhil', 'دكتوراه'], visiting: ['Visiting', 'زائر'], staff: ['Staff', 'موظف'], alumni: ['Alumni', 'خريج'], other: ['Other', 'أخرى'] };
   var uniL = function (k) { return UNI[k] ? UNI[k][lang === 'ar' ? 1 : 0] : (k || ''); };
   var uniR = function (r) { return uniL(r.uni_status) + (r.uni_status === 'other' && r.uni_status_other ? ': ' + r.uni_status_other : ''); };
-  var TIERL = { saudi: ['Saudi student', 'طالب سعودي'], student: ['Student', 'طالب'], associate: ['Associate', 'منتسب'], friend: ['Friend', 'صديق'] };
+  var TIERL = { saudi: ['Saudi student', 'طالب سعودي'], student: ['Student', 'طالب'], associate: ['Associate', 'غير الطلبة'], friend: ['Friend', 'صديق'] };
   var tierL = function (k) { return TIERL[k] ? TIERL[k][lang === 'ar' ? 1 : 0] : (k || ''); };
   var badgeCls = { pending: 'waitlisted', info_requested: 'offered', approved: 'confirmed', declined: 'cancelled', revoked: 'cancelled', expired: 'cancelled' };
   async function showMembership(view, q) {

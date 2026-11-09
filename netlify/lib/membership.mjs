@@ -9,7 +9,7 @@ import { audit } from './events.mjs';
 export const TIERS = {
   saudi: { en: 'Saudi student membership', ar: 'عضوية الطلبة السعوديين', price: 0, verify: true },
   student: { en: 'Student membership', ar: 'عضوية الطلبة', price: null, verify: false },
-  associate: { en: 'Associate membership', ar: 'العضوية المنتسبة', price: null, verify: false },
+  associate: { en: 'Associate membership', ar: 'عضوية غير الطلبة', price: null, verify: false },
   friend: { en: 'Friend of the Society (mailing list & volunteering)', ar: 'صديق الجمعية (القائمة البريدية والتطوّع)', price: 0, verify: false },
 };
 const UNI_STATUS = ['undergraduate', 'masters', 'dphil', 'visiting', 'staff', 'alumni', 'other'];
