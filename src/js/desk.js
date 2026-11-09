@@ -27,7 +27,7 @@
       staffH: 'Staff & roles', staffP: 'super_admin: everything · events_admin: edit events, bookings, notices, members · checkin_staff: check-in only (optionally limited to chosen events).', role: 'Role', events: 'Limit to events (optional)', addStaff: 'Save staff member', disable: 'Remove', sth: { email: 'Email', name: 'Name', role: 'Role', events: 'Events', status: 'Status' }, active: 'Active', disabled: 'Removed',
       auditH: 'Audit log', ath: { at: 'When', actor: 'Who', action: 'Action', resource: 'Resource', meta: 'Details' },
       err: 'Something went wrong.', errCodes: { capacity_below_seated: 'Capacity cannot be lower than the seats already taken.', confirm_before_opening: 'Confirm the event (status = Confirmed) before opening registration.', paid_not_enabled: 'Paid events are not enabled yet.', bad_times: 'The end must be after the start.', forbidden: 'Your role does not allow this.', rate_limited: 'Too many requests — wait a moment.', build_hook_not_configured: 'The publish hook is not configured yet (NETLIFY_BUILD_HOOK).' },
-      signout: 'Sign out', who: 'Signed in as'
+      signout: 'Sign out', who: 'Signed in as', editor: 'Website editor', editorHint: 'Edit the pages of the website. It signs in with GitHub.'
     },
     ar: {
       title: 'مكتب اللجنة', sub: 'العضوية والفعاليات', signinH: 'دخول أعضاء اللجنة', signinP: 'أدخل بريدك في اللجنة وسنرسل لك رابط دخول.', email: 'البريد الإلكتروني', send: 'أرسل لي رابط الدخول', sent: 'تحقّق من بريدك', sentP: 'إن كان {email} ضمن قائمة اللجنة فرابط الدخول في الطريق إليك، ويعمل مرة واحدة خلال ٣٠ دقيقة.', sentHelp: 'لم يصل شيء بعد بضع دقائق؟ تحقّق من البريد غير المرغوب فيه ثم اطلب رابطًا جديدًا.', sentAgain: 'استخدم بريدًا آخر أو أعد الإرسال', notStaff: 'هذا البريد ليس في قائمة الموظفين. اطلب من المشرف العام إضافتك.',
@@ -52,7 +52,7 @@
       staffH: 'الموظفون والأدوار', staffP: 'super_admin: كل شيء · events_admin: تعديل الفعاليات والحجوزات والإشعارات والأعضاء · checkin_staff: تسجيل الحضور فقط (يمكن حصره بفعاليات محددة).', role: 'الدور', events: 'حصر بفعاليات (اختياري)', addStaff: 'حفظ الموظف', disable: 'إزالة', sth: { email: 'البريد', name: 'الاسم', role: 'الدور', events: 'الفعاليات', status: 'الحالة' }, active: 'نشط', disabled: 'مُزال',
       auditH: 'سجل التدقيق', ath: { at: 'متى', actor: 'من', action: 'الإجراء', resource: 'المورد', meta: 'التفاصيل' },
       err: 'حدث خطأ ما.', errCodes: { capacity_below_seated: 'لا يمكن أن تقل السعة عن المقاعد المحجوزة.', confirm_before_opening: 'أكّد الفعالية (الحالة = مؤكدة) قبل فتح التسجيل.', paid_not_enabled: 'الفعاليات المدفوعة غير مفعّلة بعد.', bad_times: 'يجب أن تكون النهاية بعد البداية.', forbidden: 'دورك لا يسمح بهذا.', rate_limited: 'طلبات كثيرة — انتظر قليلًا.', build_hook_not_configured: 'رابط النشر غير مهيأ بعد (NETLIFY_BUILD_HOOK).' },
-      signout: 'تسجيل الخروج', who: 'مسجّل الدخول باسم'
+      signout: 'تسجيل الخروج', who: 'مسجّل الدخول باسم', editor: 'محرّر الموقع', editorHint: 'تعديل صفحات الموقع. يتم الدخول إليه عبر GitHub.'
     }
   };
   var s = S[lang];
@@ -82,7 +82,7 @@
 
   function shell(tab, inner) {
     var tabs = ['membership', 'overview', 'checkin', 'mail', 'staff', 'audit'].filter(function (t) { if (t === 'staff') return me.role === 'super_admin'; if (t === 'mail' || t === 'membership' || t === 'audit') return canEdit(); return true; });
-    app.innerHTML = '<div class="app-head"><div><p class="eyebrow">' + esc(s.sub) + '</p><h1>' + esc(s.title) + '</h1><p class="who">' + esc(s.who) + ' <b dir="ltr">' + esc(me.email) + '</b> · ' + esc(me.role) + '</p></div><div class="rowc">' + (canEdit() ? '<button class="btn btn-s btn-sm" id="publish" title="' + esc(s.publishHint) + '">' + esc(s.publish) + '</button>' : '') + '<button class="btn btn-s btn-sm" id="signout">' + esc(s.signout) + '</button></div></div>' +
+    app.innerHTML = '<div class="app-head"><div><p class="eyebrow">' + esc(s.sub) + '</p><h1>' + esc(s.title) + '</h1><p class="who">' + esc(s.who) + ' <b dir="ltr">' + esc(me.email) + '</b> · ' + esc(me.role) + '</p></div><div class="rowc">' + (canEdit() ? '<button class="btn btn-s btn-sm" id="publish" title="' + esc(s.publishHint) + '">' + esc(s.publish) + '</button>' : '') + (me.role === 'super_admin' ? '<a class="btn btn-s btn-sm" href="/admin/" title="' + esc(s.editorHint) + '">' + esc(s.editor) + '</a>' : '') + '<button class="btn btn-s btn-sm" id="signout">' + esc(s.signout) + '</button></div></div>' +
       '<div class="tabs" role="tablist">' + tabs.map(function (t) { return '<a class="chip" role="tab" href="#' + t + '" aria-selected="' + (t === tab) + '">' + esc(s.tabs[t]) + '</a>'; }).join('') + '</div><div id="flash"></div><div id="view">' + inner + '</div>';
     $('signout').addEventListener('click', async function () { try { await O.api('/auth/logout', { method: 'POST' }); } catch (e) { /* ignore */ } location.reload(); });
     var pb = $('publish'); if (pb) pb.addEventListener('click', async function () { pb.disabled = true; try { await O.api('/admin/publish', { method: 'POST' }); flash(esc(s.published)); } catch (e) { flash(esc(errText(e)), 'bad'); } pb.disabled = false; });
