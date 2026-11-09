@@ -765,8 +765,6 @@ html[dir="rtl"] .track .tk:empty::before{content:counter(tk,arabic-indic)}
   .lang a,.lang button{padding:7px 10px}
 }
 .board-hint{margin:12px 0 0;font-size:13px;color:rgba(0,33,71,.7);text-align:center}
-.archive-note{margin-top:30px}
-.archive-note a{color:var(--gold-lt)}
 .lbl.term-label{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-lt);margin:0 0 14px}
 html[dir="rtl"] .lbl.term-label{letter-spacing:0;font-size:14px}
 /* small laptops and tablets: the full menu, the brand and both language buttons all fit on one line */

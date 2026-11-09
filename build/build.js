@@ -60,12 +60,12 @@ const GROUPS = { student: ['Current student', 'طالب حالي'], alumni: ['Al
 const CATS = { exec: ['Executive', 'اللجنة التنفيذية'], events: ['Events', 'لجنة الفعاليات'], media: ['Media, PR & Outreach', 'الإعلام والعلاقات العامة'], other: ['Committee', 'اللجنة'] };
 const TAGS = { free: ['Free', 'مجاناً'], open: ['All welcome', 'الكل مرحّب به'], booking: ['Booking', 'التسجيل مطلوب'], members: ['Members', 'للأعضاء'] };
 const S = {
-  en: { namePh: '[Name]', termTitle: (t) => `<bdi dir="ltr">${esc(t)}</bdi> Committee`, nMembers: (n) => `${n} members`, archiveH: 'Historical archive',
-        archive: (email) => `We have not yet been able to document the committee members for earlier years. If you served on a past committee, or hold any of its records, email ${email} and we will add them.`,
+  en: { namePh: '[Name]', termTitle: (t) => `<bdi dir="ltr">${esc(t)}</bdi> Committee`, nMembers: (n) => `${n} members`, tracing: 'Records being traced',
+        trace: (email) => `We have not yet been able to document this year’s committee. If you served on it, or know who did, email ${email} and we will add the names.`,
         pastLink: 'Committees page →', dirEmpty: 'The members’ directory will be available soon.', book: 'Book a place',
         weekPh: '[Week]', datePh: '[Date]', venuePh: '[Venue]', nextPh: '[Event name]', nextSubPh: '[Date and time] · [Venue]', emailPh: '[hello@address]' },
-  ar: { namePh: '[الاسم]', termTitle: (t) => `لجنة <bdi dir="ltr">${esc(t)}</bdi>`, nMembers: (n) => `${n} أعضاء`, archiveH: 'الأرشيف التاريخي',
-        archive: (email) => `لم نتمكن بعد من توثيق أسماء أعضاء اللجان في الأعوام السابقة. إن كنت عضواً في لجنة سابقة أو لديك شيء من سجلاتها، راسلنا على ${email} لنضيفها.`,
+  ar: { namePh: '[الاسم]', termTitle: (t) => `لجنة <bdi dir="ltr">${esc(t)}</bdi>`, nMembers: (n) => `${n} أعضاء`, tracing: 'قيد التوثيق',
+        trace: (email) => `لم نتمكن بعد من توثيق أسماء أعضاء اللجنة لهذا العام. إن كنت عضواً فيها أو تعرف أعضاءها، راسلنا على ${email} لنضيف الأسماء.`,
         pastLink: 'صفحة مجالس الإدارة ←', dirEmpty: 'سيُتاح دليل الأعضاء قريبًا.', book: 'احجز مقعداً',
         weekPh: '[الأسبوع]', datePh: '[التاريخ]', venuePh: '[المكان]', nextPh: '[اسم الفعالية]', nextSubPh: '[التاريخ والوقت] · [المكان]', emailPh: '[hello@address]' },
 };
@@ -123,14 +123,14 @@ function committeesHtml(lang) {
   // The most recent verified committee carries a neutral heading: no "current" badge and no ordinal number,
   // because neither the current year's committee nor the historical sequence has been verified yet.
   if (cur) h += `<div class="term current"><div class="cur-head"><h3 class="disp">${s.termTitle(cur.term)}</h3></div>${committeeGrid(cur, lang)}</div>`;
+  // every academic year since the founding year is listed; a year whose committee is not documented yet says so and asks for help
+  const founded = parseInt(settings.founded, 10) || 0;
   let decade = null;
-  committees.filter((c) => c !== cur && (c.members || []).length).forEach((c) => {
-    const n = c.members.length, dec = Math.floor(startYear(c) / 10) * 10;
+  committees.filter((c) => c !== cur && (!founded || startYear(c) >= founded)).forEach((c) => {
+    const n = (c.members || []).length, dec = Math.floor(startYear(c) / 10) * 10;
     if (dec !== decade) { decade = dec; h += `<p class="lbl decade">${esc(lang === 'ar' ? arDigits(dec) + '–' + arDigits(dec + 9) : dec + 's')}</p>`; }
-    h += `<div class="term"><details><summary><span class="yrs">${esc(c.term)}</span><span class="n">${esc(s.nMembers(n))}</span></summary>${committeeGrid(c, lang)}</details></div>`;
+    h += `<div class="term"><details><summary><span class="yrs">${esc(c.term)}</span><span class="n">${esc(n ? s.nMembers(n) : s.tracing)}</span></summary>${n ? committeeGrid(c, lang) : `<p class="trace">${s.trace(emailHtml(lang))}</p>`}</details></div>`;
   });
-  // one consolidated notice instead of an empty entry for every undocumented year
-  h += `<div class="note archive-note"><b>${esc(s.archiveH)}:</b> <span>${s.archive(emailHtml(lang))}</span></div>`;
   return h;
 }
 /* ── page assembly ─────────────────────────────────────────────── */
