@@ -47,5 +47,6 @@
   "adminEmails": [
     "president@oxsss.org",
     "tech@oxsss.org"
-  ]
+  ],
+  "nationalityUpload": false
 }

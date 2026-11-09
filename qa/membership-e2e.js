@@ -30,7 +30,7 @@ async function applyAs(p, lang, tier, name, email) {
   ok(/^OSS-\d{4}-0002$/.test(a2.no) && a2.q === '٢', 'second applicant (Arabic): number + place ٢ ' + JSON.stringify(a2));
   const again = await applyAs(other, 'en', 'student', 'Sara Ahmed', 'sara@example.org');
   ok(again.no === a2.no && !again.fail, 'same email again → same number, no duplicate ' + JSON.stringify(again));
-  ok(await other.evaluate(() => /already applied/i.test(document.getElementById('join-done').textContent)), 'duplicate shows "already applied"');
+  ok(await other.evaluate(() => /Application updated/i.test(document.getElementById('join-done').textContent)), 'the form sent again with different answers shows "Application updated"');
 
   // committee desk
   await desk.goto(BASE + '/admin/events/'); await desk.waitForTimeout(600);

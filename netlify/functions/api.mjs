@@ -116,7 +116,7 @@ async function route(req, context, db) {
     if (body.website) return json({ result: 'received', member: null, honeypot: true }); // bots get a polite nothing
     await limitByIp(db, 'apply_ip', req, context, 12, 3600);
     if (validEmail(normEmail(body.email))) await limitByEmail(db, 'apply_email', normEmail(body.email), 5, 3600);
-    const out = await db.tx((q) => M.apply(q, body, site));
+    const out = await db.tx((q) => M.apply(q, body, site, session ? session.email : null));
     return json(out);
   }
   if (a === 'membership' && b === 'me' && m === 'GET') {

@@ -41,14 +41,14 @@ test('apply: permanent number, queue position, confirmation email, committee not
   assert.equal(r2.body.member.amountGbp, 10); assert.equal(r2.body.member.paymentStatus, 'due');
   assert.notEqual(r1.body.member.memberNo, r2.body.member.memberNo);
   const mail = C.lastMail('one@example.org', 'membership_received');
-  assert.ok(mail.body_text.includes(m1.memberNo)); assert.match(mail.body_text, /Place in the review queue: 1/); assert.match(mail.body_text, /do not send identity documents by email/);
+  assert.ok(mail.body_text.includes(m1.memberNo)); assert.match(mail.body_text, /Place in the review queue: 1/); assert.match(mail.body_text, /secretary will email you later to ask for proof of Saudi nationality/); assert.doesNotMatch(mail.body_text, /upload/i);
   const arMail = C.lastMail('two@example.org', 'membership_received');
   assert.match(arMail.subject, /تم استلام طلب العضوية/); assert.match(arMail.body_text, /£10/); assert.ok(arMail.body_text.includes(r2.body.member.memberNo));
   assert.ok(C.lastMail(COMMITTEE, 'membership_committee'), 'committee is told about new applications');
   const row = (await q(db, "SELECT volunteer, consent_news, consent_privacy_version, heard FROM oss_members WHERE email = 'one@example.org'"))[0];
   assert.deepEqual(row.volunteer, ['events']); assert.equal(row.consent_news, true); assert.ok(row.consent_privacy_version);
-  const dup = await apply({ name: 'Someone Else' });
-  assert.equal(dup.body.result, 'already'); assert.equal(dup.body.member.memberNo, m1.memberNo);
+  const dup = await apply();
+  assert.equal(dup.body.result, 'already', 'the same answers again change nothing'); assert.equal(dup.body.member.memberNo, m1.memberNo);
   assert.equal((await q(db, "SELECT count(*)::int AS n FROM oss_members WHERE email = 'one@example.org'"))[0].n, 1);
 });
 
@@ -142,4 +142,27 @@ test('status "Other" needs the typed answer, which is stored and shown to the co
   assert.equal(plain.status, 200);
   const r2 = (await q(db, "SELECT uni_status_other, heard FROM oss_members WHERE email = 'other2@example.org'"))[0];
   assert.equal(r2.uni_status_other, null); assert.equal(r2.heard, null);
+});
+
+test('sending the form again with a different membership type updates the open application (same number and place)', async () => {
+  const first = await apply({ email: 'switch@example.org', name: 'Switch Person', tier: 'saudi' });
+  assert.equal(first.body.member.nationalityStatus, 'pending'); assert.equal(first.body.member.canUploadProof, false, 'the upload is switched off');
+  const pos = first.body.member.position;
+  // chose "Saudi students" by mistake → sends the form again as an ordinary student
+  const again = await apply({ email: 'switch@example.org', name: 'Switch Person', tier: 'student', status: 'masters' });
+  assert.equal(again.body.result, 'updated'); assert.equal(again.body.member.memberNo, first.body.member.memberNo); assert.equal(again.body.member.position, pos);
+  assert.equal(again.body.member.tier, 'student'); assert.equal(again.body.member.nationalityStatus, 'not_required', 'nothing about nationality for a non-Saudi membership');
+  assert.equal(again.body.member.amountGbp, 10); assert.equal(again.body.member.paymentStatus, 'due');
+  const changed = C.lastMail('switch@example.org', 'membership_changed');
+  assert.match(changed.subject, /application was updated/); assert.match(changed.body_text, /Student membership/); assert.doesNotMatch(changed.body_text, /nationality/i);
+  assert.match(C.lastMail(COMMITTEE, 'membership_committee').subject, /Application changed to Student membership/);
+  assert.equal((await q(db, "SELECT count(*)::int AS n FROM oss_members WHERE email = 'switch@example.org'"))[0].n, 1);
+  // once the address is confirmed, only its owner (signed in) can change the application
+  const me = await C.signIn('switch@example.org');
+  const stranger = await apply({ email: 'switch@example.org', name: 'Someone Else', tier: 'friend' });
+  assert.equal(stranger.body.result, 'already'); assert.equal(stranger.body.needsSignIn, true); assert.equal(stranger.body.member.tier, 'student'); assert.equal(stranger.body.member.name, 'Switch Person');
+  const own = await C.call('POST', '/api/membership/apply', { cookie: me, body: { tier: 'saudi', name: 'Switch Person', email: 'switch@example.org', college: 'Hertford College', status: 'masters', consent_privacy: true, lang: 'en' } });
+  assert.equal(own.body.result, 'updated'); assert.equal(own.body.member.tier, 'saudi'); assert.equal(own.body.member.nationalityStatus, 'pending'); assert.equal(own.body.member.amountGbp, 0);
+  const acct = await C.call('GET', '/api/membership/me', { cookie: me });
+  assert.equal(acct.body.member.canUploadProof, false); assert.equal(acct.body.member.evidence, null);
 });

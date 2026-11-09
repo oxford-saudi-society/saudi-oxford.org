@@ -51,6 +51,7 @@ export async function publicView(q, row) {
     infoResponse: row.info_response, infoResponseAt: row.info_response_at, emailVerified: !!row.email_verified_at,
     reason: row.status === 'declined' || row.status === 'revoked' ? row.decision_reason : null,
     evidence: await evidenceMeta(q, row.email).then((e) => (e ? { uploadedAt: e.uploadedAt } : null)), // the applicant sees only that a document is held
+    canUploadProof: canUpload(row),
   };
 }
 
@@ -67,8 +68,13 @@ async function evidenceMeta(q, email) {
 export async function deleteEvidence(q, email) {
   return (await q.query('DELETE FROM oss_member_evidence WHERE email = $1', [email])).rowCount || 0;
 }
-const canUpload = (row) => row && TIERS[row.tier] && TIERS[row.tier].verify && OPEN.includes(row.status) && ['pending', 'submitted', 'rejected'].includes(row.nationality_status);
+/* The upload is switched OFF for now (settings.nationalityUpload): the committee's secretary asks for proof by email
+   when it is needed. With the switch off nothing can be uploaded, the pages do not offer it, and the scheduled job
+   removes any document left over from when it was on. */
+export const proofUploadEnabled = () => (process.env.NATIONALITY_UPLOAD || '').toLowerCase() === 'true' || SETTINGS.nationalityUpload === true;
+const canUpload = (row) => proofUploadEnabled() && row && row.tier === 'saudi' && TIERS[row.tier].verify && OPEN.includes(row.status) && ['pending', 'submitted', 'rejected'].includes(row.nationality_status);
 export async function uploadEvidence(q, email, body, site) {
+  if (!proofUploadEnabled()) fail(404, 'not_found');
   const row = (await q.query('SELECT * FROM oss_members WHERE email = $1 FOR UPDATE', [email])).rows[0];
   if (!canUpload(row)) fail(400, 'not_needed');
   const mime = String(body.mime || '').toLowerCase();
@@ -108,10 +114,11 @@ export async function viewEvidence(q, staff, no) {
 }
 /* Scheduled safety net: a document nobody has checked is not kept beyond the limit. */
 export async function expireEvidence(q) {
-  const old = (await q.query(`SELECT e.email, m.member_no FROM oss_member_evidence e JOIN oss_members m ON m.email = e.email WHERE e.uploaded_at < now() - make_interval(days => $1)`, [EVIDENCE_KEEP_DAYS])).rows;
+  // switched off → nothing uploaded earlier is kept at all
+  const old = (await q.query(`SELECT e.email, m.member_no FROM oss_member_evidence e JOIN oss_members m ON m.email = e.email WHERE $2 OR e.uploaded_at < now() - make_interval(days => $1)`, [EVIDENCE_KEEP_DAYS, !proofUploadEnabled()])).rows;
   for (const r of old) {
     await deleteEvidence(q, r.email);
-    await q.query(`UPDATE oss_members SET nationality_status = 'pending', updated_at = now() WHERE email = $1 AND nationality_status = 'submitted'`, [r.email]);
+    await q.query(`UPDATE oss_members SET nationality_status = 'pending', updated_at = now() WHERE email = $1 AND nationality_status IN ('submitted','rejected')`, [r.email]);
     await audit(q, 'system', 'membership.evidence_expired', 'member:' + r.member_no, { days: EVIDENCE_KEEP_DAYS });
   }
   return old.length;
@@ -125,12 +132,15 @@ function nextStepText(row, lang) {
     const link = (SETTINGS.payLinks || {})[row.tier];
     return ar ? `الخطوة التالية: رسوم العضوية £${row.amount_gbp}. ${link ? 'ادفع بالبطاقة: ' + link + ' ' : ''}${bankLine} اذكر رقم عضويتك مرجعًا للدفع.` : `Next step: the membership fee is £${row.amount_gbp}. ${link ? 'Pay by card: ' + link + ' ' : ''}${bankLine} Quote your membership number as the payment reference.`;
   }
-  if (row.nationality_status === 'pending') return ar ? 'الخطوة التالية: سجّل الدخول عبر الرابط أدناه وارفع من صفحة عضويتك مستندًا واحدًا يثبت الجنسية السعودية (صفحة الصورة في جواز السفر، أو الهوية الوطنية، أو تأكيد الابتعاث من الملحقية الثقافية). يُحذف المستند فور تحقق اللجنة منه. يرجى عدم إرسال وثائق الهوية بالبريد الإلكتروني.' : 'Next step: sign in with the link below and, on your membership page, upload one proof of Saudi nationality (the photo page of your passport, your national ID or your Cultural Bureau scholarship confirmation). It is deleted as soon as the committee has checked it. Please do not send identity documents by email.';
+  if (row.tier === 'saudi' && ['pending', 'rejected'].includes(row.nationality_status)) {
+    if (!proofUploadEnabled()) return ar ? 'لا يلزمك فعل شيء الآن. سيراسلك أمين سر مجلس إدارة الجمعية لاحقًا لطلب إثبات الجنسية السعودية عند الحاجة. يرجى عدم إرسال أي وثيقة هوية قبل أن يُطلب منك ذلك.' : 'Nothing is needed from you now. The committee’s secretary will email you later to ask for proof of Saudi nationality, if it is needed. Please do not send any identity document until you are asked.';
+    return ar ? 'الخطوة التالية: سجّل الدخول عبر الرابط أدناه وارفع من صفحة عضويتك مستندًا واحدًا يثبت الجنسية السعودية (صفحة الصورة في جواز السفر، أو الهوية الوطنية، أو تأكيد الابتعاث من الملحقية الثقافية). يُحذف المستند فور تحقق اللجنة منه. يرجى عدم إرسال وثائق الهوية بالبريد الإلكتروني.' : 'Next step: sign in with the link below and, on your membership page, upload one proof of Saudi nationality (the photo page of your passport, your national ID or your Cultural Bureau scholarship confirmation). It is deleted as soon as the committee has checked it. Please do not send identity documents by email.';
+  }
   return ar ? 'لا يلزمك فعل شيء الآن؛ سنراسلك عند البت في طلبك.' : 'Nothing else is needed from you now; we will email you when the committee has decided.';
 }
 
 /* ── public: apply ──────────────────────────────────────────────── */
-export async function apply(q, body, site) {
+export async function apply(q, body, site, sessionEmail) {
   const email = normEmail(body.email), name = cleanName(body.name), lang = body.lang === 'ar' ? 'ar' : 'en';
   const tier = String(body.tier || ''), uni = String(body.status || ''), heard = String(body.heard || '');
   const fields = {};
@@ -150,8 +160,27 @@ export async function apply(q, body, site) {
     consent_news: body.consent_news === true, tier, amount_gbp: priceOf(tier), payment_status: priceOf(tier) > 0 ? 'due' : 'not_required', nationality_status: TIERS[tier].verify ? 'pending' : 'not_required',
   };
   const existing = (await q.query('SELECT * FROM oss_members WHERE email = $1 FOR UPDATE', [email])).rows[0];
-  if (existing && (OPEN.includes(existing.status) || existing.status === 'approved')) {
-    return { result: existing.status === 'approved' ? 'already_member' : 'already', member: Object.assign(await publicView(q, existing), { evidence: null }) }; // the public form never says whether a document is held
+  if (existing && existing.status === 'approved') return { result: 'already_member', member: Object.assign(await publicView(q, existing), { evidence: null, canUploadProof: false }) };
+  if (existing && OPEN.includes(existing.status)) {
+    const same = existing.tier === tier && existing.name === rec.name && (existing.college || '') === rec.college && existing.uni_status === rec.uni_status && (existing.uni_status_other || null) === rec.uni_status_other;
+    if (same) return { result: 'already', member: Object.assign(await publicView(q, existing), { evidence: null, canUploadProof: false }) }; // the public form never says whether a document is held
+    // The form was sent again with different answers (most often a different membership type): the open application
+    // takes the new answers and keeps its number and its place in the queue, and the address owner is told by email.
+    // Once the address has been confirmed, only its owner (signed in) can change the application this way.
+    if (existing.email_verified_at && sessionEmail !== email) return { result: 'already', needsSignIn: true, member: Object.assign(await publicView(q, existing), { evidence: null, canUploadProof: false }) };
+    const tierChanged = existing.tier !== tier;
+    const pay = tierChanged ? rec.payment_status : existing.payment_status;
+    const nat = !TIERS[tier].verify ? 'not_required' : (tierChanged || existing.nationality_status === 'not_required' ? 'pending' : existing.nationality_status);
+    const upd = (await q.query(`UPDATE oss_members SET name=$2, name_ar=$3, college=$4, uni_status=$5, uni_status_other=$6, phone=$7, volunteer=$8, lang=$9, consent_privacy_version=$10, consent_news=$11, tier=$12, amount_gbp=$13,
+      payment_status=$14, nationality_status=$15, updated_at=now() WHERE email=$1 RETURNING *`, [email, rec.name, rec.name_ar, rec.college, rec.uni_status, rec.uni_status_other, rec.phone, rec.volunteer, rec.lang, rec.consent_privacy_version, rec.consent_news, rec.tier, rec.amount_gbp, pay, nat])).rows[0];
+    if (tierChanged) await deleteEvidence(q, email);
+    const pos = await positionOf(q, upd), uu = urlsFor(site, lang);
+    const tok = await createPending(q, { kind: 'login', email, lang, ttlMin: 1440, payload: { redirect: (lang === 'ar' ? '/ar' : '') + '/account/' } });
+    await enqueue(q, { kind: 'membership_changed', to: email, lang, dedupeKey: `membership_changed:${upd.member_no}:${Date.now()}`,
+      vars: Object.assign({ name: upd.name, memberNo: upd.member_no, tierLabel: tierLabel(tier, lang), position: pos, nextStep: nextStepText(upd, lang), link: `${site}/api/verify?t=${tok}`, membershipEmail: SETTINGS.membershipEmail || SETTINGS.email || '', siteUrl: site }, uu) });
+    if (tierChanged) await notifyCommittee(q, upd, pos, site, 'Application changed to ' + tierLabel(tier, 'en'));
+    await audit(q, email, 'membership.changed', 'member:' + upd.member_no, tierChanged ? { from: existing.tier, to: tier } : { details: true });
+    return { result: 'updated', member: Object.assign(await publicView(q, upd), { evidence: null, canUploadProof: false }) };
   }
   let row;
   if (existing) { // re-application after a decline/revocation/expiry keeps the same membership number
@@ -171,7 +200,7 @@ export async function apply(q, body, site) {
     vars: Object.assign({ name, memberNo: row.member_no, tierLabel: tierLabel(tier, lang), position, nextStep: nextStepText(row, lang), link: `${site}/api/verify?t=${token}`, siteUrl: site }, u) });
   await notifyCommittee(q, row, position, site, 'New membership application');
   await audit(q, email, existing ? 'membership.reapplied' : 'membership.applied', 'member:' + row.member_no, { tier });
-  return { result: 'received', member: Object.assign(await publicView(q, row), { evidence: null }) };
+  return { result: 'received', member: Object.assign(await publicView(q, row), { evidence: null, canUploadProof: false }) };
 }
 
 async function notifyCommittee(q, row, position, site, headline, response) {

@@ -74,7 +74,9 @@ See `.env.example`. Required for the API to work at all: `DATABASE_URL` (or Netl
 
 Set `RETENTION_PAUSED=true` in Netlify to stop all deletion (for example during a legal claim); `oss_members.legal_hold = true` protects one record. Financial transaction records are not held by the website — the treasurer keeps them (six years where the law requires).
 
-**Proof of nationality** is uploaded by the applicant on their membership page (`/account/`), never emailed. It is stored in `oss_member_evidence`, opened only from the desk (*Membership → the applicant → Proof of nationality → Open the document*; every opening is logged), and deleted when the result is recorded. Do not download or forward it.
+**Proof of nationality**: for now the committee's secretary asks for it by email when it is needed (from an @oxsss.org address), checks it, records *Verified* under *Membership → the applicant → Checks*, and deletes the email and its attachment straight away — that deletion is manual. The secure upload on the member's own page is built but switched off (`nationalityUpload: false` in `src/content/settings.json`); switching it on also needs the wording on the join page, FAQ and privacy notice changed back. While it is off, nothing can be uploaded and the scheduled job removes any document left from when it was on.
+
+**Sending the form again**: if someone with an open application sends the join form again with different answers (usually a different membership type), the application is updated, keeps its number and place, and they are emailed. Once they have confirmed their address, only they (signed in) can change it.
 
 **News subscribers**: *Membership → News subscribers (CSV)* lists everyone who ticked the news box.
 

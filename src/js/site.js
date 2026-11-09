@@ -9,7 +9,7 @@
   var T = {
     en: {
       sumPaid: 'Fee: <b>{amount}</b> — payment details follow after you apply', sumFree: 'Nothing to pay',
-      sumVerify: 'Free — you upload proof of nationality securely after you apply', sumNone: 'Choose a membership type above',
+      sumVerify: 'Free — the secretary will email you later if proof of nationality is needed', sumNone: 'Choose a membership type above',
       sending: 'Sending…',
       cardTitle: 'Pay by card', cardBtn: 'Pay {amount} by card',
       cardNote: 'Secure checkout opens in a new tab, handled by the payment provider. The Society never sees your card details.',
@@ -18,7 +18,7 @@
     },
     ar: {
       sumPaid: 'الرسوم: <b>{amount}</b> — تصلك تفاصيل الدفع بعد التقديم', sumFree: 'لا توجد رسوم',
-      sumVerify: 'مجاناً — ترفع إثبات الجنسية بأمان بعد التقديم', sumNone: 'اختر نوع العضوية أعلاه',
+      sumVerify: 'مجاناً — سيراسلك أمين السر لاحقاً إن لزم إثبات الجنسية', sumNone: 'اختر نوع العضوية أعلاه',
       sending: 'جارٍ الإرسال…',
       cardTitle: 'الدفع بالبطاقة', cardBtn: 'ادفع {amount} بالبطاقة',
       cardNote: 'تُفتح صفحة دفع آمنة في تبويب جديد عبر مزوّد الدفع. لا تطّلع الجمعية على بيانات بطاقتك أبداً.',
@@ -255,34 +255,38 @@
      membership number and a place in the review queue. Nothing is claimed until the server answers. */
   var M = {
     en: {
-      eyebrowNew: 'Application received', eyebrowAgain: 'You have already applied', eyebrowMember: 'You are already a member',
+      eyebrowNew: 'Application received', eyebrowUpdated: 'Application updated', eyebrowAgain: 'You have already applied', eyebrowMember: 'You are already a member',
       thanks: 'Thank you, {name}.', welcomeBack: 'Welcome back, {name}.',
       ledeNew: 'Your application is with the committee. Keep your membership number: quote it in anything you send us.',
       ledeAgain: 'We already have your application, so nothing new was submitted. Here is where it stands.',
+      ledeUpdated: 'We already had an application from this email address, so we have updated it with your new answers. It keeps its number and its place in the queue.',
+      changeHow: 'To change your answers, sign in on the My account page first (we email you a sign-in link), then send this form again.', changeBtn: 'Sign in to My account',
       ledeMember: 'This email address already belongs to an active membership.',
       org: 'Oxford Saudi Society', noLabel: 'Membership number', nameL: 'Name', typeL: 'Membership', appliedL: 'Applied', copy: 'Copy number', copied: 'Copied',
       st: { pending: 'Pending review', info_requested: 'Question from the committee', approved: 'Active member', declined: 'Not approved', revoked: 'Ended', expired: 'Expired' },
       qL: 'Your place in the review queue', qP: 'The committee reviews applications in the order they arrive. You will get an email as soon as yours is decided.',
-      t1: 'Application received', t2: 'Committee review', t3pay: 'Payment of {amount}', t3verify: 'Proof of Saudi nationality', t4: 'Membership active',
+      t1: 'Application received', t2: 'Committee review', t3pay: 'Payment of {amount}', t3verify: 'Nationality check, if needed', t4: 'Membership active',
       payH: 'Membership fee: {amount}', payP: 'Use your membership number as the payment reference so the treasurer can match it. Membership is approved once the payment is confirmed.', payLater: 'The treasurer will email you how to pay. Use your membership number as the payment reference; membership is approved once the payment is confirmed.',
-      verifyH: 'Proof of Saudi nationality', verifyP: 'Sign in to your membership page and upload one proof of Saudi nationality: the photo page of your passport, your national ID or your Cultural Bureau scholarship confirmation. It is deleted as soon as the committee has checked it. Please do not email identity documents.', verifyBtn: 'Upload proof securely',
+      verifyH: 'Proof of Saudi nationality', verifyP: 'Nothing is needed from you now. The committee\u2019s secretary will email you later to ask for proof of Saudi nationality, if it is needed. Please do not send any identity document until you are asked.',
       mailNote: 'We have sent a confirmation to <b dir="ltr">{email}</b>. Its link lets you follow your application and answer any question from the committee.',
       track: 'Track my application', print: 'Save or print', again: 'Submit another application',
       failH: 'Your application was not submitted', fail: 'We could not reach the membership system just now. Your answers are still in the form: please press Submit again in a minute.', failMail: 'If it keeps failing, email {email}.',
       rate: 'Too many attempts from this connection. Please wait a few minutes and try again.'
     },
     ar: {
-      eyebrowNew: 'تم استلام الطلب', eyebrowAgain: 'لقد تقدّمت بطلب من قبل', eyebrowMember: 'أنت عضو بالفعل',
+      eyebrowNew: 'تم استلام الطلب', eyebrowUpdated: 'تم تحديث الطلب', eyebrowAgain: 'لقد تقدّمت بطلب من قبل', eyebrowMember: 'أنت عضو بالفعل',
       thanks: 'شكرًا لك يا {name}.', welcomeBack: 'أهلًا بعودتك يا {name}.',
       ledeNew: 'طلبك الآن لدى اللجنة. احتفظ برقم عضويتك واذكره في أي مراسلة معنا.',
       ledeAgain: 'طلبك موجود لدينا، فلم يُرسل طلب جديد. هذا وضع طلبك الآن.',
+      ledeUpdated: 'لدينا طلب سابق من هذا البريد الإلكتروني، فحدّثناه بإجاباتك الجديدة. يحتفظ الطلب برقمه وبترتيبه في قائمة المراجعة.',
+      changeHow: 'لتعديل إجاباتك، سجّل الدخول أولًا من صفحة «حسابي» (نرسل لك رابط دخول بالبريد)، ثم أرسل هذا النموذج مرة أخرى.', changeBtn: 'سجّل الدخول إلى حسابي',
       ledeMember: 'هذا البريد مرتبط بعضوية فعّالة.',
       org: 'الجمعية السعودية في أكسفورد', noLabel: 'رقم العضوية', nameL: 'الاسم', typeL: 'العضوية', appliedL: 'تاريخ الطلب', copy: 'نسخ الرقم', copied: 'تم النسخ',
       st: { pending: 'قيد المراجعة', info_requested: 'سؤال من اللجنة', approved: 'عضو فعّال', declined: 'لم تتم الموافقة', revoked: 'منتهية', expired: 'منتهية الصلاحية' },
       qL: 'ترتيبك في قائمة المراجعة', qP: 'تراجع اللجنة الطلبات بحسب ترتيب وصولها، وستصلك رسالة بالبريد فور البت في طلبك.',
-      t1: 'تم استلام الطلب', t2: 'مراجعة اللجنة', t3pay: 'دفع {amount}', t3verify: 'إثبات الجنسية السعودية', t4: 'تفعيل العضوية',
+      t1: 'تم استلام الطلب', t2: 'مراجعة اللجنة', t3pay: 'دفع {amount}', t3verify: 'التحقق من الجنسية عند الحاجة', t4: 'تفعيل العضوية',
       payH: 'رسوم العضوية: {amount}', payP: 'اكتب رقم عضويتك مرجعًا للدفع ليتمكن أمين الصندوق من مطابقته. تُعتمد العضوية بعد تأكيد الدفعة.', payLater: 'سيراسلك أمين الصندوق بطريقة الدفع. اكتب رقم عضويتك مرجعًا للدفع، وتُعتمد العضوية بعد تأكيد الدفعة.',
-      verifyH: 'إثبات الجنسية السعودية', verifyP: 'سجّل الدخول إلى صفحة عضويتك وارفع مستندًا واحدًا يثبت الجنسية السعودية: صفحة الصورة في جواز السفر، أو الهوية الوطنية، أو تأكيد الابتعاث من الملحقية الثقافية. يُحذف المستند فور تحقق اللجنة منه. يرجى عدم إرسال وثائق الهوية بالبريد الإلكتروني.', verifyBtn: 'ارفع الإثبات بأمان',
+      verifyH: 'إثبات الجنسية السعودية', verifyP: 'لا يلزمك فعل شيء الآن. سيراسلك أمين سر مجلس إدارة الجمعية لاحقًا لطلب إثبات الجنسية السعودية عند الحاجة. يرجى عدم إرسال أي وثيقة هوية قبل أن يُطلب منك ذلك.',
       mailNote: 'أرسلنا تأكيدًا إلى <b dir="ltr">{email}</b>، ويتيح لك الرابط فيه متابعة طلبك والإجابة عن أي سؤال من اللجنة.',
       track: 'تابع طلبي', print: 'حفظ أو طباعة', again: 'تقديم طلب آخر',
       failH: 'لم يُرسل طلبك', fail: 'تعذّر الوصول إلى نظام العضوية الآن. إجاباتك ما زالت في النموذج؛ اضغط «إرسال الطلب» مرة أخرى بعد دقيقة.', failMail: 'إن تكرر الخطأ فراسلنا على {email}.',
@@ -332,17 +336,18 @@
     finally { busy = false; btn.disabled = false; lbl.innerHTML = keep; }
     if (!res.ok || !res.data || !res.data.member) { showFail(res); return; }
     var f = $('join-fail'); if (f) f.hidden = true;
-    last = { app: app, result: res.data.result, member: res.data.member }; renderDone();
+    last = { app: app, result: res.data.result, member: res.data.member, needsSignIn: !!res.data.needsSignIn }; renderDone();
   });
   function setSteps(stage) { document.querySelectorAll('#steps li').forEach(function (li) { li.classList.remove('on', 'done'); li.classList.add(stage === 'form' ? 'on' : 'done'); }); }
   function renderDone() {
     var app = last.app, mem = last.member, kind = last.result, tier = tierOf(mem.tier) || selectedTier() || TIERS[0];
     var first = esc((app.name || mem.name || '').split(/\s+/)[0]);
-    var amount = '£' + (mem.amountGbp || 0), paid = mem.amountGbp > 0, verify = mem.nationalityStatus === 'pending' || mem.nationalityStatus === 'verified';
+    var amount = '£' + (mem.amountGbp || 0), paid = mem.amountGbp > 0, verify = mem.tier === 'saudi' && (mem.nationalityStatus === 'pending' || mem.nationalityStatus === 'verified');
     var isMember = mem.status === 'approved';
-    var h = '<p class="eyebrow">' + esc(m(kind === 'already_member' ? 'eyebrowMember' : kind === 'already' ? 'eyebrowAgain' : 'eyebrowNew')) + '</p>';
+    var h = '<p class="eyebrow">' + esc(m(kind === 'already_member' ? 'eyebrowMember' : kind === 'already' ? 'eyebrowAgain' : kind === 'updated' ? 'eyebrowUpdated' : 'eyebrowNew')) + '</p>';
     h += '<h2 class="done-h">' + esc(m(kind === 'received' ? 'thanks' : 'welcomeBack', { name: first })) + '</h2>';
-    h += '<p class="lede done-lede">' + esc(m(kind === 'already_member' ? 'ledeMember' : kind === 'already' ? 'ledeAgain' : 'ledeNew')) + '</p>';
+    h += '<p class="lede done-lede">' + esc(m(kind === 'already_member' ? 'ledeMember' : kind === 'already' ? 'ledeAgain' : kind === 'updated' ? 'ledeUpdated' : 'ledeNew')) + '</p>';
+    if (last.needsSignIn) h += '<p class="note">' + esc(m('changeHow')) + '</p>';
     // membership card
     h += '<div class="mcard" id="mcard"><div class="mcard-top"><span class="mcard-org">' + esc(m('org')) + '</span><span class="mstate s-' + esc(mem.status) + '">' + esc(m('st')[mem.status] || mem.status) + '</span></div>';
     h += '<span class="mk">' + esc(m('noLabel')) + '</span><span class="mno" dir="ltr" id="mno">' + esc(mem.memberNo) + '</span>';
@@ -367,7 +372,7 @@
       }
       h += '</div>';
     } else if (!isMember && verify && mem.nationalityStatus !== 'verified') {
-      h += '<div class="nextpanel"><h3 class="disp">' + esc(m('verifyH')) + '</h3><p>' + esc(m('verifyP')) + '</p><p class="cta-row"><a class="btn btn-p" href="' + (lang === 'ar' ? '/ar' : '') + '/account/">' + esc(m('verifyBtn')) + '</a></p></div>';
+      h += '<div class="nextpanel"><h3 class="disp">' + esc(m('verifyH')) + '</h3><p>' + esc(m('verifyP')) + '</p></div>';
     }
     h += '<p class="muted done-mail">' + m('mailNote', { email: esc(app.email) }) + '</p>';
     h += '<div class="done-actions"><a class="btn btn-p" href="' + (lang === 'ar' ? '/ar' : '') + '/account/">' + esc(m('track')) + '</a><button type="button" class="btn btn-s" id="done-print">' + esc(m('print')) + '</button></div>';

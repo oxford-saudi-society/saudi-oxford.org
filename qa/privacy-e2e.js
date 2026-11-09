@@ -1,7 +1,7 @@
-// Secure proof-of-nationality upload in a real browser (phone for the applicant, desktop for the committee):
-// apply → sign in from the emailed link → upload a photo on the membership page → committee opens it from the desk
-// (and nobody else can) → "Verified" deletes it → the applicant sees the confirmation. Also: the 3-step join page,
-// language switch on every page type, and the single ideas-board button.
+// Membership pages in a real browser with the proof-of-nationality upload switched OFF (as on the site now):
+// Saudi applicants are told the secretary will email later and are offered no upload; other membership types see
+// nothing about nationality; sending the form again with another type updates the application. Also: the 3-step
+// join page, the styled college list, the language switch on every page type, and the single ideas-board button.
 // Prereq: qa/dev-reset.sh
 const { chromium } = require('playwright');
 const fs = require('fs'); const path = require('path');
@@ -16,7 +16,6 @@ const link = (to, kind) => { const m = lastMail(to, kind); const r = m && /https
   const errors = [];
   const phone = await (await b.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, reducedMotion: 'reduce' })).newPage(); phone.on('pageerror', (e) => errors.push('phone: ' + e.message));
   const desk = await (await b.newContext({ viewport: { width: 1280, height: 900 }, reducedMotion: 'reduce' })).newPage(); desk.on('pageerror', (e) => errors.push('desk: ' + e.message));
-  const nosy = await (await b.newContext({ viewport: { width: 1280, height: 900 } })).newPage();
 
   // ── join page: exactly three steps, numbered once; no unavailable payment methods; no hardship/privilege claims
   await phone.goto(BASE + '/ar/join/'); await phone.waitForTimeout(400);
@@ -33,53 +32,51 @@ const link = (to, kind) => { const m = lastMail(to, kind); const r = m && /https
   await phone.keyboard.press('ArrowDown'); await phone.keyboard.press('Enter'); await phone.waitForTimeout(150);
   ok(await phone.evaluate(() => document.getElementById('f-college').value === 'Hertford College' && document.getElementById('college-list').hidden && !document.getElementById('join-form').hidden), 'a suggestion can be chosen from the keyboard without sending the form'); await phone.locator('#statuses label', { has: phone.locator('input[value=masters]') }).click(); await phone.check('#f-consent', { force: true });
   await phone.click('#submit-btn'); await phone.waitForTimeout(1500);
-  j = await phone.evaluate(() => ({ no: (document.getElementById('mno') || {}).textContent, text: document.getElementById('join-done').innerText, track: Array.from(document.querySelectorAll('.track .tk')).map((k) => k.textContent + getComputedStyle(k, '::before').content) }));
+  j = await phone.evaluate(() => ({ no: (document.getElementById('mno') || {}).textContent, text: document.getElementById('join-done').innerText, links: Array.from(document.querySelectorAll('#join-done a')).map((x) => x.textContent.trim()) }));
   ok(/^OSS-\d{4}-0001$/.test(j.no), 'application received with a number ' + j.no);
-  ok(/ارفع الإثبات بأمان/.test(j.text) && /عدم إرسال وثائق الهوية بالبريد/.test(j.text) && !/سنراسلك لطلب صورة/.test(j.text), 'confirmation points to the secure upload, not email');
+  ok(/سيراسلك أمين سر مجلس إدارة الجمعية لاحقًا لطلب إثبات الجنسية السعودية عند الحاجة/.test(j.text) && !/ارفع|رفع/.test(j.text) && !j.links.some((t) => /ارفع/.test(t)), 'Saudi applicant: told the secretary will email later; nothing to upload');
   await shot(phone, 'p-join-done-ar', true);
   const no = j.no;
-  ok(/ارفع من صفحة عضويتك|وارفع من صفحة عضويتك/.test((lastMail('noura@example.org', 'membership_received') || {}).text || ''), 'confirmation email explains the upload');
+  const mail1 = (lastMail('noura@example.org', 'membership_received') || {}).text || '';
+  ok(/سيراسلك أمين سر مجلس إدارة الجمعية لاحقًا/.test(mail1) && !/ارفع/.test(mail1), 'confirmation email says the same');
 
-  // ── applicant signs in from the email link and uploads a photo
+  // ── Saudi applicant's own page ("السجل"): the note, and no upload
   await phone.goto(link('noura@example.org', 'membership_received')); await phone.waitForTimeout(1500);
-  ok(await phone.evaluate(() => !!document.getElementById('mem-ev')), 'membership page offers the secure upload');
-  // a real PNG with visible content, larger than the downscale limit so the browser re-encodes it
-  const png = await phone.evaluate(() => { const c = document.createElement('canvas'); c.width = 3000; c.height = 2000; const g = c.getContext('2d'); g.fillStyle = '#e8e2d0'; g.fillRect(0, 0, 3000, 2000); g.fillStyle = '#14532D'; g.font = '160px sans-serif'; g.fillText('SPECIMEN PASSPORT', 300, 1000); return c.toDataURL('image/png').split(',')[1]; });
-  fs.writeFileSync('/tmp/specimen.png', Buffer.from(png, 'base64'));
-  await phone.click('#mem-ev-btn'); await phone.waitForTimeout(200);
-  ok(await phone.evaluate(() => !document.getElementById('mem-ev-err').hidden), 'cannot upload without a file and the consent tick');
-  await phone.setInputFiles('#mem-ev-file', '/tmp/specimen.png'); await phone.check('#mem-ev-ok', { force: true });
-  await shot(phone, 'p-account-upload-ar', true);
-  await phone.click('#mem-ev-btn'); await phone.waitForTimeout(2500);
-  let a = await phone.evaluate(() => ({ text: document.getElementById('app').innerText, form: !!document.getElementById('mem-ev'), remove: !!document.getElementById('mem-ev-remove') }));
-  ok(!a.form && a.remove && /تم استلام مستندك|تم استلام المستند/.test(a.text), 'upload accepted; page now shows it is held and can be removed');
-  await shot(phone, 'p-account-held-ar', true);
-  ok(/Proof of nationality uploaded/.test((lastMail('admin@example.org') || lastMail('membership@oxsss.org') || {}).subject || (mails().reverse().find((m) => m.kind === 'membership_committee') || {}).subject || ''), 'committee is told a document is waiting');
-  ok(!mails().some((m) => /\/9j\/[A-Za-z0-9+/]{200}/.test(JSON.stringify(m))), 'the document never appears in any email');
+  let a = await phone.evaluate(() => ({ text: document.getElementById('app').innerText, upload: !!document.getElementById('mem-ev') || !!document.querySelector('input[type=file]'), title: document.title }));
+  ok(!a.upload && /سيراسلك أمين سر مجلس إدارة الجمعية لاحقًا لطلب إثبات الجنسية السعودية عند الحاجة/.test(a.text), 'Saudi applicant page: secretary note, no upload control');
+  ok(/السجل/.test(a.text) && /^السجل —/.test(a.title) && !/تسجيلات/.test(a.text), 'the page is called السجل (no "تسجيلاتي") — ' + a.title);
+  await shot(phone, 'p-account-saudi-ar', true);
+  let r = await phone.evaluate(async () => (await fetch('/api/membership/evidence', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ mime: 'image/jpeg', data: 'AAAA' }) })).status);
+  ok(r === 404, 'the upload route is closed: ' + r);
 
-  // ── nobody else can open it
-  let r = await nosy.goto(BASE + '/api/admin/membership/' + no + '/evidence'); ok(r.status() === 401, 'signed-out visitor: ' + r.status());
-  r = await phone.evaluate(async (u) => (await fetch(u, { credentials: 'same-origin' })).status, '/api/admin/membership/' + no + '/evidence'); ok(r === 403, 'the applicant themself cannot use the committee route: ' + r);
+  // ── a non-Saudi applicant never sees anything about nationality
+  const other = await (await b.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, reducedMotion: 'reduce' })).newPage(); other.on('pageerror', (e) => errors.push('other: ' + e.message));
+  const applyOn = async (p, tier, name, email) => { await p.goto(BASE + '/join/'); await p.waitForTimeout(400); await p.check('input[name=tier][value=' + tier + ']', { force: true }); await p.fill('#f-name', name); await p.fill('#f-email', email); await p.fill('#f-college', 'Hertford College'); await p.locator('#statuses label', { has: p.locator('input[value=masters]') }).click(); await p.check('#f-consent', { force: true }); await p.click('#submit-btn'); await p.waitForTimeout(1500); return p.evaluate(() => document.getElementById('join-done').innerText); };
+  let t = await applyOn(other, 'student', 'Maria Rossi', 'maria@example.org');
+  ok(/Application received/i.test(t) && !/nationality|secretary|upload/i.test(t), 'non-Saudi confirmation says nothing about nationality');
+  await other.goto(link('maria@example.org', 'membership_received')); await other.waitForTimeout(1500);
+  a = await other.evaluate(() => ({ text: document.getElementById('app').innerText, upload: !!document.getElementById('mem-ev') || !!document.querySelector('input[type=file]') }));
+  ok(!a.upload && !/nationality|secretary|upload/i.test(a.text) && /Student membership/.test(a.text), 'non-Saudi member page: no nationality note and no upload');
+  await shot(other, 'p-account-nonsaudi-en', true);
+  ok(!/nationality|upload/i.test((lastMail('maria@example.org', 'membership_received') || {}).text || 'nationality'), 'non-Saudi confirmation email says nothing about nationality');
 
-  // ── committee desk
+  // ── chose "Saudi students" by mistake, then sends the form again as another type: the page follows the new choice
+  const third = await (await b.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, reducedMotion: 'reduce' })).newPage(); third.on('pageerror', (e) => errors.push('third: ' + e.message));
+  t = await applyOn(third, 'saudi', 'John Smith', 'john@example.org');
+  ok(/secretary will email you later/i.test(t), 'first as Saudi: secretary note');
+  t = await applyOn(third, 'associate', 'John Smith', 'john@example.org');
+  ok(/Application updated/i.test(t) && /Associate membership/.test(t) && !/nationality|secretary/i.test(t), 'sent again as Associate: application updated, nationality note gone');
+  await third.goto(link('john@example.org', 'membership_changed')); await third.waitForTimeout(1500);
+  a = await third.evaluate(() => document.getElementById('app').innerText);
+  ok(/Associate membership/.test(a) && !/nationality|secretary|upload/i.test(a), 'their page now shows the Associate application only');
+
+  // ── committee desk: no document panel while the upload is off; the request template asks by email
   await desk.goto(BASE + '/admin/events/'); await desk.waitForTimeout(600);
   await desk.fill('#si-email', 'admin@example.org'); await desk.click('#si-btn'); await desk.waitForTimeout(1000);
   await desk.goto(link('admin@example.org', 'login_link')); await desk.waitForTimeout(1500);
   await desk.goto(BASE + '/admin/events/#membership/' + no); await desk.waitForTimeout(1200);
-  let d = await desk.evaluate(() => ({ pane: (document.getElementById('mev') || {}).innerText || '', open: (document.querySelector('#mev a[target=_blank]') || {}).href || '' }));
-  ok(/Document to check/i.test(d.pane) && /Uploaded/.test(d.pane) && /JPEG/.test(d.pane) && /evidence$/.test(d.open), 'desk shows the document is waiting, with an open link ' + JSON.stringify(d).slice(0, 200));
-  await shot(desk, 'p-desk-evidence', true);
-  const img = await desk.evaluate(async (u) => { const x = await fetch(u, { credentials: 'same-origin' }); const buf = new Uint8Array(await x.arrayBuffer()); const bmp = await createImageBitmap(new Blob([buf], { type: x.headers.get('content-type') })); return { status: x.status, type: x.headers.get('content-type'), cache: x.headers.get('cache-control'), bytes: buf.length, w: bmp.width, h: bmp.height, jpeg: buf[0] === 0xff && buf[1] === 0xd8 }; }, d.open);
-  ok(img.status === 200 && img.type === 'image/jpeg' && img.jpeg && /no-store/.test(img.cache), 'committee can open it: a JPEG, never cached ' + JSON.stringify(img));
-  ok(Math.max(img.w, img.h) === 2200 && img.bytes < 3 * 1024 * 1024, 'the photo was reduced in the browser before upload (' + img.w + '×' + img.h + ', ' + Math.round(img.bytes / 1024) + ' KB)');
-  await desk.reload(); await desk.waitForTimeout(1200);
-  ok(await desk.evaluate(() => /Last opened/.test(document.getElementById('mev').innerText) && /evidence viewed/.test(document.body.innerText)), 'the opening is recorded and shown');
-  await desk.click('#mev [data-ev=verified]'); await desk.waitForTimeout(1500);
-  d = await desk.evaluate(() => ({ pane: (document.getElementById('mev') || {}).innerText || '', link: !!document.querySelector('#mev a[target=_blank]') }));
-  ok(/Verified/i.test(d.pane) && !d.link, 'recording "verified" removes the document from the desk ' + JSON.stringify(d).slice(0, 160));
-  r = await desk.evaluate(async (u) => (await fetch(u, { credentials: 'same-origin' })).status, '/api/admin/membership/' + no + '/evidence'); ok(r === 404, 'the document no longer exists: ' + r);
-  await phone.reload(); await phone.waitForTimeout(1200);
-  ok(await phone.evaluate(() => /تم التحقق من الجنسية السعودية/.test(document.getElementById('app').innerText) && !document.getElementById('mem-ev')), 'applicant sees that the check is done and the document deleted');
+  let d = await desk.evaluate(() => ({ pane: !!document.getElementById('mev'), text: document.body.innerText }));
+  ok(!d.pane && /Saudi nationality/i.test(d.text), 'desk: no document panel; the nationality check box is still there');
 
   // ── language switch: every page type, both directions, from a phone and a narrow phone
   const narrow = await (await b.newContext({ viewport: { width: 320, height: 640 }, isMobile: true, hasTouch: true })).newPage();

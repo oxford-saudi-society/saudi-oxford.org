@@ -11,7 +11,7 @@ const PDF = Buffer.concat([Buffer.from('%PDF-1.4\n'), Buffer.alloc(2000, 32)]);
 const apply = (over) => C.call('POST', '/api/membership/apply', { body: Object.assign({ tier: 'saudi', name: 'Sara Example', email: 'sara@example.org', college: 'Hertford College', status: 'dphil', consent_privacy: true, lang: 'en' }, over || {}) });
 const upload = (cookie, buf, mime) => C.call('POST', '/api/membership/evidence', { cookie, body: { mime: mime || 'image/jpeg', data: buf.toString('base64') } });
 
-before(async () => { db = await setupDb(); C = await makeClient(); root = await C.signIn(ADMIN, '/admin/events/'); ({ runJobs } = await import('../netlify/functions/jobs.mjs')); });
+before(async () => { process.env.NATIONALITY_UPLOAD = 'true'; /* the upload is off on the site for now; these tests keep the dormant feature honest */ db = await setupDb(); C = await makeClient(); root = await C.signIn(ADMIN, '/admin/events/'); ({ runJobs } = await import('../netlify/functions/jobs.mjs')); });
 after(async () => { const dbm = await import('../netlify/lib/db.mjs'); await dbm._reset(); });
 
 test('proof of nationality: applicant uploads, only the committee can open it, and recording the result deletes it', async () => {
@@ -130,4 +130,23 @@ test('news subscribers export: members who ticked the box and carried-over event
   assert.equal(r.status, 200); assert.match(r.headers.get('content-type'), /text\/csv/);
   assert.match(r.body, /news@example\.org,News Reader,en,[^,]+,membership/); assert.match(r.body, /kept@example\.org,Kept Person,ar,[^,]+,event/);
   assert.doesNotMatch(r.body, /sara@example\.org/, 'no one who did not ask for news');
+});
+
+test('with the upload switched off (as on the site now): nothing can be uploaded and any leftover document is removed', async () => {
+  await apply({ email: 'later@example.org', name: 'Later Person' });
+  const later = await C.signIn('later@example.org');
+  assert.equal((await upload(later, JPEG)).status, 200); // uploaded while it was on
+  delete process.env.NATIONALITY_UPLOAD;
+  try {
+    assert.equal((await upload(later, JPEG)).status, 404, 'the upload route is closed');
+    const mine = await C.call('GET', '/api/membership/me', { cookie: later });
+    assert.equal(mine.body.member.canUploadProof, false);
+    const out = (await runJobs(db, C.site)).retention;
+    assert.ok(out.evidenceExpired >= 1, JSON.stringify(out));
+    assert.equal((await q(db, 'SELECT count(*)::int AS n FROM oss_member_evidence'))[0].n, 0, 'no document is kept once the upload is off');
+    assert.equal((await q(db, "SELECT nationality_status FROM oss_members WHERE email = 'later@example.org'"))[0].nationality_status, 'pending');
+    await apply({ email: 'fresh@example.org', name: 'Fresh Person' });
+    assert.match(C.lastMail('fresh@example.org', 'membership_received').body_text, /secretary will email you later to ask for proof of Saudi nationality/);
+    assert.doesNotMatch(C.lastMail('fresh@example.org', 'membership_received').body_text, /upload/i);
+  } finally { process.env.NATIONALITY_UPLOAD = 'true'; }
 });
