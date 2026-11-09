@@ -7,7 +7,7 @@ import { MIGRATIONS } from './migrations.mjs';
 let instance = null;
 let readyPromise = null;
 
-function url() { return process.env.DATABASE_URL || process.env.NETLIFY_DATABASE_URL || process.env.NETLIFY_DATABASE_URL_UNPOOLED || ''; }
+function url() { return process.env.DATABASE_URL || process.env.NETLIFY_DB_URL || process.env.NETLIFY_DATABASE_URL || process.env.NETLIFY_DATABASE_URL_UNPOOLED || ''; }
 
 function sslFor(connectionString) {
   const mode = (process.env.DATABASE_SSL || '').toLowerCase();
