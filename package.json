@@ -6,7 +6,7 @@
     "prebuild": "node build/fetch-live.js",
     "build": "node build/build.js",
     "check": "node build/check.js",
-    "test": "node --test tests/",
+    "test": "node --test tests/*.test.mjs",
     "dev": "node qa/dev-server.mjs",
     "e2e": "node qa/events-static.js && node qa/faq-static.js && node qa/events-e2e.js && node qa/membership-e2e.js"
   },

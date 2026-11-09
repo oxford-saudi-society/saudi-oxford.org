@@ -88,6 +88,23 @@ for (const page of pages) {
   c($('#en').attr('href') && $('#ar').attr('href') && exists($('#en').attr('href')) && exists($('#ar').attr('href')), 'language switch links broken');
 }
 for (const f of ['sitemap.xml', 'robots.txt', '_redirects', '_headers', 'favicon.ico', 'admin/index.html', 'admin/config.yml']) { checks++; if (!fs.existsSync(path.join(DIST, f))) fails.push(`missing ${f}`); }
+// every page (app shells included) must load scripts/styles by content-versioned URL, matching the file shipped
+(function walk(dir) {
+  for (const f of fs.readdirSync(dir)) {
+    const p = path.join(dir, f);
+    if (fs.statSync(p).isDirectory()) { walk(p); continue; }
+    if (!f.endsWith('.html')) continue;
+    const $ = cheerio.load(fs.readFileSync(p, 'utf8'));
+    $('script[src^="/js/"], link[rel="stylesheet"][href^="/css/"]').each((i, el) => {
+      const u = $(el).attr('src') || $(el).attr('href'); checks++;
+      const m = /^(\/(?:js|css)\/[\w.-]+)\?v=([0-9a-f]{10})$/.exec(u);
+      if (!m) { fails.push(`${path.relative(DIST, p)}: ${u} is not cache-busted`); return; }
+      const want = require('crypto').createHash('sha256').update(fs.readFileSync(path.join(DIST, m[1]))).digest('hex').slice(0, 10);
+      if (want !== m[2]) fails.push(`${path.relative(DIST, p)}: ${u} version does not match the file`);
+    });
+  }
+})(DIST);
+checks++; if (!/\/js\/\*\n\s+Cache-Control: public, max-age=0, must-revalidate/.test(fs.readFileSync(path.join(DIST, '_headers'), 'utf8'))) fails.push('_headers: /js/* must revalidate on every visit');
 console.log(`${pages.length} pages, ${checks} checks, ${fails.length} failures`);
 fails.forEach((f) => console.log('  FAIL ' + f));
 process.exit(fails.length ? 1 : 0);

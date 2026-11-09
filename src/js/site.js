@@ -274,8 +274,10 @@
     if (form.querySelector('input[name="website"]').value) return;
     if (!validate()) return;
     busy = true; var btn = $('submit-btn'), lbl = $('submit-label'), keep = lbl.innerHTML; btn.disabled = true; lbl.textContent = t('sending');
-    var app = collect(); var res = await send(app);
-    busy = false; btn.disabled = false; lbl.innerHTML = keep;
+    var app = null, res;
+    // never leave the button stuck on "Sending…": any unexpected error ends in the visible failure message
+    try { app = collect(); res = await send(app); } catch (err) { res = { ok: false, status: 0, data: null }; }
+    finally { busy = false; btn.disabled = false; lbl.innerHTML = keep; }
     if (!res.ok || !res.data || !res.data.member) { showFail(res); return; }
     var f = $('join-fail'); if (f) f.hidden = true;
     last = { app: app, result: res.data.result, member: res.data.member }; renderDone();

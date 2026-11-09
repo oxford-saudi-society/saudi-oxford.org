@@ -274,10 +274,33 @@ fs.writeFileSync(path.join(DIST, '_redirects'), [
   '/t/*  /t/index.html  200', '/ar/t/*  /t/index.html  200',
   '/admin/events/*  /admin/events/index.html  200', '/ar/admin/events/*  /admin/events/index.html  200', '',
 ].join('\n'));
+/* Cache-busting: every page asks for /js/x.js?v=<content hash> and /css/x.css?v=<hash>, so a new deploy
+   always reaches browsers that visited before (a stale script against new markup breaks forms). */
+{
+  const crypto = require('crypto');
+  const hashes = {};
+  const hashOf = (rel) => {
+    if (!(rel in hashes)) { const f = path.join(DIST, rel); hashes[rel] = fs.existsSync(f) ? crypto.createHash('sha256').update(fs.readFileSync(f)).digest('hex').slice(0, 10) : null; }
+    return hashes[rel];
+  };
+  const walk = (dir) => {
+    for (const f of fs.readdirSync(dir)) {
+      const a = path.join(dir, f);
+      if (fs.statSync(a).isDirectory()) { walk(a); continue; }
+      if (!f.endsWith('.html')) continue;
+      const html = fs.readFileSync(a, 'utf8');
+      const out = html.replace(/(\s(?:src|href)=")\/((?:js|css)\/[\w.-]+\.(?:js|css))(?:\?v=[\w]+)?"/g, (m, attr, rel) => { const h = hashOf(rel); return h ? `${attr}/${rel}?v=${h}"` : m; });
+      if (out !== html) fs.writeFileSync(a, out);
+    }
+  };
+  walk(DIST);
+}
 fs.writeFileSync(path.join(DIST, '_headers'), [
   '/*', '  X-Frame-Options: DENY', '  X-Content-Type-Options: nosniff', '  Referrer-Policy: strict-origin-when-cross-origin',
   '  Permissions-Policy: camera=(self), microphone=(), geolocation=()',
-  '/assets/*', '  Cache-Control: public, max-age=31536000, immutable', '/css/*', '  Cache-Control: public, max-age=86400', '/js/*', '  Cache-Control: public, max-age=86400', '',
+  '/assets/*', '  Cache-Control: public, max-age=31536000, immutable',
+  // scripts and styles: browsers re-check with the server on every visit (cheap 304 when unchanged)
+  '/css/*', '  Cache-Control: public, max-age=0, must-revalidate', '/js/*', '  Cache-Control: public, max-age=0, must-revalidate', '',
 ].join('\n'));
 require('./gen-content').generate();
 console.log(`built ${urls.length} pages → dist/  (people: ${people.length}, events: ${events.length}, committees: ${committees.length})`);
