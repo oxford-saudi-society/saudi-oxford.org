@@ -25,8 +25,25 @@ const link = (to, kind) => { const m = lastMail(to, kind); const r = m && /https
   ok(!/صندوق للمساعدة|بالبطاقة|شهادة تقدير|حق التصويت|إنستغرام/.test(j.text), 'no hardship fund, card payment, certificate, voting or Instagram claims');
   await phone.check('input[name=tier][value=saudi]', { force: true });
   await phone.fill('#f-name', 'نورة العتيبي'); await phone.fill('#f-email', 'noura@example.org');
+  // Oxford SSO username: Arabic label and placeholder, needed for the student types only, 4 letters + 4 digits
+  let so = await phone.evaluate(() => { const i = document.getElementById('f-sso'), f = i.closest('.f'); return { label: f.querySelector('.lbl span').textContent, ph: i.placeholder, phColor: getComputedStyle(i, '::placeholder').color, inkColor: getComputedStyle(i).color, emptyDir: getComputedStyle(i).direction, star: !document.getElementById('sso-req').hidden, opt: !document.getElementById('sso-opt').hidden, required: i.required }; });
+  ok(so.label === 'معرّف الدخول الموحّد (SSO)' && so.ph === 'مثال: abcd1234' && so.emptyDir === 'rtl', 'Arabic label and placeholder, shown right-to-left ' + JSON.stringify(so));
+  ok(so.phColor !== so.inkColor && /0\.3\d*\)$/.test(so.phColor), 'placeholder is a subtle grey, lighter than typed text: ' + so.phColor + ' vs ' + so.inkColor);
+  ok(so.star && !so.opt && so.required, 'Saudi student type: the username is required (star shown)');
+  await phone.check('input[name=tier][value=associate]', { force: true });
+  ok(await phone.evaluate(() => document.getElementById('sso-req').hidden && !document.getElementById('sso-opt').hidden && !document.getElementById('f-sso').required), 'non-student type: optional');
+  await phone.check('input[name=tier][value=student]', { force: true });
+  ok(await phone.evaluate(() => !document.getElementById('sso-req').hidden && document.getElementById('f-sso').required), 'student type: required again');
+  await phone.check('input[name=tier][value=saudi]', { force: true });
+  await phone.tap('#f-sso'); await phone.keyboard.type('HE rt-12'); await phone.waitForTimeout(100);
+  so = await phone.evaluate(() => { const i = document.getElementById('f-sso'); return { v: i.value, dir: getComputedStyle(i).direction, phGone: !i.matches(':placeholder-shown') }; });
+  ok(so.v === 'hert12' && so.dir === 'ltr' && so.phGone, 'typing clears the placeholder; letters and digits only, lower case, left-to-right ' + JSON.stringify(so));
+  await phone.tap('#f-name'); await phone.waitForTimeout(150);
+  ok(await phone.evaluate(() => document.querySelector('[data-f=sso]').classList.contains('err') && getComputedStyle(document.querySelector('[data-f=sso] .msg')).display !== 'none'), 'an incomplete username shows the format message');
+  await phone.fill('#f-sso', 'hert1234');
+  ok(await phone.evaluate(() => !document.querySelector('[data-f=sso]').classList.contains('err')), 'a correct username clears the message');
   // college field: the suggestions are the page's own list, styled like the field (not the browser's built-in one)
-  await phone.tap('#f-college'); await phone.keyboard.type('hert'); await phone.waitForTimeout(200);
+  await phone.tap('#f-college'); await phone.waitForTimeout(200); await phone.keyboard.type('hert'); await phone.waitForTimeout(200);
   const cb = await phone.evaluate(() => { const l = document.getElementById('college-list'), i = document.getElementById('f-college'), ls = getComputedStyle(l), is = getComputedStyle(i); return { native: i.hasAttribute('list'), open: !l.hidden, items: Array.from(l.children).map((x) => x.textContent), sameRadius: ls.borderRadius === is.borderRadius, sameFont: ls.fontSize === is.fontSize && ls.fontFamily === is.fontFamily, dark: ls.backgroundColor, sameWidth: Math.abs(l.getBoundingClientRect().width - i.getBoundingClientRect().width) < 1 }; });
   ok(!cb.native && cb.open && cb.items.length === 1 && cb.items[0] === 'Hertford College' && cb.sameRadius && cb.sameFont && cb.sameWidth && /rgba?\(6, 22, 46/.test(cb.dark), 'college suggestions use the field\'s own style ' + JSON.stringify(cb));
   await phone.keyboard.press('ArrowDown'); await phone.keyboard.press('Enter'); await phone.waitForTimeout(150);
@@ -51,7 +68,7 @@ const link = (to, kind) => { const m = lastMail(to, kind); const r = m && /https
 
   // ── a non-Saudi applicant never sees anything about nationality
   const other = await (await b.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, reducedMotion: 'reduce' })).newPage(); other.on('pageerror', (e) => errors.push('other: ' + e.message));
-  const applyOn = async (p, tier, name, email) => { await p.goto(BASE + '/join/'); await p.waitForTimeout(400); await p.check('input[name=tier][value=' + tier + ']', { force: true }); await p.fill('#f-name', name); await p.fill('#f-email', email); await p.fill('#f-college', 'Hertford College'); await p.locator('#statuses label', { has: p.locator('input[value=masters]') }).click(); await p.check('#f-consent', { force: true }); await p.click('#submit-btn'); await p.waitForTimeout(1500); return p.evaluate(() => document.getElementById('join-done').innerText); };
+  const applyOn = async (p, tier, name, email) => { await p.goto(BASE + '/join/'); await p.waitForTimeout(400); await p.check('input[name=tier][value=' + tier + ']', { force: true }); await p.fill('#f-name', name); await p.fill('#f-email', email); if (tier === 'saudi' || tier === 'student') await p.fill('#f-sso', 'hert1234'); await p.fill('#f-college', 'Hertford College'); await p.locator('#statuses label', { has: p.locator('input[value=masters]') }).click(); await p.check('#f-consent', { force: true }); await p.click('#submit-btn'); await p.waitForTimeout(1500); return p.evaluate(() => document.getElementById('join-done').innerText); };
   let t = await applyOn(other, 'student', 'Maria Rossi', 'maria@example.org');
   ok(/Application received/i.test(t) && !/nationality|secretary|upload/i.test(t), 'non-Saudi confirmation says nothing about nationality');
   await other.goto(link('maria@example.org', 'membership_received')); await other.waitForTimeout(1500);

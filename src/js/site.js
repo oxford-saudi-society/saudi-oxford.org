@@ -220,8 +220,19 @@
     document.querySelectorAll('#tiers .tier').forEach(function (l) { l.classList.toggle('sel', l.querySelector('input').checked); });
     $('email-hint').hidden = !(tier && (tier.id === 'student' || tier.id === 'saudi'));
     $('sum').innerHTML = !tier ? t('sumNone') : tier.price ? t('sumPaid', { amount: amountHtml(tier) }) : tier.verify ? t('sumVerify') : t('sumFree');
+    // the Oxford SSO username is needed for the two student membership types only
+    var needSso = ssoNeeded(tier), ssoIn = $('f-sso');
+    if (ssoIn) { ssoIn.required = needSso; $('sso-req').hidden = !needSso; $('sso-opt').hidden = needSso; if (!needSso && (!ssoIn.value.trim() || SSO_RE.test(ssoIn.value.trim()))) setErr('sso', false); }
     if (tier) { $('tier-msg').style.display = 'none'; $('tiers').classList.remove('err'); }
   }
+  var SSO_RE = /^[A-Za-z]{4}[0-9]{4}$/;
+  function ssoNeeded(tier) { return !!tier && (tier.id === 'saudi' || tier.id === 'student'); }
+  (function () {
+    var ssoIn = $('f-sso'); if (!ssoIn) return;
+    // letters and digits only, lower case, as the username is written by the University
+    ssoIn.addEventListener('input', function () { var v = ssoIn.value.replace(/[^A-Za-z0-9]/g, '').toLowerCase().slice(0, 8); if (v !== ssoIn.value) ssoIn.value = v; if (!v || SSO_RE.test(v)) setErr('sso', false); });
+    ssoIn.addEventListener('blur', function () { var v = ssoIn.value.trim(); if (v && !SSO_RE.test(v)) setErr('sso', true); });
+  })();
   form.addEventListener('change', function (e) { if (e.target.name === 'tier') syncTier(); if (e.target.name === 'status') syncStatus(true); });
   /* Status cards: one tap selects; "Other" opens its own text box inside the card */
   function selectedStatus() { var r = form.querySelector('input[name="status"]:checked'); return r ? r.value : ''; }
@@ -242,6 +253,8 @@
     var name = $('f-name').value.trim(), email = $('f-email').value.trim(), college = $('f-college').value.trim(), status = selectedStatus(), statusOther = $('f-status-other').value.trim(), consent = $('f-consent').checked;
     setErr('name', !name); if (!name) bad.push('f-name');
     var okMail = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email); setErr('email', !okMail); if (!okMail) bad.push('f-email');
+    var sso = $('f-sso').value.trim(), ssoBad = (ssoNeeded(tier) && !sso) || (!!sso && !SSO_RE.test(sso));
+    setErr('sso', ssoBad); if (ssoBad) bad.push('f-sso');
     setErr('college', !college); if (!college) bad.push('f-college');
     var badStatus = !status || (status === 'other' && !statusOther);
     setErr('status', badStatus); if (badStatus) bad.push(status === 'other' ? 'f-status-other' : 'statuses');
@@ -298,7 +311,7 @@
   function num(n) { return lang === 'ar' ? new Intl.NumberFormat('ar-SA-u-nu-arab').format(n) : String(n); }
   function collect() {
     var tier = selectedTier();
-    return { tier: tier ? tier.id : '', name: $('f-name').value.trim(), nameAr: $('f-name-ar').value.trim(), email: $('f-email').value.trim(), college: $('f-college').value.trim(), status: selectedStatus(), statusOther: selectedStatus() === 'other' ? $('f-status-other').value.trim() : '', phone: $('f-phone').value.trim(),
+    return { tier: tier ? tier.id : '', name: $('f-name').value.trim(), nameAr: $('f-name-ar').value.trim(), email: $('f-email').value.trim(), sso: $('f-sso').value.trim().toLowerCase(), college: $('f-college').value.trim(), status: selectedStatus(), statusOther: selectedStatus() === 'other' ? $('f-status-other').value.trim() : '', phone: $('f-phone').value.trim(),
       volunteer: Array.prototype.slice.call(form.querySelectorAll('input[name="volunteer"]:checked')).map(function (c) { return c.value; }),
       consent_privacy: $('f-consent').checked, consent_news: form.querySelector('input[name="consent_news"]').checked,
       privacy_version: SITE.privacyVersion || '', lang: lang, website: form.querySelector('input[name="website"]').value };
@@ -317,7 +330,7 @@
     var box = $('join-fail');
     if (!box) { box = document.createElement('div'); box.id = 'join-fail'; box.className = 'err-sum on'; box.setAttribute('role', 'alert'); $('submit-btn').parentNode.parentNode.insertBefore(box, $('submit-btn').parentNode); }
     if (res.status === 400 && res.data && res.data.fields) {
-      var map = { name: 'name', email: 'email', college: 'college', status: 'status', statusOther: 'status', consent: 'consent' };
+      var map = { name: 'name', email: 'email', sso: 'sso', college: 'college', status: 'status', statusOther: 'status', consent: 'consent' };
       Object.keys(res.data.fields).forEach(function (k) { if (map[k]) setErr(map[k], true); if (k === 'tier') { $('tier-msg').style.display = 'block'; $('tiers').classList.add('err'); } });
       box.hidden = true; $('err-sum').classList.add('on'); return;
     }

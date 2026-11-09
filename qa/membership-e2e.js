@@ -12,7 +12,7 @@ const link = (to, kind) => { const m = [...mails()].reverse().find((x) => x.to =
 async function applyAs(p, lang, tier, name, email) {
   await p.goto(BASE + (lang === 'ar' ? '/ar' : '') + '/join/'); await p.waitForTimeout(400);
   await p.check(`input[name=tier][value=${tier}]`, { force: true });
-  await p.fill('#f-name', name); await p.fill('#f-email', email); await p.fill('#f-college', 'Hertford College'); await p.locator('#statuses label', { has: p.locator('input[value=dphil]') }).click(); await p.check('#f-consent', { force: true });
+  await p.fill('#f-name', name); await p.fill('#f-email', email); await p.fill('#f-sso', 'hert1234'); await p.fill('#f-college', 'Hertford College'); await p.locator('#statuses label', { has: p.locator('input[value=dphil]') }).click(); await p.check('#f-consent', { force: true });
   await p.click('#submit-btn'); await p.waitForTimeout(1500);
   return p.evaluate(() => ({ no: (document.getElementById('mno') || {}).textContent, q: (document.querySelector('.qno') || {}).textContent, st: (document.querySelector('.mstate') || {}).textContent, fail: !!(document.getElementById('join-fail') && !document.getElementById('join-fail').hidden) }));
 }

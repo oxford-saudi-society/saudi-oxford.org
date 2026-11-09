@@ -230,4 +230,10 @@ CREATE TABLE IF NOT EXISTS oss_subscribers (
 );
 `,
   },
+  {
+    id: '0005_sso_username',
+    sql: `
+ALTER TABLE oss_members ADD COLUMN IF NOT EXISTS sso_username text;
+`,
+  },
 ];

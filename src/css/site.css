@@ -797,3 +797,5 @@ nav.main a{white-space:nowrap}
 .f input:-webkit-autofill,.f input:-webkit-autofill:hover,.f input:-webkit-autofill:focus,.f textarea:-webkit-autofill,.dir-search input:-webkit-autofill{
   -webkit-text-fill-color:var(--ink);caret-color:var(--ink);transition:background-color 100000s ease-out 0s,color 100000s ease-out 0s,box-shadow var(--t) var(--ease)}
 .f input:autofill{-webkit-text-fill-color:var(--ink);caret-color:var(--ink)}
+/* the SSO username is typed left-to-right; on the Arabic page its Arabic placeholder still reads right-to-left */
+html[dir="rtl"] #f-sso:placeholder-shown{direction:rtl;text-align:right}

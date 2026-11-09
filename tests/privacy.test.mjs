@@ -8,7 +8,7 @@ let db, C, root, runJobs;
 const ADMIN = 'president@oxsss.org';
 const JPEG = Buffer.concat([Buffer.from([0xff, 0xd8, 0xff, 0xe0]), Buffer.alloc(2000, 7)]);
 const PDF = Buffer.concat([Buffer.from('%PDF-1.4\n'), Buffer.alloc(2000, 32)]);
-const apply = (over) => C.call('POST', '/api/membership/apply', { body: Object.assign({ tier: 'saudi', name: 'Sara Example', email: 'sara@example.org', college: 'Hertford College', status: 'dphil', consent_privacy: true, lang: 'en' }, over || {}) });
+const apply = (over) => C.call('POST', '/api/membership/apply', { body: Object.assign({ tier: 'saudi', sso: 'hert1234', name: 'Sara Example', email: 'sara@example.org', college: 'Hertford College', status: 'dphil', consent_privacy: true, lang: 'en' }, over || {}) });
 const upload = (cookie, buf, mime) => C.call('POST', '/api/membership/evidence', { cookie, body: { mime: mime || 'image/jpeg', data: buf.toString('base64') } });
 
 before(async () => { process.env.NATIONALITY_UPLOAD = 'true'; /* the upload is off on the site for now; these tests keep the dormant feature honest */ db = await setupDb(); C = await makeClient(); root = await C.signIn(ADMIN, '/admin/events/'); ({ runJobs } = await import('../netlify/functions/jobs.mjs')); });

@@ -333,7 +333,7 @@
     var open = mm.status === 'pending' || mm.status === 'info_requested';
     var kv = function (k, v) { return '<dt>' + esc(k) + '</dt><dd>' + v + '</dd>'; };
     var info = '<dl class="kv mkv">' + kv(D.email, '<span dir="ltr">' + esc(mm.email) + '</span> ' + (mm.email_verified_at ? '<span class="badge confirmed">' + esc(MS.verified) + '</span>' : '<span class="badge waitlisted">' + esc(MS.unverified) + '</span>')) +
-      (mm.phone ? kv(D.phone, '<span dir="ltr">' + esc(mm.phone) + '</span>') : '') + kv(D.college, esc(mm.college || '—')) + kv(D.uni, esc(uniR(mm))) +
+      (mm.phone ? kv(D.phone, '<span dir="ltr">' + esc(mm.phone) + '</span>') : '') + (mm.sso_username ? kv(lang === 'ar' ? 'معرّف SSO' : 'Oxford SSO', '<span class="mono" dir="ltr">' + esc(mm.sso_username) + '</span>') : '') + kv(D.college, esc(mm.college || '—')) + kv(D.uni, esc(uniR(mm))) +
       kv(D.vol, esc((mm.volunteer || []).join(', ') || '—')) + kv(D.heard, esc(mm.heard || '—')) + kv(D.news, esc(mm.consent_news ? D.yes : D.no)) + kv(D.privacy, esc(mm.consent_privacy_version || '—')) +
       kv(D.applied, esc(mm.applied_at ? O.fmtStamp(mm.applied_at) : '—')) + (mm.position ? kv(D.queue, '<b>' + O.num(mm.position) + '</b>') : '') +
       (mm.decided_at ? kv(D.decided, esc(O.fmtStamp(mm.decided_at)) + ' ' + esc(D.by) + ' <span dir="ltr">' + esc(mm.decided_by || '') + '</span>') : '') + (mm.valid_until ? kv(D.valid, esc(O.fmtShort(mm.valid_until))) : '') +

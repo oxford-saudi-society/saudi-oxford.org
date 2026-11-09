@@ -9,7 +9,7 @@ let db, C, root;
 const ADMIN = 'president@oxsss.org'; // from settings.adminEmails
 const COMMITTEE = 'membership@oxsss.org'; // settings.committeeNotifyEmail
 const NO = /^OSS-\d{4}-\d{4,}$/;
-const apply = (over) => C.call('POST', '/api/membership/apply', { body: Object.assign({ tier: 'saudi', name: 'Applicant One', nameAr: 'مقدم الطلب', email: 'one@example.org', college: 'Hertford College', status: 'dphil', phone: '+44 7700 900000', volunteer: ['events', 'nope'], heard: 'friend', consent_privacy: true, consent_news: true, lang: 'en' }, over || {}) });
+const apply = (over) => C.call('POST', '/api/membership/apply', { body: Object.assign({ tier: 'saudi', sso: 'hert1234', name: 'Applicant One', nameAr: 'مقدم الطلب', email: 'one@example.org', college: 'Hertford College', status: 'dphil', phone: '+44 7700 900000', volunteer: ['events', 'nope'], heard: 'friend', consent_privacy: true, consent_news: true, lang: 'en' }, over || {}) });
 
 before(async () => { db = await setupDb(); C = await makeClient(); root = await C.signIn(ADMIN, '/admin/events/'); });
 after(async () => { const dbm = await import('../netlify/lib/db.mjs'); await dbm._reset(); });
@@ -95,7 +95,7 @@ test('approve → active member (members-only gate opens), queue moves up, flags
   assert.equal((await C.call('GET', '/api/me', { cookie })).body.member, true, 'approved members pass the members-only check');
   const qd = await C.call('GET', '/api/admin/membership?view=queue', { cookie: root });
   assert.deepEqual(qd.body.members.map((x) => [x.email, x.position]), [['two@example.org', 1], ['three@example.org', 2]]);
-  const again = await C.call('POST', '/api/membership/apply', { body: { tier: 'saudi', name: 'Applicant One', email: 'one@example.org', college: 'Hertford', status: 'dphil', consent_privacy: true } });
+  const again = await C.call('POST', '/api/membership/apply', { body: { tier: 'saudi', sso: 'hert1234', name: 'Applicant One', email: 'one@example.org', college: 'Hertford', status: 'dphil', consent_privacy: true } });
   assert.equal(again.body.result, 'already_member');
   const hist = (await C.call('GET', '/api/admin/membership/' + no, { cookie: root })).body.history.map((h) => h.action);
   assert.deepEqual(hist.filter((a) => a.startsWith('membership.')), ['membership.applied', 'membership.info_requested', 'membership.responded', 'membership.updated', 'membership.approved']);
@@ -161,8 +161,34 @@ test('sending the form again with a different membership type updates the open a
   const me = await C.signIn('switch@example.org');
   const stranger = await apply({ email: 'switch@example.org', name: 'Someone Else', tier: 'friend' });
   assert.equal(stranger.body.result, 'already'); assert.equal(stranger.body.needsSignIn, true); assert.equal(stranger.body.member.tier, 'student'); assert.equal(stranger.body.member.name, 'Switch Person');
-  const own = await C.call('POST', '/api/membership/apply', { cookie: me, body: { tier: 'saudi', name: 'Switch Person', email: 'switch@example.org', college: 'Hertford College', status: 'masters', consent_privacy: true, lang: 'en' } });
+  const own = await C.call('POST', '/api/membership/apply', { cookie: me, body: { tier: 'saudi', sso: 'hert1234', name: 'Switch Person', email: 'switch@example.org', college: 'Hertford College', status: 'masters', consent_privacy: true, lang: 'en' } });
   assert.equal(own.body.result, 'updated'); assert.equal(own.body.member.tier, 'saudi'); assert.equal(own.body.member.nationalityStatus, 'pending'); assert.equal(own.body.member.amountGbp, 0);
   const acct = await C.call('GET', '/api/membership/me', { cookie: me });
   assert.equal(acct.body.member.canUploadProof, false); assert.equal(acct.body.member.evidence, null);
+});
+
+test('Oxford SSO username: needed for the student membership types, optional otherwise, four letters then four digits', async () => {
+  const base = { name: 'Sso Person', college: 'Hertford College', status: 'masters', consent_privacy: true, lang: 'en' };
+  const send = (over) => C.call('POST', '/api/membership/apply', { body: Object.assign({}, base, over) });
+  for (const tier of ['saudi', 'student']) {
+    const r = await send({ tier, email: tier + '-nosso@example.org' });
+    assert.equal(r.status, 400); assert.equal(r.body.fields.sso, 'required', tier + ' needs the username');
+  }
+  for (const [i, bad] of ['abc1234', 'abcd123', 'abcde123', '1234abcd', 'ab-d1234', 'abcd12345'].entries()) {
+    const r = await send({ tier: 'student', email: 'badsso' + i + '@example.org', sso: bad });
+    assert.equal(r.status, 400, bad); assert.equal(r.body.fields.sso, 'invalid', bad);
+  }
+  const ok = await send({ tier: 'student', email: 'goodsso@example.org', sso: '  HeRt1234 ' });
+  assert.equal(ok.status, 200, JSON.stringify(ok.body));
+  assert.equal((await q(db, "SELECT sso_username FROM oss_members WHERE email = 'goodsso@example.org'"))[0].sso_username, 'hert1234', 'stored in lower case');
+  assert.match(C.lastMail(COMMITTEE, 'membership_committee').body_text, /SSO hert1234/);
+  const detail = await C.call('GET', '/api/admin/membership/' + ok.body.member.memberNo, { cookie: root });
+  assert.equal(detail.body.member.sso_username, 'hert1234');
+  // not a student type → the field may be left empty, but a wrong format is still refused
+  for (const tier of ['associate', 'friend']) {
+    const r = await send({ tier, email: tier + '-nosso@example.org', status: 'staff' });
+    assert.equal(r.status, 200, tier + ': ' + JSON.stringify(r.body));
+    assert.equal((await q(db, 'SELECT sso_username FROM oss_members WHERE email = $1', [tier + '-nosso@example.org']))[0].sso_username, null);
+  }
+  assert.equal((await send({ tier: 'associate', email: 'assoc-bad@example.org', status: 'staff', sso: 'nope' })).body.fields.sso, 'invalid');
 });
