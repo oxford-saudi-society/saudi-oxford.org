@@ -236,4 +236,21 @@ CREATE TABLE IF NOT EXISTS oss_subscribers (
 ALTER TABLE oss_members ADD COLUMN IF NOT EXISTS sso_username text;
 `,
   },
+  {
+    /* Fee codes: the committee gives a code to someone who would normally pay; entering it waives the membership fee. */
+    id: '0006_fee_codes',
+    sql: `
+CREATE TABLE IF NOT EXISTS oss_fee_codes (
+  code text PRIMARY KEY,
+  label text,
+  max_uses integer CHECK (max_uses IS NULL OR max_uses >= 1),
+  used integer NOT NULL DEFAULT 0,
+  expires_on date,
+  disabled boolean NOT NULL DEFAULT false,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  created_by text
+);
+ALTER TABLE oss_members ADD COLUMN IF NOT EXISTS fee_code text;
+`,
+  },
 ];

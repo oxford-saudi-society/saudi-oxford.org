@@ -1,5 +1,6 @@
 /* Membership: applications, permanent membership numbers, the review queue and committee decisions.
    oss_members is the single register: one row per email, also used by members-only events. */
+import { randomBytes } from 'node:crypto';
 import { SETTINGS } from './content.generated.mjs';
 import { fail, normEmail, validEmail, cleanName } from './http.mjs';
 import { requireRole, createPending } from './auth.mjs';
@@ -27,6 +28,58 @@ export function priceOf(tier) {
   const fees = SETTINGS.fees || {};
   return Number(fees[tier] != null ? fees[tier] : tier === 'student' ? 10 : 15) || 0;
 }
+/* ── fee codes ──────────────────────────────────────────────────────────────────────────────────────────────────
+   The committee creates a code in the desk and gives it to someone who would normally pay. Entered on the join form
+   with a fee-paying membership type, a valid code waives the fee (accepted); a wrong, expired, switched-off or
+   used-up code is refused (declined) and the form is not sent. The application itself is still reviewed as usual. */
+const CODE_ALPHABET = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'; // no 0/O or 1/I/L, so a code is easy to read out and type
+export const cleanCode = (v) => String(v || '').toUpperCase().replace(/[^A-Z0-9-]/g, '').slice(0, 24);
+function newCode() { const b = randomBytes(8); const ch = (i) => CODE_ALPHABET[b[i] % CODE_ALPHABET.length]; return 'OSS-' + [0, 1, 2, 3].map(ch).join('') + '-' + [4, 5, 6, 7].map(ch).join(''); }
+async function checkCode(q, raw, lock) {
+  const code = cleanCode(raw); if (code.length < 4) return { ok: false, reason: 'invalid' };
+  const r = (await q.query(`SELECT code, max_uses, used, disabled, (expires_on IS NOT NULL AND expires_on < CURRENT_DATE) AS expired FROM oss_fee_codes WHERE code = $1${lock ? ' FOR UPDATE' : ''}`, [code])).rows[0];
+  if (!r || r.disabled) return { ok: false, reason: 'invalid' };
+  if (r.expired) return { ok: false, reason: 'expired' };
+  if (r.max_uses != null && r.used >= r.max_uses) return { ok: false, reason: 'used_up' };
+  return { ok: true, code };
+}
+/* The join form's "Check code" button: accepted or declined, nothing is saved or counted here. */
+export async function codeStatus(q, body) {
+  const tier = String(body.tier || '');
+  if (!TIERS[tier] || !(priceOf(tier) > 0)) return { ok: false, reason: 'not_needed' };
+  const c = await checkCode(q, body.code, false);
+  return c.ok ? { ok: true } : { ok: false, reason: c.reason };
+}
+export async function codesList(q, staff) {
+  requireRole(staff, 'events_admin');
+  const rows = (await q.query(`SELECT code, label, max_uses, used, expires_on, disabled, created_at, created_by, (expires_on IS NOT NULL AND expires_on < CURRENT_DATE) AS expired FROM oss_fee_codes ORDER BY created_at DESC, code`)).rows;
+  return { codes: rows };
+}
+export async function codeCreate(q, staff, body) {
+  requireRole(staff, 'events_admin');
+  let code = cleanCode(body.code);
+  if (String(body.code || '').trim() && code.length < 4) fail(400, 'validation', { fields: { code: 'invalid' } });
+  const label = String(body.label || '').replace(/[\u0000-\u001f\u007f]/g, '').trim().slice(0, 120) || null;
+  let max = body.maxUses === '' || body.maxUses == null ? null : parseInt(body.maxUses, 10);
+  if (max !== null && (!Number.isFinite(max) || max < 1 || max > 100000)) fail(400, 'validation', { fields: { maxUses: 'invalid' } });
+  const exp = body.expiresOn ? String(body.expiresOn).slice(0, 10) : null;
+  if (exp && (!/^\d{4}-\d{2}-\d{2}$/.test(exp) || isNaN(new Date(exp)))) fail(400, 'validation', { fields: { expiresOn: 'invalid' } });
+  for (let tries = 0; ; tries++) {
+    const c = code || newCode();
+    const ins = await q.query('INSERT INTO oss_fee_codes (code, label, max_uses, expires_on, created_by) VALUES ($1,$2,$3,$4,$5) ON CONFLICT (code) DO NOTHING RETURNING code', [c, label, max, exp, staff.email]);
+    if (ins.rows.length) { await audit(q, staff.email, 'fee_code.created', 'fee_code:' + c, { label, maxUses: max, expiresOn: exp }); return Object.assign({ created: c }, await codesList(q, staff)); }
+    if (code || tries > 4) fail(409, 'code_exists');
+  }
+}
+export async function codeSwitch(q, staff, raw, disabled) {
+  requireRole(staff, 'events_admin');
+  const code = cleanCode(raw);
+  const r = await q.query('UPDATE oss_fee_codes SET disabled = $2 WHERE code = $1 RETURNING code', [code, !!disabled]);
+  if (!r.rows.length) fail(404, 'not_found');
+  await audit(q, staff.email, disabled ? 'fee_code.disabled' : 'fee_code.enabled', 'fee_code:' + code, null);
+  return codesList(q, staff);
+}
+
 const tierLabel = (tier, lang) => (TIERS[tier] ? TIERS[tier][lang] || TIERS[tier].en : tier);
 const urlsFor = (site, lang) => { const b = site + (lang === 'ar' ? '/ar' : ''); return { accountUrl: `${b}/account/`, eventsUrl: `${b}/events/`, deskUrl: `${site}/admin/events/#membership` }; };
 
@@ -54,6 +107,7 @@ export async function publicView(q, row) {
     reason: row.status === 'declined' || row.status === 'revoked' ? row.decision_reason : null,
     evidence: await evidenceMeta(q, row.email).then((e) => (e ? { uploadedAt: e.uploadedAt } : null)), // the applicant sees only that a document is held
     canUploadProof: canUpload(row),
+    feeWaived: row.payment_status === 'waived' && !!row.fee_code, // never the code itself
   };
 }
 
@@ -127,6 +181,10 @@ export async function expireEvidence(q) {
 }
 
 function nextStepText(row, lang) {
+  const waived = row.fee_code && row.payment_status === 'waived' ? (lang === 'ar' ? 'تم إعفاؤك من رسوم العضوية بموجب الرمز الذي أدخلته. ' : 'Your membership fee has been waived with the code you entered. ') : '';
+  return waived + nextStepCore(row, lang);
+}
+function nextStepCore(row, lang) {
   const ar = lang === 'ar';
   if (row.amount_gbp > 0) {
     const bank = SETTINGS.bank || {};
@@ -161,23 +219,34 @@ export async function apply(q, body, site, sessionEmail) {
   const rec = {
     name, name_ar: cleanName(body.nameAr).slice(0, 120) || null, college, uni_status: uni, uni_status_other: uniOther || null, phone: String(body.phone || '').replace(/[^\d+()\s-]/g, '').slice(0, 30) || null,
     volunteer, heard: heard && HEARD.includes(heard) ? heard : null, lang, consent_privacy_version: String(body.privacy_version || SETTINGS.privacyVersion || '2026-11').slice(0, 40),
-    sso_username: sso || null, consent_news: body.consent_news === true, tier, amount_gbp: priceOf(tier), payment_status: priceOf(tier) > 0 ? 'due' : 'not_required', nationality_status: TIERS[tier].verify ? 'pending' : 'not_required',
+    sso_username: sso || null, fee_code: null, consent_news: body.consent_news === true, tier, amount_gbp: priceOf(tier), payment_status: priceOf(tier) > 0 ? 'due' : 'not_required', nationality_status: TIERS[tier].verify ? 'pending' : 'not_required',
   };
   const existing = (await q.query('SELECT * FROM oss_members WHERE email = $1 FOR UPDATE', [email])).rows[0];
+  // Fee code — only for the membership types that carry a fee. Accepted → the fee is waived; declined → the form stops here.
+  const codeIn = cleanCode(body.feeCode); let countCode = false;
+  if (codeIn && priceOf(tier) > 0 && !(existing && existing.status === 'approved')) {
+    const held = !!existing && existing.fee_code === codeIn && existing.tier === tier; // already theirs: not checked or counted twice
+    if (!held) { const c = await checkCode(q, codeIn, true); if (!c.ok) fail(400, 'validation', { fields: { feeCode: c.reason } }); countCode = true; }
+    Object.assign(rec, { amount_gbp: 0, payment_status: 'waived', fee_code: codeIn });
+  }
+  const useCode = async (no) => { if (!countCode) return; await q.query('UPDATE oss_fee_codes SET used = used + 1 WHERE code = $1', [codeIn]); await audit(q, email, 'membership.fee_code_used', 'member:' + no, { code: codeIn }); };
   if (existing && existing.status === 'approved') return { result: 'already_member', member: Object.assign(await publicView(q, existing), { evidence: null, canUploadProof: false }) };
   if (existing && OPEN.includes(existing.status)) {
-    const same = existing.tier === tier && existing.name === rec.name && (existing.college || '') === rec.college && existing.uni_status === rec.uni_status && (existing.uni_status_other || null) === rec.uni_status_other && (existing.sso_username || null) === rec.sso_username;
+    const same = existing.tier === tier && existing.name === rec.name && (existing.college || '') === rec.college && existing.uni_status === rec.uni_status && (existing.uni_status_other || null) === rec.uni_status_other && (existing.sso_username || null) === rec.sso_username && (rec.fee_code || existing.fee_code || null) === (existing.fee_code || null);
     if (same) return { result: 'already', member: Object.assign(await publicView(q, existing), { evidence: null, canUploadProof: false }) }; // the public form never says whether a document is held
     // The form was sent again with different answers (most often a different membership type): the open application
     // takes the new answers and keeps its number and its place in the queue, and the address owner is told by email.
     // Once the address has been confirmed, only its owner (signed in) can change the application this way.
     if (existing.email_verified_at && sessionEmail !== email) return { result: 'already', needsSignIn: true, member: Object.assign(await publicView(q, existing), { evidence: null, canUploadProof: false }) };
     const tierChanged = existing.tier !== tier;
-    const pay = tierChanged ? rec.payment_status : existing.payment_status;
+    const keepWaiver = !rec.fee_code && !tierChanged && !!existing.fee_code && existing.payment_status === 'waived'; // an earlier code still stands for the same type
+    if (keepWaiver) Object.assign(rec, { amount_gbp: 0, fee_code: existing.fee_code });
+    const pay = rec.fee_code && !keepWaiver ? 'waived' : (tierChanged ? rec.payment_status : existing.payment_status);
     const nat = !TIERS[tier].verify ? 'not_required' : (tierChanged || existing.nationality_status === 'not_required' ? 'pending' : existing.nationality_status);
     const upd = (await q.query(`UPDATE oss_members SET name=$2, name_ar=$3, college=$4, uni_status=$5, uni_status_other=$6, phone=$7, volunteer=$8, lang=$9, consent_privacy_version=$10, consent_news=$11, tier=$12, amount_gbp=$13,
       payment_status=$14, nationality_status=$15, updated_at=now() WHERE email=$1 RETURNING *`, [email, rec.name, rec.name_ar, rec.college, rec.uni_status, rec.uni_status_other, rec.phone, rec.volunteer, rec.lang, rec.consent_privacy_version, rec.consent_news, rec.tier, rec.amount_gbp, pay, nat])).rows[0];
-    await q.query('UPDATE oss_members SET sso_username = $2 WHERE email = $1', [email, rec.sso_username]); upd.sso_username = rec.sso_username;
+    await q.query('UPDATE oss_members SET sso_username = $2, fee_code = $3 WHERE email = $1', [email, rec.sso_username, rec.fee_code]); upd.sso_username = rec.sso_username; upd.fee_code = rec.fee_code;
+    await useCode(upd.member_no);
     if (tierChanged) await deleteEvidence(q, email);
     const pos = await positionOf(q, upd), uu = urlsFor(site, lang);
     const tok = await createPending(q, { kind: 'login', email, lang, ttlMin: 1440, payload: { redirect: (lang === 'ar' ? '/ar' : '') + '/account/' } });
@@ -198,7 +267,8 @@ export async function apply(q, body, site, sessionEmail) {
       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,'pending',now(),'web',$17) RETURNING *`,
       [email, no, rec.name, rec.name_ar, rec.college, rec.uni_status, rec.phone, rec.volunteer, rec.heard, rec.lang, rec.consent_privacy_version, rec.consent_news, rec.tier, rec.amount_gbp, rec.payment_status, rec.nationality_status, rec.uni_status_other])).rows[0];
   }
-  await q.query('UPDATE oss_members SET sso_username = $2 WHERE email = $1', [email, rec.sso_username]); row.sso_username = rec.sso_username;
+  await q.query('UPDATE oss_members SET sso_username = $2, fee_code = $3 WHERE email = $1', [email, rec.sso_username, rec.fee_code]); row.sso_username = rec.sso_username; row.fee_code = rec.fee_code;
+  await useCode(row.member_no);
   const position = await positionOf(q, row);
   const u = urlsFor(site, lang);
   const token = await createPending(q, { kind: 'login', email, lang, ttlMin: 1440, payload: { redirect: (lang === 'ar' ? '/ar' : '') + '/account/' } });
@@ -212,7 +282,7 @@ export async function apply(q, body, site, sessionEmail) {
 async function notifyCommittee(q, row, position, site, headline, response) {
   const to = SETTINGS.committeeNotifyEmail; if (!to) return;
   await enqueue(q, { kind: 'membership_committee', to, lang: 'en', dedupeKey: `committee:${headline}:${row.member_no}:${Date.now()}`,
-    vars: { headline, memberNo: row.member_no, name: row.name, nameAr: row.name_ar, email: row.email, tierLabel: tierLabel(row.tier, 'en'), college: row.college || '', sso: row.sso_username || '', uniStatus: uniText(row), position: position == null ? '—' : position, response, deskUrl: urlsFor(site, 'en').deskUrl, siteUrl: site } });
+    vars: { headline, memberNo: row.member_no, name: row.name, nameAr: row.name_ar, email: row.email, tierLabel: tierLabel(row.tier, 'en'), college: row.college || '', sso: row.sso_username || '', feeCode: row.payment_status === 'waived' ? row.fee_code || '' : '', uniStatus: uniText(row), position: position == null ? '—' : position, response, deskUrl: urlsFor(site, 'en').deskUrl, siteUrl: site } });
 }
 
 /* ── applicant: own record, answer an information request ──────── */
@@ -232,7 +302,7 @@ export async function respond(q, email, body, site) {
 }
 
 /* ── committee desk ─────────────────────────────────────────────── */
-const DESK_FIELDS = 'email, member_no, name, name_ar, sso_username, college, uni_status, uni_status_other, phone, volunteer, heard, lang, consent_news, consent_privacy_version, tier, amount_gbp, payment_status, nationality_status, status, applied_at, email_verified_at, info_request, info_requested_at, info_response, info_response_at, decided_at, decided_by, decision_reason, valid_until, approved_at, approved_by, notes, source, created_at, updated_at';
+const DESK_FIELDS = 'email, member_no, name, name_ar, sso_username, fee_code, college, uni_status, uni_status_other, phone, volunteer, heard, lang, consent_news, consent_privacy_version, tier, amount_gbp, payment_status, nationality_status, status, applied_at, email_verified_at, info_request, info_requested_at, info_response, info_response_at, decided_at, decided_by, decision_reason, valid_until, approved_at, approved_by, notes, source, created_at, updated_at';
 export async function list(q, staff, params) {
   requireRole(staff, 'events_admin');
   const view = params.get('view') || 'queue';

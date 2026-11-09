@@ -9,7 +9,10 @@
   var T = {
     en: {
       sumPaid: 'Fee: <b>{amount}</b> — payment details follow after you apply', sumFree: 'Nothing to pay',
-      sumVerify: 'Free — the secretary will email you later if proof of nationality is needed', sumNone: 'Choose a membership type above',
+      sumVerify: 'Free — the secretary will email you later if proof of nationality is needed',
+      sumWaived: 'Nothing to pay — your fee is waived with your code',
+      codeOk: 'Code accepted — your membership fee is waived.', codeChecking: 'Checking…', codeEmpty: 'Type the code first.',
+      codeBad: { invalid: 'Code declined — this code is not valid.', expired: 'Code declined — this code has expired.', used_up: 'Code declined — this code has already been used.', not_needed: 'This membership type is free, so no code is needed.', rate: 'Too many attempts. Please wait a few minutes and try again.', net: 'The code could not be checked just now. It is checked again when you send the form.' }, sumNone: 'Choose a membership type above',
       sending: 'Sending…',
       cardTitle: 'Pay by card', cardBtn: 'Pay {amount} by card',
       cardNote: 'Secure checkout opens in a new tab, handled by the payment provider. The Society never sees your card details.',
@@ -18,7 +21,10 @@
     },
     ar: {
       sumPaid: 'الرسوم: <b>{amount}</b> — تصلك تفاصيل الدفع بعد التقديم', sumFree: 'لا توجد رسوم',
-      sumVerify: 'مجاناً — سيراسلك أمين السر لاحقاً إن لزم إثبات الجنسية', sumNone: 'اختر نوع العضوية أعلاه',
+      sumVerify: 'مجاناً — سيراسلك أمين السر لاحقاً إن لزم إثبات الجنسية',
+      sumWaived: 'لا توجد رسوم — أُعفيت منها بموجب الرمز',
+      codeOk: 'تم قبول الرمز — أُعفيت من رسوم العضوية.', codeChecking: 'جارٍ التحقق…', codeEmpty: 'اكتب الرمز أولاً.',
+      codeBad: { invalid: 'رُفض الرمز — هذا الرمز غير صحيح.', expired: 'رُفض الرمز — انتهت صلاحية هذا الرمز.', used_up: 'رُفض الرمز — استُخدم هذا الرمز من قبل.', not_needed: 'هذا النوع من العضوية مجاني، فلا حاجة إلى رمز.', rate: 'محاولات كثيرة. انتظر بضع دقائق ثم حاول مجدداً.', net: 'تعذّر التحقق من الرمز الآن. سيُتحقق منه مرة أخرى عند إرسال النموذج.' }, sumNone: 'اختر نوع العضوية أعلاه',
       sending: 'جارٍ الإرسال…',
       cardTitle: 'الدفع بالبطاقة', cardBtn: 'ادفع {amount} بالبطاقة',
       cardNote: 'تُفتح صفحة دفع آمنة في تبويب جديد عبر مزوّد الدفع. لا تطّلع الجمعية على بيانات بطاقتك أبداً.',
@@ -219,12 +225,38 @@
     var tier = selectedTier();
     document.querySelectorAll('#tiers .tier').forEach(function (l) { l.classList.toggle('sel', l.querySelector('input').checked); });
     $('email-hint').hidden = !(tier && (tier.id === 'student' || tier.id === 'saudi'));
-    $('sum').innerHTML = !tier ? t('sumNone') : tier.price ? t('sumPaid', { amount: amountHtml(tier) }) : tier.verify ? t('sumVerify') : t('sumFree');
+    var paidTier = !!(tier && tier.price), fc = $('fee-code');
+    if (fc) { fc.hidden = !paidTier; if (!paidTier) codeState(null); }
+    $('sum').innerHTML = !tier ? t('sumNone') : tier.price ? (feeOk ? t('sumWaived') : t('sumPaid', { amount: amountHtml(tier) })) : tier.verify ? t('sumVerify') : t('sumFree');
     // the Oxford SSO username is needed for the two student membership types only
     var needSso = ssoNeeded(tier), ssoIn = $('f-sso');
     if (ssoIn) { ssoIn.required = needSso; $('sso-req').hidden = !needSso; $('sso-opt').hidden = needSso; if (!needSso && (!ssoIn.value.trim() || SSO_RE.test(ssoIn.value.trim()))) setErr('sso', false); }
     if (tier) { $('tier-msg').style.display = 'none'; $('tiers').classList.remove('err'); }
   }
+  /* Fee code: a code from the committee waives the fee on the fee-paying membership types. "Check code" answers at once
+     (accepted or declined); the server checks it again when the form is sent, so nothing depends on this check. */
+  var feeOk = false;
+  function codeState(kind, text) { var p = $('fee-code-state'); if (!p) return; feeOk = kind === 'ok'; p.hidden = !kind; p.className = 'code-state' + (kind ? ' is-' + kind : ''); p.textContent = text || ''; if (kind !== 'bad') setErr('feeCode', false); }
+  (function () {
+    var inp = $('f-fee-code'), btn = $('fee-code-btn'); if (!inp || !btn) return;
+    async function check() {
+      var tier = selectedTier(), code = inp.value.trim();
+      if (!code) { codeState('bad', t('codeEmpty')); inp.focus(); return; }
+      btn.disabled = true; codeState('wait', t('codeChecking'));
+      try {
+        var r = await fetch((SITE.apiBase || '/api') + '/membership/code', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify({ code: code, tier: tier ? tier.id : '' }) });
+        var d = null; try { d = await r.json(); } catch (e) { /* not json */ }
+        if (r.status === 429) codeState('bad', t('codeBad').rate);
+        else if (r.ok && d && d.ok) codeState('ok', t('codeOk'));
+        else if (r.ok && d) codeState('bad', t('codeBad')[d.reason] || t('codeBad').invalid);
+        else codeState('wait', t('codeBad').net);
+      } catch (e) { codeState('wait', t('codeBad').net); }
+      btn.disabled = false; syncTier();
+    }
+    btn.addEventListener('click', check);
+    inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); check(); } });
+    inp.addEventListener('input', function () { var v = inp.value.toUpperCase().replace(/[^A-Z0-9-]/g, ''); if (v !== inp.value) inp.value = v; if (!$('fee-code-state').hidden) { codeState(null); syncTier(); } });
+  })();
   var SSO_RE = /^[A-Za-z]{4}[0-9]{4}$/;
   function ssoNeeded(tier) { return !!tier && (tier.id === 'saudi' || tier.id === 'student'); }
   (function () {
@@ -271,7 +303,7 @@
       eyebrowNew: 'Application received', eyebrowUpdated: 'Application updated', eyebrowAgain: 'You have already applied', eyebrowMember: 'You are already a member',
       thanks: 'Thank you, {name}.', welcomeBack: 'Welcome back, {name}.',
       ledeNew: 'Your application is with the committee. Keep your membership number: quote it in anything you send us.',
-      ledeAgain: 'We already have your application, so nothing new was submitted. Here is where it stands.',
+      ledeAgain: 'We already have your application, so nothing new was submitted. Here is where it stands.', feeWaived: 'Your membership fee has been waived with your code. There is nothing to pay.',
       ledeUpdated: 'We already had an application from this email address, so we have updated it with your new answers. It keeps its number and its place in the queue.',
       changeHow: 'To change your answers, sign in on the My account page first (we email you a sign-in link), then send this form again.', changeBtn: 'Sign in to My account',
       ledeMember: 'This email address already belongs to an active membership.',
@@ -290,7 +322,7 @@
       eyebrowNew: 'تم استلام الطلب', eyebrowUpdated: 'تم تحديث الطلب', eyebrowAgain: 'لقد تقدّمت بطلب من قبل', eyebrowMember: 'أنت عضو بالفعل',
       thanks: 'شكرًا لك يا {name}.', welcomeBack: 'أهلًا بعودتك يا {name}.',
       ledeNew: 'طلبك الآن لدى اللجنة. احتفظ برقم عضويتك واذكره في أي مراسلة معنا.',
-      ledeAgain: 'طلبك موجود لدينا، فلم يُرسل طلب جديد. هذا وضع طلبك الآن.',
+      ledeAgain: 'طلبك موجود لدينا، فلم يُرسل طلب جديد. هذا وضع طلبك الآن.', feeWaived: 'أُعفيت من رسوم العضوية بموجب الرمز الذي أدخلته، فلا يلزمك دفع شيء.',
       ledeUpdated: 'لدينا طلب سابق من هذا البريد الإلكتروني، فحدّثناه بإجاباتك الجديدة. يحتفظ الطلب برقمه وبترتيبه في قائمة المراجعة.',
       changeHow: 'لتعديل إجاباتك، سجّل الدخول أولًا من صفحة «حسابي» (نرسل لك رابط دخول بالبريد)، ثم أرسل هذا النموذج مرة أخرى.', changeBtn: 'سجّل الدخول إلى حسابي',
       ledeMember: 'هذا البريد مرتبط بعضوية فعّالة.',
@@ -311,7 +343,7 @@
   function num(n) { return lang === 'ar' ? new Intl.NumberFormat('ar-SA-u-nu-arab').format(n) : String(n); }
   function collect() {
     var tier = selectedTier();
-    return { tier: tier ? tier.id : '', name: $('f-name').value.trim(), nameAr: $('f-name-ar').value.trim(), email: $('f-email').value.trim(), sso: $('f-sso').value.trim().toLowerCase(), college: $('f-college').value.trim(), status: selectedStatus(), statusOther: selectedStatus() === 'other' ? $('f-status-other').value.trim() : '', phone: $('f-phone').value.trim(),
+    return { tier: tier ? tier.id : '', name: $('f-name').value.trim(), nameAr: $('f-name-ar').value.trim(), email: $('f-email').value.trim(), sso: $('f-sso').value.trim().toLowerCase(), feeCode: (tier && tier.price && $('f-fee-code')) ? $('f-fee-code').value.trim() : '', college: $('f-college').value.trim(), status: selectedStatus(), statusOther: selectedStatus() === 'other' ? $('f-status-other').value.trim() : '', phone: $('f-phone').value.trim(),
       volunteer: Array.prototype.slice.call(form.querySelectorAll('input[name="volunteer"]:checked')).map(function (c) { return c.value; }),
       consent_privacy: $('f-consent').checked, consent_news: form.querySelector('input[name="consent_news"]').checked,
       privacy_version: SITE.privacyVersion || '', lang: lang, website: form.querySelector('input[name="website"]').value };
@@ -331,6 +363,7 @@
     if (!box) { box = document.createElement('div'); box.id = 'join-fail'; box.className = 'err-sum on'; box.setAttribute('role', 'alert'); $('submit-btn').parentNode.parentNode.insertBefore(box, $('submit-btn').parentNode); }
     if (res.status === 400 && res.data && res.data.fields) {
       var map = { name: 'name', email: 'email', sso: 'sso', college: 'college', status: 'status', statusOther: 'status', consent: 'consent' };
+      if (res.data.fields.feeCode) { codeState('bad', t('codeBad')[res.data.fields.feeCode] || t('codeBad').invalid); setErr('feeCode', true); syncTier(); $('fee-code').scrollIntoView({ behavior: 'smooth', block: 'center' }); }
       Object.keys(res.data.fields).forEach(function (k) { if (map[k]) setErr(map[k], true); if (k === 'tier') { $('tier-msg').style.display = 'block'; $('tiers').classList.add('err'); } });
       box.hidden = true; $('err-sum').classList.add('on'); return;
     }
@@ -387,6 +420,7 @@
     } else if (!isMember && verify && mem.nationalityStatus !== 'verified') {
       h += '<div class="nextpanel"><h3 class="disp">' + esc(m('verifyH')) + '</h3><p>' + esc(m('verifyP')) + '</p></div>';
     }
+    if (mem.feeWaived && !isMember) h += '<p class="alert ok">' + esc(m('feeWaived')) + '</p>';
     h += '<p class="muted done-mail">' + m('mailNote', { email: esc(app.email) }) + '</p>';
     h += '<div class="done-actions"><a class="btn btn-p" href="' + (lang === 'ar' ? '/ar' : '') + '/account/">' + esc(m('track')) + '</a><button type="button" class="btn btn-s" id="done-print">' + esc(m('print')) + '</button></div>';
     h += '<p class="again"><a href="#join-form-band" id="again">' + esc(m('again')) + '</a></p>';

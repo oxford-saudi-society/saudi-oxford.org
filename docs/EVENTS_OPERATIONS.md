@@ -76,6 +76,8 @@ Set `RETENTION_PAUSED=true` in Netlify to stop all deletion (for example during 
 
 **Proof of nationality**: for now the committee's secretary asks for it by email when it is needed (from an @oxsss.org address), checks it, records *Verified* under *Membership → the applicant → Checks*, and deletes the email and its attachment straight away — that deletion is manual. The secure upload on the member's own page is built but switched off (`nationalityUpload: false` in `src/content/settings.json`); switching it on also needs the wording on the join page, FAQ and privacy notice changed back. While it is off, nothing can be uploaded and the scheduled job removes any document left from when it was on.
 
+**Fee codes** (*Membership → Fee codes*): create a code — optionally with a note of who it is for, a number of uses and an expiry date — and give it to someone whose membership fee you want to waive. On the join form the code field appears for the fee-paying types only; *Check code* answers at once (accepted or declined) and the server checks again when the form is sent. An accepted code sets the fee to zero and the payment to *Waived*; the application still goes through the usual review, and the member's page in the desk shows which code was used. A code can be switched off at any time. Codes are kept in `oss_fee_codes`.
+
 **Sending the form again**: if someone with an open application sends the join form again with different answers (usually a different membership type), the application is updated, keeps its number and place, and they are emailed. Once they have confirmed their address, only they (signed in) can change it.
 
 **News subscribers**: *Membership → News subscribers (CSV)* lists everyone who ticked the news box.

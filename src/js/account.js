@@ -62,6 +62,7 @@
     h += '<span class="mk">' + esc(t.no) + '</span><span class="mno" dir="ltr">' + esc(mm.memberNo) + '</span>';
     h += '<div class="mcard-meta"><div><span class="mk">' + esc(t.type) + '</span><b>' + esc(O.L(mm.tierLabel)) + '</b></div><div><span class="mk">' + esc(mm.status === 'approved' && mm.validUntil ? t.valid : t.since) + '</span><b>' + esc(mm.status === 'approved' && mm.validUntil ? day(mm.validUntil) : day(mm.appliedAt)) + '</b></div>' + (mm.position ? '<div><span class="mk">' + esc(t.queue) + '</span><b>' + esc(O.num(mm.position)) + '</b></div>' : '') + '</div></div>';
     if (mm.reason) h += '<p class="alert warn">' + esc(t.reason) + ': ' + esc(mm.reason) + '</p>';
+    if ((mm.status === 'pending' || mm.status === 'info_requested') && mm.feeWaived) h += '<p class="alert ok">' + esc(O.ar ? 'أُعفيت من رسوم العضوية بموجب الرمز الذي أدخلته.' : 'Your membership fee has been waived with your code.') + '</p>';
     if ((mm.status === 'pending' || mm.status === 'info_requested') && mm.paymentStatus === 'due') h += '<p class="alert">' + esc(t.payDue.replace('{amount}', '£' + mm.amountGbp)) + '</p>';
     var openApp = mm.status === 'pending' || mm.status === 'info_requested', ns = mm.nationalityStatus, E = t.ev;
     var saudi = mm.tier === 'saudi'; // nothing about nationality is ever shown for the other membership types

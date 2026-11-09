@@ -799,3 +799,14 @@ nav.main a{white-space:nowrap}
 .f input:autofill{-webkit-text-fill-color:var(--ink);caret-color:var(--ink)}
 /* the SSO username is typed left-to-right; on the Arabic page its Arabic placeholder still reads right-to-left */
 html[dir="rtl"] #f-sso:placeholder-shown{direction:rtl;text-align:right}
+/* fee code on the join form */
+.fee-code{margin-top:22px;max-width:560px}
+.code-row{display:flex;gap:10px;align-items:stretch}
+.code-row input{flex:1 1 auto;min-width:0;letter-spacing:.06em}
+.code-row .btn{flex:0 0 auto;white-space:nowrap}
+.code-state{margin:2px 0 0;padding:10px 14px;border-radius:var(--r-xs);font-size:14px;font-weight:600}
+.code-state.is-ok{color:var(--green-lt);background:rgba(92,191,138,.14);box-shadow:inset 0 0 0 1px rgba(92,191,138,.5)}
+.code-state.is-bad{color:#F2A9A9;background:rgba(224,122,122,.12);box-shadow:inset 0 0 0 1px rgba(224,122,122,.55)}
+.code-state.is-wait{color:var(--ink-2);background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14);font-weight:400}
+html[dir="rtl"] #f-fee-code:placeholder-shown{direction:rtl;text-align:right;letter-spacing:0}
+@media (max-width:420px){.code-row{flex-wrap:wrap}.code-row .btn{flex:1 1 100%}}

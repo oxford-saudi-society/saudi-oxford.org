@@ -119,6 +119,12 @@ async function route(req, context, db) {
     const out = await db.tx((q) => M.apply(q, body, site, session ? session.email : null));
     return json(out);
   }
+  if (a === 'membership' && b === 'code' && m === 'POST') { // "Check code" on the join form: accepted or declined
+    assertSameOrigin(req);
+    const body = await readJson(req);
+    await limitByIp(db, 'code_ip', req, context, 15, 3600); // a code cannot be found by guessing
+    return json(await M.codeStatus(db, body));
+  }
   if (a === 'membership' && b === 'me' && m === 'GET') {
     if (!session) fail(401, 'sign_in_required');
     return json({ email: session.email, member: await M.mine(db, session.email) });
@@ -300,6 +306,9 @@ async function route(req, context, db) {
     if (b === 'membership' && c && !d && m === 'GET') return json(await M.detail(db, staff, decodeURIComponent(c)));
     if (b === 'membership' && c && ['approve', 'request-info', 'decline', 'revoke'].includes(d) && m === 'POST') return json(await db.tx((q) => M.decide(q, staff, decodeURIComponent(c), d, body, site)));
     if (b === 'membership' && c && d === 'update' && m === 'POST') return json(await db.tx((q) => M.update(q, staff, decodeURIComponent(c), body, site)));
+    if (b === 'fee-codes' && !c && m === 'GET') return json(await M.codesList(db, staff));
+    if (b === 'fee-codes' && !c && m === 'POST') return json(await db.tx((q) => M.codeCreate(q, staff, body)));
+    if (b === 'fee-codes' && c && (d === 'disable' || d === 'enable') && m === 'POST') return json(await db.tx((q) => M.codeSwitch(q, staff, decodeURIComponent(c), d === 'disable')));
     if (b === 'publish' && m === 'POST') return json(await A.triggerPublish(db, staff));
     fail(404, 'not_found');
   }

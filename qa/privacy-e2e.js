@@ -95,6 +95,43 @@ const link = (to, kind) => { const m = lastMail(to, kind); const r = m && /https
   let d = await desk.evaluate(() => ({ pane: !!document.getElementById('mev'), text: document.body.innerText }));
   ok(!d.pane && /Saudi nationality/i.test(d.text), 'desk: no document panel; the nationality check box is still there');
 
+  // ── fee codes: the committee creates one in the desk; on the join form it is accepted or declined at once
+  await desk.goto(BASE + '/admin/events/#membership-codes'); await desk.waitForTimeout(1000);
+  await desk.fill('#fc-label', 'Partner scholars'); await desk.fill('#fc-max', '1'); await desk.click('#fc-f button[type=submit]'); await desk.waitForTimeout(1200);
+  const code = await desk.evaluate(() => (document.querySelector('.tbl tbody tr td b') || {}).textContent || '');
+  ok(/^OSS-[A-Z2-9]{4}-[A-Z2-9]{4}$/.test(code) && await desk.evaluate(() => /Code created/.test(document.getElementById('flash').innerText) && /0 \/ 1/.test(document.querySelector('.tbl tbody tr').innerText)), 'desk: code created and listed, unused — ' + code);
+  await shot(desk, 'p-desk-codes', true);
+  const fee = await (await b.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, reducedMotion: 'reduce' })).newPage(); fee.on('pageerror', (e) => errors.push('fee: ' + e.message));
+  await fee.goto(BASE + '/ar/join/'); await fee.waitForTimeout(400);
+  ok(await fee.evaluate(() => document.getElementById('fee-code').hidden), 'no code field before a type is chosen');
+  await fee.check('input[name=tier][value=saudi]', { force: true });
+  ok(await fee.evaluate(() => document.getElementById('fee-code').hidden), 'no code field for a free type');
+  await fee.check('input[name=tier][value=student]', { force: true });
+  let fc = await fee.evaluate(() => { const f = document.getElementById('fee-code'), i = document.getElementById('f-fee-code'); return { shown: !f.hidden, label: f.querySelector('.lbl span').textContent, ph: i.placeholder, btn: document.getElementById('fee-code-btn').textContent, sum: document.getElementById('sum').innerText }; });
+  ok(fc.shown && fc.label === 'رمز الإعفاء من الرسوم' && /OSS-ABCD-2345/.test(fc.ph) && fc.btn === 'تحقّق من الرمز' && /£10/.test(fc.sum), 'fee-paying type: Arabic code field appears ' + JSON.stringify(fc));
+  await fee.fill('#f-fee-code', 'oss-nope-nope'); await fee.tap('#fee-code-btn'); await fee.waitForTimeout(900);
+  fc = await fee.evaluate(() => ({ cls: document.getElementById('fee-code-state').className, text: document.getElementById('fee-code-state').innerText, sum: document.getElementById('sum').innerText, val: document.getElementById('f-fee-code').value }));
+  ok(/is-bad/.test(fc.cls) && /رُفض الرمز/.test(fc.text) && /£10/.test(fc.sum) && fc.val === 'OSS-NOPE-NOPE', 'a wrong code is declined at once ' + JSON.stringify(fc));
+  await shot(fee, 'p-code-declined-ar');
+  await fee.fill('#f-fee-code', code.toLowerCase()); await fee.tap('#fee-code-btn'); await fee.waitForTimeout(900);
+  fc = await fee.evaluate(() => ({ cls: document.getElementById('fee-code-state').className, text: document.getElementById('fee-code-state').innerText, sum: document.getElementById('sum').innerText }));
+  ok(/is-ok/.test(fc.cls) && /تم قبول الرمز/.test(fc.text) && /لا توجد رسوم/.test(fc.sum) && !/£10/.test(fc.sum), 'the right code is accepted and the fee disappears ' + JSON.stringify(fc));
+  await shot(fee, 'p-code-accepted-ar');
+  await fee.fill('#f-name', 'ليلى حسن'); await fee.fill('#f-email', 'layla.code@example.org'); await fee.fill('#f-sso', 'hert1234'); await fee.fill('#f-college', 'Hertford College'); await fee.locator('#statuses label', { has: fee.locator('input[value=masters]') }).click(); await fee.check('#f-consent', { force: true });
+  await fee.click('#submit-btn'); await fee.waitForTimeout(1500);
+  t = await fee.evaluate(() => document.getElementById('join-done').innerText);
+  ok(/أُعفيت من رسوم العضوية/.test(t) && !/£10|رسوم العضوية: /.test(t), 'confirmation: fee waived, nothing to pay');
+  ok(/أُعفيت|إعفاؤك من رسوم العضوية/.test((lastMail('layla.code@example.org', 'membership_received') || {}).text || ''), 'confirmation email says the fee is waived');
+  // the single use is spent: the next person is declined when sending the form, and nothing is saved
+  const fee2 = await (await b.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, reducedMotion: 'reduce' })).newPage();
+  await fee2.goto(BASE + '/join/'); await fee2.waitForTimeout(400); await fee2.check('input[name=tier][value=associate]', { force: true });
+  await fee2.fill('#f-fee-code', code); await fee2.fill('#f-name', 'Second Person'); await fee2.fill('#f-email', 'second.code@example.org'); await fee2.fill('#f-college', 'Hertford College'); await fee2.locator('#statuses label', { has: fee2.locator('input[value=staff]') }).click(); await fee2.check('#f-consent', { force: true });
+  await fee2.click('#submit-btn'); await fee2.waitForTimeout(1500);
+  fc = await fee2.evaluate(() => ({ state: document.getElementById('fee-code-state').innerText, done: !document.getElementById('join-done').hidden, form: !document.getElementById('join-form').hidden }));
+  ok(/Code declined — this code has already been used/.test(fc.state) && !fc.done && fc.form, 'a used-up code is declined on sending and the form stays open ' + JSON.stringify(fc));
+  await desk.goto(BASE + '/admin/events/#membership'); await desk.waitForTimeout(600); await desk.goto(BASE + '/admin/events/#membership-codes'); await desk.waitForTimeout(1000);
+  ok(await desk.evaluate(() => /1 \/ 1/.test(document.querySelector('.tbl tbody tr').innerText) && /Used up/i.test(document.querySelector('.tbl tbody tr').innerText)), 'desk shows the code as used up');
+
   // ── language switch: every page type, both directions, from a phone and a narrow phone
   const narrow = await (await b.newContext({ viewport: { width: 320, height: 640 }, isMobile: true, hasTouch: true })).newPage();
   const pages = ['/', '/about/', '/events/', '/events/eid-al-fitr-celebration/', '/join/', '/community/', '/committees/', '/ideas/', '/faq/', '/privacy/', '/terms/', '/account/'];

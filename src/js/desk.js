@@ -301,6 +301,34 @@
   var TIERL = { saudi: ['Saudi student', 'طالب سعودي'], student: ['Student', 'طالب'], associate: ['Associate', 'غير الطلبة'], friend: ['Friend', 'صديق'] };
   var tierL = function (k) { return TIERL[k] ? TIERL[k][lang === 'ar' ? 1 : 0] : (k || ''); };
   var badgeCls = { pending: 'waitlisted', info_requested: 'offered', approved: 'confirmed', declined: 'cancelled', revoked: 'cancelled', expired: 'cancelled' };
+  /* Fee codes: create a code, give it to the person, and their membership fee is waived when they enter it on the join form. */
+  var FC = lang === 'ar' ? {
+    h: 'رموز الإعفاء من الرسوم', p: 'أنشئ رمزًا وأعطه لمن تريد إعفاءه من رسوم العضوية. عند إدخاله في نموذج الانضمام مع نوع عضوية برسوم يُقبل الرمز وتُلغى الرسوم، أو يُرفض إن كان خاطئًا أو منتهيًا أو مستنفدًا. يبقى الطلب خاضعًا لمراجعة اللجنة كالمعتاد.',
+    newH: 'رمز جديد', label: 'لمن هذا الرمز؟ (ملاحظة داخلية)', max: 'عدد مرات الاستخدام (اتركه فارغًا لعدد غير محدود)', exp: 'ينتهي في (اختياري)', custom: 'رمز من اختيارك (اختياري — يُولَّد تلقائيًا إن تُرك فارغًا)', create: 'إنشاء الرمز', made: 'تم إنشاء الرمز: ',
+    th: ['الرمز', 'لمن', 'الاستخدام', 'ينتهي', 'الحالة', ''], on: 'فعّال', off: 'موقوف', expired: 'منتهٍ', full: 'مستنفد', disable: 'إيقاف', enable: 'تفعيل', none: 'لا توجد رموز بعد.', unlimited: 'غير محدود', copy: 'نسخ', copied: 'تم النسخ', exists: 'هذا الرمز موجود من قبل.', bad: 'تحقق من الحقول: الرمز ٤ أحرف أو أرقام على الأقل، والعدد ١ أو أكثر.'
+  } : {
+    h: 'Fee codes', p: 'Create a code and give it to someone whose membership fee you want to waive. When they enter it on the join form with a fee-paying membership type, the code is accepted and the fee is waived — or declined if it is wrong, expired or used up. The application is still reviewed by the committee as usual.',
+    newH: 'New code', label: 'Who is it for? (internal note)', max: 'Number of uses (leave empty for unlimited)', exp: 'Expires on (optional)', custom: 'Your own code (optional — one is generated if left empty)', create: 'Create code', made: 'Code created: ',
+    th: ['Code', 'For', 'Used', 'Expires', 'Status', ''], on: 'Active', off: 'Switched off', expired: 'Expired', full: 'Used up', disable: 'Switch off', enable: 'Switch on', none: 'No codes yet.', unlimited: 'unlimited', copy: 'Copy', copied: 'Copied', exists: 'That code already exists.', bad: 'Check the fields: a code needs at least 4 letters or digits, and the number of uses must be 1 or more.'
+  };
+  async function showCodes(note) {
+    var d = await O.api('/admin/fee-codes');
+    var rows = d.codes.map(function (c) {
+      var full = c.max_uses != null && c.used >= c.max_uses, st = c.disabled ? ['cancelled', FC.off] : c.expired ? ['waitlisted', FC.expired] : full ? ['waitlisted', FC.full] : ['confirmed', FC.on];
+      return '<tr><td class="mono nowrap" dir="ltr"><b>' + esc(c.code) + '</b> <button type="button" class="btn btn-s btn-sm" data-copy="' + esc(c.code) + '">' + esc(FC.copy) + '</button></td><td>' + esc(c.label || '') + '<div class="ln" dir="ltr">' + esc(c.created_by || '') + '</div></td><td class="nowrap">' + O.num(c.used) + ' / ' + (c.max_uses == null ? esc(FC.unlimited) : O.num(c.max_uses)) + '</td><td class="nowrap">' + (c.expires_on ? esc(O.fmtShort(c.expires_on)) : '—') + '</td><td><span class="badge ' + st[0] + '">' + esc(st[1]) + '</span></td><td><button type="button" class="btn btn-s btn-sm" data-code="' + esc(c.code) + '" data-do="' + (c.disabled ? 'enable' : 'disable') + '">' + esc(c.disabled ? FC.enable : FC.disable) + '</button></td></tr>';
+    }).join('');
+    shell('membership', '<p><a class="lnk" href="#membership">' + esc(MS.d.back) + '</a></p><div class="app-head"><div><p class="eyebrow">' + esc(s.tabs.membership) + '</p><h1 style="font-size:30px">' + esc(FC.h) + '</h1><p class="muted" style="font-size:14px;max-width:75ch;margin:6px 0 0">' + esc(FC.p) + '</p></div></div>' +
+      '<form id="fc-f" class="pane" style="max-width:640px;margin-bottom:18px"><h3>' + esc(FC.newH) + '</h3><div class="f"><label class="lbl" for="fc-label">' + esc(FC.label) + '</label><input id="fc-label" type="text" maxlength="120"></div><div class="rowc"><div class="f"><label class="lbl" for="fc-max">' + esc(FC.max) + '</label><input id="fc-max" type="number" min="1" step="1" inputmode="numeric" dir="ltr"></div><div class="f"><label class="lbl" for="fc-exp">' + esc(FC.exp) + '</label><input id="fc-exp" type="date"></div></div><div class="f"><label class="lbl" for="fc-code">' + esc(FC.custom) + '</label><input id="fc-code" type="text" maxlength="24" dir="ltr" autocomplete="off" autocapitalize="characters" spellcheck="false"></div><div class="form-foot"><button class="btn btn-p" type="submit">' + esc(FC.create) + '</button></div></form>' +
+      (d.codes.length ? '<div class="tbl-wrap"><table class="tbl"><thead><tr>' + FC.th.map(function (x) { return '<th>' + esc(x) + '</th>'; }).join('') + '</tr></thead><tbody>' + rows + '</tbody></table></div>' : '<p class="dir-empty">' + esc(FC.none) + '</p>'));
+    if (note) flash(note);
+    $('fc-f').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      try { var r = await O.api('/admin/fee-codes', { method: 'POST', body: { label: $('fc-label').value, maxUses: $('fc-max').value, expiresOn: $('fc-exp').value || null, code: $('fc-code').value } }); await showCodes(esc(FC.made) + '<b class="mono" dir="ltr">' + esc(r.created) + '</b>'); }
+      catch (ex) { flash(esc(ex.status === 409 ? FC.exists : ex.status === 400 ? FC.bad : errText(ex)), 'bad'); }
+    });
+    view_().querySelectorAll('[data-code]').forEach(function (b) { b.addEventListener('click', async function () { b.disabled = true; try { await O.api('/admin/fee-codes/' + encodeURIComponent(b.getAttribute('data-code')) + '/' + b.getAttribute('data-do'), { method: 'POST', body: {} }); await showCodes(); } catch (ex) { b.disabled = false; flash(esc(errText(ex)), 'bad'); } }); });
+    view_().querySelectorAll('[data-copy]').forEach(function (b) { b.addEventListener('click', function () { var c = b.getAttribute('data-copy'); var p = navigator.clipboard && navigator.clipboard.writeText ? navigator.clipboard.writeText(c) : Promise.reject(); p.then(function () { b.textContent = FC.copied; setTimeout(function () { b.textContent = FC.copy; }, 1500); }, function () { flash('<b class="mono" dir="ltr">' + esc(c) + '</b>'); }); }); });
+  }
   async function showMembership(view, q) {
     var d = await O.api('/admin/membership?view=' + encodeURIComponent(view) + (q ? '&q=' + encodeURIComponent(q) : ''));
     var tot = d.totals || {}; var cnt = function (k) { return k === 'queue' ? (tot.pending || 0) + (tot.info_requested || 0) : k === 'all' ? Object.keys(tot).reduce(function (a, x) { return a + tot[x]; }, 0) : (tot[k] || 0); };
@@ -309,7 +337,7 @@
       return '<tr class="mrow" data-no="' + esc(r.member_no) + '" tabindex="0"><td class="num">' + (r.position ? '<b>' + O.num(r.position) + '</b>' : '') + '</td><td class="mono" dir="ltr">' + esc(r.member_no) + '</td><td><b>' + esc(r.name) + '</b>' + (r.name_ar ? '<div class="ln" dir="rtl">' + esc(r.name_ar) + '</div>' : '') + '</td><td>' + esc(tierL(r.tier)) + '</td><td>' + esc(r.college || '') + '<div class="ln">' + esc(uniR(r)) + '</div></td><td class="nowrap">' + esc(r.applied_at ? O.fmtShort(r.applied_at) : '') + '</td>' +
         '<td>' + (r.email_verified_at ? '✓' : '<span class="ln">—</span>') + '</td><td>' + esc(MS.pay[r.payment_status] || r.payment_status) + '</td><td>' + esc(MS.nat[r.nationality_status] || r.nationality_status) + '</td><td><span class="badge ' + (badgeCls[r.status] || '') + '">' + esc(MS.st[r.status] || r.status) + '</span></td></tr>';
     }).join('');
-    shell('membership', '<div class="app-head"><div><p class="eyebrow">' + esc(s.tabs.membership) + '</p><h1 style="font-size:30px">' + esc(view === 'queue' ? MS.h : MS.hAll) + '</h1><p class="muted" style="font-size:14px;max-width:70ch;margin:6px 0 0">' + esc(MS.p) + '</p></div><div class="rowc"><a class="btn btn-s btn-sm" href="/api/admin/subscribers.csv">' + esc(lang === 'ar' ? 'مشتركو الأخبار (CSV)' : 'News subscribers (CSV)') + '</a><a class="btn btn-s btn-sm" href="#membership-add">' + esc(MS.add) + '</a></div></div>' +
+    shell('membership', '<div class="app-head"><div><p class="eyebrow">' + esc(s.tabs.membership) + '</p><h1 style="font-size:30px">' + esc(view === 'queue' ? MS.h : MS.hAll) + '</h1><p class="muted" style="font-size:14px;max-width:70ch;margin:6px 0 0">' + esc(MS.p) + '</p></div><div class="rowc"><a class="btn btn-s btn-sm" href="#membership-codes">' + esc(lang === 'ar' ? 'رموز الإعفاء من الرسوم' : 'Fee codes') + '</a><a class="btn btn-s btn-sm" href="/api/admin/subscribers.csv">' + esc(lang === 'ar' ? 'مشتركو الأخبار (CSV)' : 'News subscribers (CSV)') + '</a><a class="btn btn-s btn-sm" href="#membership-add">' + esc(MS.add) + '</a></div></div>' +
       '<div class="tabs sub">' + chips + '</div><form id="ms-f" class="rowc" style="margin-bottom:12px"><div class="f"><input id="ms-q" type="text" placeholder="' + esc(MS.search) + '" value="' + esc(q || '') + '"></div><button class="btn btn-s btn-sm" type="submit">' + esc(s.find) + '</button></form>' +
       (d.members.length ? '<div class="tbl-wrap"><table class="tbl mtbl"><thead><tr><th class="num">' + esc(MS.th.pos) + '</th><th>' + esc(MS.th.no) + '</th><th>' + esc(MS.th.name) + '</th><th>' + esc(MS.th.type) + '</th><th>' + esc(MS.th.college) + '</th><th>' + esc(MS.th.applied) + '</th><th>' + esc(MS.th.email) + '</th><th>' + esc(MS.th.pay) + '</th><th>' + esc(MS.th.nat) + '</th><th>' + esc(MS.th.status) + '</th></tr></thead><tbody>' + rows + '</tbody></table></div>' : '<p class="dir-empty">' + esc(MS.empty) + '</p>'));
     $('ms-f').addEventListener('submit', function (e) { e.preventDefault(); showMembership(view, $('ms-q').value.trim()); });
@@ -333,7 +361,7 @@
     var open = mm.status === 'pending' || mm.status === 'info_requested';
     var kv = function (k, v) { return '<dt>' + esc(k) + '</dt><dd>' + v + '</dd>'; };
     var info = '<dl class="kv mkv">' + kv(D.email, '<span dir="ltr">' + esc(mm.email) + '</span> ' + (mm.email_verified_at ? '<span class="badge confirmed">' + esc(MS.verified) + '</span>' : '<span class="badge waitlisted">' + esc(MS.unverified) + '</span>')) +
-      (mm.phone ? kv(D.phone, '<span dir="ltr">' + esc(mm.phone) + '</span>') : '') + (mm.sso_username ? kv(lang === 'ar' ? 'معرّف SSO' : 'Oxford SSO', '<span class="mono" dir="ltr">' + esc(mm.sso_username) + '</span>') : '') + kv(D.college, esc(mm.college || '—')) + kv(D.uni, esc(uniR(mm))) +
+      (mm.phone ? kv(D.phone, '<span dir="ltr">' + esc(mm.phone) + '</span>') : '') + (mm.sso_username ? kv(lang === 'ar' ? 'معرّف SSO' : 'Oxford SSO', '<span class="mono" dir="ltr">' + esc(mm.sso_username) + '</span>') : '') + kv(D.college, esc(mm.college || '—')) + kv(D.uni, esc(uniR(mm))) + (mm.fee_code ? kv(lang === 'ar' ? 'رمز الإعفاء' : 'Fee code', '<span class="mono" dir="ltr">' + esc(mm.fee_code) + '</span>') : '') +
       kv(D.vol, esc((mm.volunteer || []).join(', ') || '—')) + kv(D.heard, esc(mm.heard || '—')) + kv(D.news, esc(mm.consent_news ? D.yes : D.no)) + kv(D.privacy, esc(mm.consent_privacy_version || '—')) +
       kv(D.applied, esc(mm.applied_at ? O.fmtStamp(mm.applied_at) : '—')) + (mm.position ? kv(D.queue, '<b>' + O.num(mm.position) + '</b>') : '') +
       (mm.decided_at ? kv(D.decided, esc(O.fmtStamp(mm.decided_at)) + ' ' + esc(D.by) + ' <span dir="ltr">' + esc(mm.decided_by || '') + '</span>') : '') + (mm.valid_until ? kv(D.valid, esc(O.fmtShort(mm.valid_until))) : '') +
@@ -422,6 +450,7 @@
       if (v === 'mail') return await showMail('');
       if (v === 'members') { location.hash = '#membership'; return; }
       if (v === 'membership-add') return await showMembers('');
+      if (v === 'membership-codes') return await showCodes();
       if (v === 'membership') return id && /^OSS-/i.test(id) ? await showMemberDetail(decodeURIComponent(id)) : await showMembership(id || 'queue', '');
       if (v === 'staff') return await showStaff();
       if (v === 'audit') return await showAudit();

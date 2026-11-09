@@ -268,6 +268,11 @@
           </label>
         </div>
         <span class="msg" id="tier-msg" data-ar="يرجى اختيار نوع العضوية.">Please choose a membership type.</span>
+        <div class="f fee-code" id="fee-code" data-f="feeCode" hidden>
+          <label class="lbl" for="f-fee-code"><span data-ar="رمز الإعفاء من الرسوم">Fee code</span> <span class="hint" data-ar="(اختياري — إن زوّدتك به اللجنة)">(optional — if the committee gave you one)</span></label>
+          <div class="code-row"><input id="f-fee-code" name="fee_code" type="text" dir="ltr" autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false" maxlength="24" placeholder="e.g. OSS-ABCD-2345" data-ar-ph="مثال: OSS-ABCD-2345"><button type="button" class="btn btn-s" id="fee-code-btn" data-ar="تحقّق من الرمز">Check code</button></div>
+          <p class="code-state" id="fee-code-state" role="status" hidden></p>
+        </div>
 
         <p class="eyebrow" style="margin-top:44px" data-ar="الخطوة ٢ · الصفة">Step 2 · Status</p>
         <h3 class="disp" style="font-size:28px;margin:10px 0 22px" data-ar="ما صفتك في أكسفورد؟">What is your status at Oxford?</h3>

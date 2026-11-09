@@ -192,3 +192,52 @@ test('Oxford SSO username: needed for the student membership types, optional oth
   }
   assert.equal((await send({ tier: 'associate', email: 'assoc-bad@example.org', status: 'staff', sso: 'nope' })).body.fields.sso, 'invalid');
 });
+
+test('fee codes: the committee issues one; a valid code waives the fee, a wrong or used-up one is declined', async () => {
+  const base = { name: 'Code Person', college: 'Hertford College', status: 'masters', consent_privacy: true, lang: 'en', sso: 'hert1234' };
+  const send = (over) => C.call('POST', '/api/membership/apply', { body: Object.assign({}, base, over) });
+  const check = (code, tier) => C.call('POST', '/api/membership/code', { body: { code, tier: tier || 'student' } });
+  // only the committee can create or see codes
+  assert.equal((await C.call('GET', '/api/admin/fee-codes')).status, 401);
+  const outsider = await C.signIn('nobody@example.org');
+  assert.equal((await C.call('POST', '/api/admin/fee-codes', { cookie: outsider, body: { label: 'x' } })).status, 403);
+  const made = await C.call('POST', '/api/admin/fee-codes', { cookie: root, body: { label: 'Partner scholars', maxUses: 1 } });
+  assert.equal(made.status, 200); const code = made.body.created;
+  assert.match(code, /^OSS-[A-HJKMNP-Z2-9]{4}-[A-HJKMNP-Z2-9]{4}$/); assert.equal(made.body.codes[0].used, 0); assert.equal(made.body.codes[0].label, 'Partner scholars');
+  // "Check code": accepted or declined, and typing it in lower case with spaces still works
+  assert.deepEqual((await check(' ' + code.toLowerCase() + ' ')).body, { ok: true });
+  assert.deepEqual((await check('OSS-NOPE-NOPE')).body, { ok: false, reason: 'invalid' });
+  assert.deepEqual((await check(code, 'saudi')).body, { ok: false, reason: 'not_needed' }, 'free types need no code');
+  // a wrong code stops the form: nothing is saved
+  const bad = await send({ tier: 'student', email: 'code-bad@example.org', feeCode: 'OSS-NOPE-NOPE' });
+  assert.equal(bad.status, 400); assert.equal(bad.body.fields.feeCode, 'invalid');
+  assert.equal((await q(db, "SELECT count(*)::int AS n FROM oss_members WHERE email = 'code-bad@example.org'"))[0].n, 0);
+  // the right code: fee waived, shown to the applicant and the committee, counted once
+  const ok = await send({ tier: 'student', email: 'code-ok@example.org', feeCode: code.toLowerCase() });
+  assert.equal(ok.status, 200, JSON.stringify(ok.body)); assert.equal(ok.body.member.amountGbp, 0); assert.equal(ok.body.member.paymentStatus, 'waived'); assert.equal(ok.body.member.feeWaived, true);
+  assert.equal(JSON.stringify(ok.body).includes(code), false, 'the code is never sent back to the browser');
+  assert.match(C.lastMail('code-ok@example.org', 'membership_received').body_text, /fee has been waived with the code you entered/);
+  assert.doesNotMatch(C.lastMail('code-ok@example.org', 'membership_received').body_text, /£10|treasurer/);
+  assert.ok(C.lastMail(COMMITTEE, 'membership_committee').body_text.includes('Fee waived with code ' + code));
+  const det = await C.call('GET', '/api/admin/membership/' + ok.body.member.memberNo, { cookie: root });
+  assert.equal(det.body.member.fee_code, code); assert.equal(det.body.member.payment_status, 'waived');
+  assert.equal((await C.call('GET', '/api/admin/fee-codes', { cookie: root })).body.codes[0].used, 1);
+  // the same person sending the form again does not use the code up twice
+  assert.equal((await send({ tier: 'student', email: 'code-ok@example.org', feeCode: code })).body.result, 'already');
+  assert.equal((await q(db, 'SELECT used FROM oss_fee_codes WHERE code = $1', [code]))[0].used, 1);
+  // one use only: the next person is declined
+  const second = await send({ tier: 'associate', email: 'code-second@example.org', status: 'staff', feeCode: code });
+  assert.equal(second.status, 400); assert.equal(second.body.fields.feeCode, 'used_up');
+  assert.deepEqual((await check(code)).body, { ok: false, reason: 'used_up' });
+  // expired and switched-off codes are declined; a free type ignores a code without using it
+  const exp = (await C.call('POST', '/api/admin/fee-codes', { cookie: root, body: { code: 'old-code-1', expiresOn: '2020-01-01' } })).body.created;
+  assert.equal(exp, 'OLD-CODE-1'); assert.deepEqual((await check(exp)).body, { ok: false, reason: 'expired' });
+  const open = (await C.call('POST', '/api/admin/fee-codes', { cookie: root, body: { code: 'FRIENDS2026' } })).body.created;
+  assert.equal((await C.call('POST', '/api/admin/fee-codes', { cookie: root, body: { code: 'FRIENDS2026' } })).status, 409, 'no two codes alike');
+  const free = await send({ tier: 'friend', email: 'code-friend@example.org', status: 'alumni', feeCode: open, sso: '' });
+  assert.equal(free.status, 200); assert.equal(free.body.member.feeWaived, false); assert.equal((await q(db, 'SELECT used FROM oss_fee_codes WHERE code = $1', [open]))[0].used, 0);
+  await C.call('POST', '/api/admin/fee-codes/' + open + '/disable', { cookie: root, body: {} });
+  assert.deepEqual((await check(open)).body, { ok: false, reason: 'invalid' });
+  await C.call('POST', '/api/admin/fee-codes/' + open + '/enable', { cookie: root, body: {} });
+  assert.deepEqual((await check(open, 'associate')).body, { ok: true });
+});
