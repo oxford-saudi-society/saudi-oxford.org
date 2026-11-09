@@ -5,7 +5,7 @@
   var O = window.OSS, $ = O.$, esc = O.esc, lang = O.lang, base = O.base, L = O.L;
   var S = {
     en: {
-      title: 'Committee desk', sub: 'Membership & events', signinH: 'Staff sign-in', signinP: 'Enter your committee email and we will send you a sign-in link.', email: 'Email', send: 'Email me a sign-in link', sent: 'Check your email', notStaff: 'This address is not on the staff list. Ask a super admin to add you.',
+      title: 'Committee desk', sub: 'Membership & events', signinH: 'Staff sign-in', signinP: 'Enter your committee email and we will send you a sign-in link.', email: 'Email', send: 'Email me a sign-in link', sent: 'Check your email', sentP: 'If {email} is on the committee list, a sign-in link is on its way. It works once, within 30 minutes.', sentHelp: 'Nothing after a few minutes? Check junk or quarantine, then send a new link.', sentAgain: 'Use a different address or send again', notStaff: 'This address is not on the staff list. Ask a super admin to add you.',
       tabs: { membership: 'Membership', overview: 'Events', checkin: 'Check-in', mail: 'Email queue', members: 'Members', staff: 'Staff', audit: 'Audit log' }, back: '← Programme',
       th: { event: 'Event', when: 'When', status: 'Status', mode: 'Registration', cap: 'Capacity', interested: 'Interest', confirmed: 'Confirmed', waitlist: 'Waitlist', checkedIn: 'Checked in', actions: '' },
       st: { proposed: 'Proposed', confirmed: 'Confirmed', postponed: 'Postponed', cancelled: 'Cancelled', completed: 'Completed' },
@@ -30,7 +30,7 @@
       signout: 'Sign out', who: 'Signed in as'
     },
     ar: {
-      title: 'مكتب اللجنة', sub: 'العضوية والفعاليات', signinH: 'دخول أعضاء اللجنة', signinP: 'أدخل بريدك في اللجنة وسنرسل لك رابط دخول.', email: 'البريد الإلكتروني', send: 'أرسل لي رابط الدخول', sent: 'تحقّق من بريدك', notStaff: 'هذا البريد ليس في قائمة الموظفين. اطلب من المشرف العام إضافتك.',
+      title: 'مكتب اللجنة', sub: 'العضوية والفعاليات', signinH: 'دخول أعضاء اللجنة', signinP: 'أدخل بريدك في اللجنة وسنرسل لك رابط دخول.', email: 'البريد الإلكتروني', send: 'أرسل لي رابط الدخول', sent: 'تحقّق من بريدك', sentP: 'إن كان {email} ضمن قائمة اللجنة فرابط الدخول في الطريق إليك، ويعمل مرة واحدة خلال ٣٠ دقيقة.', sentHelp: 'لم يصل شيء بعد بضع دقائق؟ تحقّق من البريد غير المرغوب فيه ثم اطلب رابطًا جديدًا.', sentAgain: 'استخدم بريدًا آخر أو أعد الإرسال', notStaff: 'هذا البريد ليس في قائمة الموظفين. اطلب من المشرف العام إضافتك.',
       tabs: { membership: 'العضوية', overview: 'الفعاليات', checkin: 'تسجيل الحضور', mail: 'قائمة البريد', members: 'الأعضاء', staff: 'الموظفون', audit: 'سجل التدقيق' }, back: '→ البرنامج',
       th: { event: 'الفعالية', when: 'الموعد', status: 'الحالة', mode: 'التسجيل', cap: 'السعة', interested: 'اهتمام', confirmed: 'مؤكد', waitlist: 'انتظار', checkedIn: 'حضر', actions: '' },
       st: { proposed: 'مقترحة', confirmed: 'مؤكدة', postponed: 'مؤجلة', cancelled: 'ملغاة', completed: 'منتهية' },
@@ -69,7 +69,13 @@
     $('si').addEventListener('submit', async function (e) {
       e.preventDefault(); var email = $('si-email').value.trim(); if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return;
       $('si-btn').disabled = true;
-      try { await O.api('/auth/request-link', { method: 'POST', body: { email: email, lang: lang, redirect: location.pathname } }); app.innerHTML = '<div class="app-head"><div><p class="eyebrow">' + esc(s.title) + '</p><h1>' + esc(s.sent) + '</h1></div></div>'; }
+      try {
+        await O.api('/auth/request-link', { method: 'POST', body: { email: email, lang: lang, redirect: location.pathname } });
+        app.innerHTML = '<div class="app-head"><div><p class="eyebrow">' + esc(s.title) + '</p><h1>' + esc(s.sent) + '</h1></div></div>' +
+          '<div class="pane stack" style="max-width:520px"><p style="margin:0">' + s.sentP.replace('{email}', '<b dir="ltr">' + esc(email) + '</b>') + '</p><p class="muted" style="margin:0">' + esc(s.sentHelp) + '</p>' +
+          '<div class="rowc"><button class="btn btn-s" type="button" id="si-again">' + esc(s.sentAgain) + '</button></div></div>';
+        $('si-again').addEventListener('click', function () { signin(); $('si-email').value = email; });
+      }
       catch (ex) { $('si-err').textContent = errText(ex); $('si-err').hidden = false; $('si-btn').disabled = false; }
     });
   }
