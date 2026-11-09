@@ -852,31 +852,6 @@
         },
         {
           "q": {
-            "ar": "أين أشتري ملابس الشتاء والأغراض المنزلية الأساسية بأسعار مناسبة؟",
-            "en": "Where can I buy affordable winter clothing and household essentials?"
-          },
-          "a": {
-            "ar": "لملابس الاستخدام اليومي وطبقات الشتاء، قارِن متاجر مثل Uniqlo وPrimark ومحلات وسط أكسفورد والمتاجر الخيرية. وللأدوات المنزلية الأساسية جرّب Argos والمتاجر الكبيرة. اجعل الأولوية لمعطف مقاوم للمطر وطبقة دافئة وحذاء مناسب، فشتاء أكسفورد قد يكون باردًا وممطرًا.",
-            "en": "For everyday clothing and winter layers, compare high-street retailers such as Uniqlo and Primark, the Oxford city-centre shopping area and local charity shops. For basic household equipment, try Argos and larger homeware stores. Prioritise a waterproof coat, warm mid-layer and suitable shoes; the weather can be wet and cold through winter."
-          },
-          "refs": [
-            {
-              "label": "Uniqlo UK: winter clothing",
-              "url": "https://www.uniqlo.com/uk/en/"
-            },
-            {
-              "label": "Primark UK: clothing",
-              "url": "https://www.primark.com/en-gb"
-            },
-            {
-              "label": "Argos UK: household essentials",
-              "url": "https://www.argos.co.uk/"
-            }
-          ],
-          "id": "winter-clothing"
-        },
-        {
-          "q": {
             "ar": "كيف أقدّم لطفلي على مدرسة في أوكسفوردشاير عند الانتقال خلال العام؟",
             "en": "How do I apply for an Oxfordshire school place when moving mid-year?"
           },
