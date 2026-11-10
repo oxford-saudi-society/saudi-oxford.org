@@ -11,7 +11,7 @@
     "student": 10,
     "external": 10,
     "associate": 15,
-    "confirmed": false
+    "confirmed": true
   },
   "payLinks": {
     "student": "",
@@ -28,7 +28,7 @@
     "linkedin": "https://www.linkedin.com/in/saudi-students-club-in-oxford-336458233/"
   },
   "privacy": {
-    "version": "2026-11-09"
+    "version": "2026-11-10"
   },
   "ideas": {
     "cannyBoardToken": "",

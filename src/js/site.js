@@ -12,7 +12,7 @@
       sumVerify: 'Free — the secretary will email you later if proof of nationality is needed',
       sumWaived: 'Nothing to pay — your fee is waived with your code',
       codeOk: 'Exemption code accepted — your membership fee is waived.', codeOkPersonal: 'Exemption code accepted. It is reserved for one email address, which is checked when you send the form.', codeChecking: 'Checking…', codeEmpty: 'Type the code first.',
-      codeBad: { typo: 'That code has a typing mistake — please check it against the one you were given.', not_yours: 'Code declined — this code is reserved for a different email address.', invalid: 'Code declined — this code is not valid.', expired: 'Code declined — this code has expired.', used_up: 'Code declined — this code has already been used.', not_needed: 'This membership type is free, so no code is needed.', rate: 'Too many attempts. Please wait a few minutes and try again.', net: 'The code could not be checked just now. It is checked again when you send the form.' }, sumNone: 'Choose a membership type above',
+      codeBad: { not_yours: 'Code declined — this code is reserved for a different email address.', invalid: 'Code declined — this code is not recognised. Please check it against the one you were given.', expired: 'Code declined — this code has expired.', used_up: 'Code declined — this code has already been used.', not_needed: 'This category is free, so no code is needed.', rate: 'Too many attempts. Please wait a few minutes and try again.', net: 'The code could not be checked just now. It is checked again when you send the form.' }, sumNone: 'Choose a membership type above',
       sending: 'Sending…',
       cardTitle: 'Pay by card', cardBtn: 'Pay {amount} by card',
       cardNote: 'Secure checkout opens in a new tab, handled by the payment provider. The Society never sees your card details.',
@@ -24,7 +24,7 @@
       sumVerify: 'مجاناً — سيراسلك أمين السر لاحقاً إن لزم إثبات الجنسية',
       sumWaived: 'لا توجد رسوم — أُعفيت منها بموجب الرمز',
       codeOk: 'تم قبول رمز الإعفاء — أُعفيت من رسوم العضوية.', codeOkPersonal: 'تم قبول رمز الإعفاء. هذا الرمز مخصّص لبريد إلكتروني واحد، ويُتحقق منه عند إرسال النموذج.', codeChecking: 'جارٍ التحقق…', codeEmpty: 'اكتب الرمز أولاً.',
-      codeBad: { typo: 'في الرمز خطأ كتابي — راجعه وقارنه بالرمز الذي استلمته.', not_yours: 'رُفض الرمز — هذا الرمز مخصّص لبريد إلكتروني آخر.', invalid: 'رُفض الرمز — هذا الرمز غير صحيح.', expired: 'رُفض الرمز — انتهت صلاحية هذا الرمز.', used_up: 'رُفض الرمز — استُخدم هذا الرمز من قبل.', not_needed: 'هذا النوع من العضوية مجاني، فلا حاجة إلى رمز.', rate: 'محاولات كثيرة. انتظر بضع دقائق ثم حاول مجدداً.', net: 'تعذّر التحقق من الرمز الآن. سيُتحقق منه مرة أخرى عند إرسال النموذج.' }, sumNone: 'اختر نوع العضوية أعلاه',
+      codeBad: { not_yours: 'رُفض الرمز — هذا الرمز مخصّص لبريد إلكتروني آخر.', invalid: 'رُفض الرمز — هذا الرمز غير معروف لدينا. راجعه وقارنه بالرمز الذي استلمته.', expired: 'رُفض الرمز — انتهت صلاحية هذا الرمز.', used_up: 'رُفض الرمز — استُخدم هذا الرمز من قبل.', not_needed: 'هذا النوع من العضوية مجاني، فلا حاجة إلى رمز.', rate: 'محاولات كثيرة. انتظر بضع دقائق ثم حاول مجدداً.', net: 'تعذّر التحقق من الرمز الآن. سيُتحقق منه مرة أخرى عند إرسال النموذج.' }, sumNone: 'اختر نوع العضوية أعلاه',
       sending: 'جارٍ الإرسال…',
       cardTitle: 'الدفع بالبطاقة', cardBtn: 'ادفع {amount} بالبطاقة',
       cardNote: 'تُفتح صفحة دفع آمنة في تبويب جديد عبر مزوّد الدفع. لا تطّلع الجمعية على بيانات بطاقتك أبداً.',
@@ -148,19 +148,83 @@
     apply(); openHash();
   })();
 
-  /* ── join form ─────────────────────────────────────────────────── */
+  /* ── join form: three steps — category → status or interests → details and confirmation ─────────────────────
+     Six categories. Four are memberships; the Mailing List and Volunteer Registration are separate and give no
+     membership rights. Each step shows only what applies to the choices made so far: an answer that stops applying
+     is cleared, is not checked and is not sent. The server applies the same rules again (netlify/lib/membership.mjs). */
   var form = $('join-form'); if (!form) return;
   var done = $('join-done');
-  var TIERS = [
-    { id: 'saudi', price: 0, verify: true, en: 'Oxford University Saudi students', ar: 'الطلبة السعوديون في جامعة أكسفورد' },
-    { id: 'student', price: SITE.fees.student != null ? SITE.fees.student : 10, en: 'Oxford University students membership', ar: 'عضوية طلبة جامعة أكسفورد' },
-    { id: 'external', price: SITE.fees.external != null ? SITE.fees.external : 10, en: 'Non-Oxford University students', ar: 'طلبة الجامعات الأخرى' },
-    { id: 'associate', price: SITE.fees.associate != null ? SITE.fees.associate : 15, en: 'Associate membership', ar: 'عضوية غير الطلبة' },
-    { id: 'friend', price: 0, en: 'Mailing list & volunteering', ar: 'القائمة البريدية والتطوّع' }
-  ];
-  var STATUS = { undergraduate: 'Undergraduate', masters: "Taught postgraduate (Master's)", dphil: 'Research postgraduate (DPhil)', visiting: 'Visiting student or researcher', staff: 'University staff or researcher', alumni: 'Alumni', other: 'Other' };
-  var VOL = { events: 'Events', media: 'Media & design', partnerships: 'Sponsorship & partnerships', welfare: 'Welfare & welcome', academic: 'Academic & careers' };
-  var busy = false, last = null;
+  var I = lang === 'ar' ? 1 : 0, tx = function (pair) { return pair[I]; };
+  var fees = SITE.fees || {};
+  var PRICE = { saudi: 0, student: fees.student != null ? fees.student : 10, external: fees.external != null ? fees.external : 10, associate: fees.associate != null ? fees.associate : 15, mailing: 0, volunteer: 0 };
+  var MEMBER = { saudi: 1, student: 1, external: 1, associate: 1 };
+  /* status: [English, Arabic, kind]. The kind decides which details step 3 asks for. */
+  var STATUS = {
+    undergraduate: ['Undergraduate student', 'طالب بكالوريوس', 'student'], masters: ['Master’s student', 'طالب ماجستير', 'student'], doctoral: ['Doctoral student', 'طالب دكتوراه', 'student'], visiting_student: ['Visiting student', 'طالب زائر', 'student'],
+    alumni: ['Oxford university alumnus', 'خريج إحدى جامعات أكسفورد', 'alumni'], academic_staff: ['Academic staff', 'عضو هيئة تدريس', 'academic'], researcher: ['Researcher / postdoctoral researcher', 'باحث أو باحث ما بعد الدكتوراه', 'academic'], visiting_researcher: ['Visiting researcher', 'باحث زائر', 'academic'],
+    clinical_fellow: ['Clinical fellow', 'طبيب زمالة', 'clinical'], resident_doctor: ['Resident doctor', 'طبيب مقيم', 'clinical'], consultant: ['Consultant physician', 'طبيب استشاري', 'clinical'], healthcare: ['Other healthcare professional', 'ممارس صحي', 'health'],
+    university_employee: ['University or research-institution employee', 'موظف في جامعة أو جهة بحثية', 'employee'], oxford_professional: ['Oxford-based professional or business owner', 'موظف أو صاحب عمل في مدينة أكسفورد', 'work'], other_connection: ['Other Oxford connection', 'صلة أخرى بأكسفورد', 'other'],
+    professional: ['Employee or professional', 'موظف أو مهني', 'work'], supporter: ['Friend or supporter of the Society', 'صديق أو داعم للجمعية', 'none'], other: ['Other', 'أخرى', 'other']
+  };
+  var TIER_STATUS = {
+    saudi: ['undergraduate', 'masters', 'doctoral', 'visiting_student', 'alumni', 'academic_staff', 'researcher', 'visiting_researcher', 'clinical_fellow', 'resident_doctor', 'consultant', 'healthcare', 'university_employee', 'oxford_professional', 'other_connection'],
+    student: ['undergraduate', 'masters', 'doctoral', 'visiting_student'], external: ['undergraduate', 'masters', 'doctoral', 'visiting_student'],
+    associate: ['academic_staff', 'researcher', 'visiting_researcher', 'university_employee', 'alumni', 'clinical_fellow', 'resident_doctor', 'consultant', 'healthcare', 'professional', 'supporter', 'other']
+  };
+  var STATUS_ALT = {
+    associate: { researcher: ['Researcher', 'باحث'], university_employee: ['University employee', 'موظف جامعي'], alumni: ['Alumnus', 'خريج'] },
+    external: { undergraduate: ['Undergraduate', 'بكالوريوس'], masters: ['Master’s', 'ماجستير'], doctoral: ['Doctorate', 'دكتوراه'] }
+  };
+  var PLACES = [['brookes', 'Oxford Brookes University', 'جامعة أكسفورد بروكس'], ['uk_university', 'Another UK university', 'جامعة أخرى داخل بريطانيا'], ['global_university', 'University outside the UK', 'جامعة خارج بريطانيا']];
+  var INTERESTS = [['cultural', 'Cultural events', 'الفعاليات الثقافية'], ['social', 'Social gatherings', 'اللقاءات الاجتماعية'], ['academic', 'Academic events', 'الفعاليات الأكاديمية'], ['careers', 'Career opportunities', 'الفرص المهنية'], ['all_news', 'All Society news', 'جميع أخبار الجمعية']];
+  var AREAS = [['events', 'Event organisation', 'تنظيم الفعاليات'], ['media', 'Media and design', 'الإعلام والتصميم'], ['photography', 'Photography and media coverage', 'التصوير والتغطية الإعلامية'], ['partnerships', 'Sponsorships and partnerships', 'الرعايات والشراكات'], ['welcome', 'Welcoming and supporting new students', 'استقبال ودعم الطلبة الجدد'], ['academic', 'Academic and professional programmes', 'البرامج الأكاديمية والمهنية'], ['admin', 'Administrative and organisational support', 'الدعم الإداري والتنظيمي']];
+  var VOL_PLACE = { oxford: ['In Oxford', 'في أكسفورد'], remote: ['Remotely', 'عن بُعد'], both: ['Both', 'كلاهما'] };
+  /* Words that change with the choices made: [label or heading, message when it is missing, placeholder] */
+  var W = {
+    h2: { saudi: ['What is your connection to Oxford?', 'ما علاقتك بأكسفورد؟'], student: ['Your status', 'صفتك الحالية'], associate: ['Your status', 'صفتك الحالية'], external: ['Where do you study?', 'أين تدرس؟'], mailing: ['Which topics interest you?', 'ما المواضيع التي تهمك؟'], volunteer: ['In which areas would you like to volunteer?', 'في أي المجالات ترغب بالتطوع؟'] },
+    eyebrow2: { status: ['Step 2 of 3 · Your status', 'الخطوة ٢ من ٣ · صفتك الحالية'], interest: ['Step 2 of 3 · Your interests', 'الخطوة ٢ من ٣ · مجال الاهتمام'] },
+    uniStudy: [['University', 'الجامعة'], ['Please choose your university.', 'يرجى اختيار الجامعة.']],
+    uniGrad: [['University you graduated from', 'الجامعة التي تخرجت منها'], ['Please choose the university you graduated from.', 'يرجى اختيار الجامعة التي تخرجت منها.']],
+    uniInst: [['University or institution', 'الجامعة أو الجهة التابع لها'], ['Please choose your university or institution.', 'يرجى اختيار الجامعة أو الجهة التابع لها.']],
+    orgUni: [['University name', 'اسم الجامعة'], ['Please enter the name of your university.', 'يرجى إدخال اسم الجامعة.'], ['e.g. Oxford Brookes University', 'مثال: جامعة أكسفورد بروكس']],
+    orgInst: [['Name of the university or institution', 'اسم الجامعة أو الجهة'], ['Please enter the name of the university or institution.', 'يرجى إدخال اسم الجامعة أو الجهة.'], ['', '']],
+    orgGrad: [['Name of the university you graduated from', 'اسم الجامعة التي تخرجت منها'], ['Please enter the name of the university you graduated from.', 'يرجى إدخال اسم الجامعة التي تخرجت منها.'], ['', '']],
+    orgHealth: [['Name of the hospital or healthcare organisation', 'اسم المستشفى أو الجهة الصحية'], ['Please enter the name of the hospital or healthcare organisation.', 'يرجى إدخال اسم المستشفى أو الجهة الصحية.'], ['', '']],
+    orgWork: [['Employer or business name', 'جهة العمل أو اسم المنشأة'], ['Please enter your employer or business name.', 'يرجى إدخال جهة العمل أو اسم المنشأة.'], ['', '']],
+    roleJob: [['Job title', 'الصفة الوظيفية'], ['Please enter your job title.', 'يرجى إدخال الصفة الوظيفية.'], ['e.g. Clinical Fellow in Cardiology', 'مثال: طبيب زمالة في أمراض القلب']],
+    roleProf: [['Professional role', 'الصفة المهنية'], ['Please enter your professional role.', 'يرجى إدخال الصفة المهنية.'], ['e.g. Pharmacist', 'مثال: صيدلي']],
+    roleWork: [['Nature of work or job title', 'طبيعة العمل أو المسمى الوظيفي'], ['Please enter the nature of your work or your job title.', 'يرجى إدخال طبيعة العمل أو المسمى الوظيفي.'], ['', '']],
+    connSaudi: [['Explain your connection to Oxford', 'وضّح علاقتك بأكسفورد'], ['Please explain your connection to Oxford.', 'يرجى توضيح علاقتك بأكسفورد.']],
+    connOther: [['Tell us about your status', 'وضّح صفتك'], ['Please tell us about your status in a few words.', 'يرجى توضيح صفتك بإيجاز.']],
+    submit: { member: ['Send membership application', 'إرسال طلب العضوية'], volunteer: ['Send volunteer registration', 'إرسال طلب التطوع'], mailing: ['Subscribe to the mailing list', 'الاشتراك في القائمة البريدية'] },
+    assess: { confirm: ['Please confirm your nationality, or switch off the assessment request.', 'يرجى تأكيد جنسيتك، أو ألغِ طلب التقييم.'], conn: ['Please answer the question about your connection to Oxford.', 'يرجى الإجابة عن سؤال صلتك بأكسفورد.'], offer: ['Switch to the free membership above, or switch off the assessment request.', 'انتقل إلى العضوية المجانية أعلاه، أو ألغِ طلب التقييم.'] },
+    rev: { cat: ['Category', 'نوع العضوية'], fee: ['Fee', 'الرسوم'], status: ['Status', 'الصفة'], inst: ['Institution', 'الجهة'], name: ['Name', 'الاسم'], email: ['Email', 'البريد الإلكتروني'], topics: ['Topics', 'المواضيع'], areas: ['Volunteering areas', 'مجالات التطوع'], place: ['Preferred place', 'مكان التطوع المفضل'], missing: ['not filled in yet', 'لم يُدخل بعد'], hold: ['not requested while your eligibility is under review', 'لا تُطلب ما دام طلبك قيد التحقق من الأهلية'], all: ['All Society news', 'جميع أخبار الجمعية'] },
+    codeOk: ['Code accepted — your membership fee is waived.', 'تم قبول الرمز — أُعفيت من رسوم العضوية.'], codeOff: ['Code accepted — {pct}% off. Your fee is now {fee}.', 'تم قبول الرمز — خصم {pct}٪. أصبحت الرسوم {fee}.'],
+    codePersonal: ['This code is reserved for one email address, which is checked when you send the form.', 'هذا الرمز مخصّص لبريد إلكتروني واحد، ويُتحقق منه عند إرسال النموذج.']
+  };
+  function arDigits(n) { return String(n).replace(/\d/g, function (d) { return '٠١٢٣٤٥٦٧٨٩'.charAt(+d); }); }
+  /* The fee as it is shown before sending: Free · £10 per year · ١٠ جنيهات إسترلينية سنويًا · ١٥ جنيهًا إسترلينيًا سنويًا */
+  function feeText(n) {
+    if (!(n > 0)) return tx(['Free', 'مجانية']);
+    if (!I) return '£' + n + ' per year';
+    if (n === 1) return 'جنيه إسترليني واحد سنويًا';
+    if (n === 2) return 'جنيهان إسترلينيان سنويًا';
+    return n <= 10 ? arDigits(n) + ' جنيهات إسترلينية سنويًا' : arDigits(n) + ' جنيهًا إسترلينيًا سنويًا';
+  }
+  var busy = false, last = null, step = 1, shownFor = null;
+  var GLIDE = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'; // no gliding for people who ask for less motion
+  var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/, SSO_RE = /^[A-Za-z]{4}[0-9]{4}$/;
+  var INPUT = { name: 'f-name', name_ar: 'f-name-ar', email: 'f-email', phone: 'f-phone', uniChoice: 'f-uni-choice', hospital: 'f-hospital', org: 'f-org', college: 'f-college', sso: 'f-sso', department: 'f-department', role: 'f-role', specialty: 'f-specialty', subject: 'f-subject', gradYear: 'f-grad-year', connection: 'f-connection', place: 'f-place' };
+  var SEND_AS = { name: 'name', name_ar: 'nameAr', phone: 'phone', uniChoice: 'uniChoice', hospital: 'hospital', org: 'org', college: 'college', sso: 'sso', department: 'department', role: 'role', specialty: 'specialty', subject: 'subject', gradYear: 'gradYear', connection: 'connection', place: 'place' };
+  function val(n) { var el = $(INPUT[n]); return el ? el.value.trim() : ''; }
+  function radio(name) { var r = form.querySelector('input[name="' + name + '"]:checked'); return r ? r.value : ''; }
+  function ticked(name) { return Array.prototype.map.call(form.querySelectorAll('input[name="' + name + '"]:checked'), function (c) { return c.value; }); }
+  function cat() { return radio('tier'); }
+  function tierName(c) { var r = form.querySelector('input[name="tier"][value="' + c + '"]'); return r ? r.closest('.tier').querySelector('.tn').textContent : ''; }
+  function statusName(c, st) { var alt = (STATUS_ALT[c] || {})[st], s = alt || STATUS[st]; return s ? s[I] : ''; }
+  function kindOf() { var c = cat(), st = radio('status'); if (!MEMBER[c] || !st || !STATUS[st]) return ''; return c === 'student' || c === 'external' ? 'student' : STATUS[st][2]; }
+  function setErr(name, on) { var f = form.querySelector('[data-f="' + name + '"]'); if (!f) return; f.classList.toggle('err', !!on); var inp = f.querySelector('input,select,textarea'); if (inp) inp.setAttribute('aria-invalid', on ? 'true' : 'false'); }
+
   /* College / department: the suggestions are drawn by the page in the same style as the field (a browser's own
      suggestion list cannot be styled). Typing filters them; an answer that is not on the list is still accepted. */
   (function collegeCombo() {
@@ -218,166 +282,308 @@
     input.addEventListener('blur', function () { setTimeout(function () { if (document.activeElement !== input) close(); }, 150); });
     document.addEventListener('pointerdown', function (e) { if (!wrap.contains(e.target)) close(); });
   })();
-  function tierOf(id) { for (var i = 0; i < TIERS.length; i++) if (TIERS[i].id === id) return TIERS[i]; return null; }
-  function amountOf(tier) { return '£' + tier.price; }
-  function amountHtml(tier) { var a = esc(amountOf(tier)); return '<bdi>' + (SITE.fees.confirmed ? a : '<span class="ph">[' + a + ']</span>') + '</bdi>'; }
-  function selectedTier() { var r = form.querySelector('input[name="tier"]:checked'); return r ? tierOf(r.value) : null; }
-  function syncTier() {
-    var tier = selectedTier();
-    document.querySelectorAll('#tiers .tier').forEach(function (l) { l.classList.toggle('sel', l.querySelector('input').checked); });
-    $('email-hint').hidden = !(tier && (tier.id === 'student' || tier.id === 'saudi'));
-    // A student of another university gives their university and subject; everyone else gives an Oxford college or
-    // department (and, for the two Oxford student types, the SSO username). Step 2 offers the matching choices.
-    var ext = isExternal(tier);
-    [['sso', ext], ['college', ext], ['university', !ext], ['subject', !ext]].forEach(function (p) { var f = form.querySelector('[data-f="' + p[0] + '"]'); if (f) { f.hidden = p[1]; if (p[1]) setErr(p[0], false); } });
-    $('f-college').required = !ext; $('f-university').required = ext; $('f-subject').required = ext;
-    document.querySelectorAll('#statuses .stat').forEach(function (l) { var mine = (l.getAttribute('data-for') === 'external') === ext; l.hidden = !mine; var r = l.querySelector('input[name="status"]'); if (!mine && r.checked) r.checked = false; });
-    var sh = $('status-h'); if (sh) sh.textContent = sh.getAttribute((lang === 'ar' ? 'data-ar-' : 'data-') + (ext ? 'external' : 'oxford')) || sh.textContent;
-    syncStatus(false);
-    var paidTier = !!(tier && tier.price), fc = $('fee-code');
-    if (fc) { fc.hidden = !paidTier; if (!paidTier) codeState(null); }
-    $('sum').innerHTML = !tier ? t('sumNone') : tier.price ? (feeOk ? t('sumWaived') : t('sumPaid', { amount: amountHtml(tier) })) : tier.verify ? t('sumVerify') : t('sumFree');
-    // the Oxford SSO username is needed for the two student membership types only
-    var needSso = ssoNeeded(tier), ssoIn = $('f-sso');
-    if (ssoIn) { ssoIn.required = needSso; $('sso-req').hidden = !needSso; $('sso-opt').hidden = needSso; if (!needSso && (!ssoIn.value.trim() || SSO_RE.test(ssoIn.value.trim()))) setErr('sso', false); }
-    if (tier) { $('tier-msg').style.display = 'none'; $('tiers').classList.remove('err'); }
+
+  /* ── step 2: drawn for the chosen category; choosing another category starts it afresh ─────────────────── */
+  function cards(host, name, items) {
+    var tones = ['green', 'gold', 'sky'];
+    host.innerHTML = items.map(function (it, i) { return '<label class="tier stat compact" data-tone="' + tones[i % 3] + '"><input type="radio" name="' + name + '" value="' + esc(it[0]) + '"><span class="chk" aria-hidden="true"></span><span class="tn">' + esc(it[1]) + '</span></label>'; }).join('');
   }
-  /* Fee code: a code from the committee waives the fee on the fee-paying membership types. "Check code" answers at once
-     (accepted or declined); the server checks it again when the form is sent, so nothing depends on this check. */
-  var feeOk = false;
-  /* A generated code looks like OSS-X26-7K4MQ-2XPDC: issuer, type and year, nine random characters and a final check
-     character (Luhn mod 32 over an alphabet with no I, L, O or U). The page puts the dashes in as you type, reads a
-     typed O as 0 and I or L as 1, and spots a typing mistake from the check character before asking the server. */
-  var B32 = '0123456789ABCDEFGHJKMNPQRSTVWXYZ';
-  function codeCanon(v) {
-    var raw = String(v || '').toUpperCase().replace(/[^A-Z0-9-]/g, ''), bare = raw.replace(/-/g, '');
-    if (/^OSSX[0-9]{0,2}[0-9A-Z]{0,10}$/.test(bare) && bare.length > 3) { var body = bare.slice(6).replace(/O/g, '0').replace(/[IL]/g, '1'); return ['OSS', bare.slice(3, 6), body.slice(0, 5), body.slice(5, 10)].filter(function (x) { return x; }).join('-'); }
-    return raw.slice(0, 24);
+  function switches(host, name, items) { host.innerHTML = items.map(function (it) { return '<label class="chk-l"><input type="checkbox" name="' + name + '" value="' + esc(it[0]) + '"><span>' + esc(it[1 + I]) + '</span></label>'; }).join(''); }
+  function paintCards() { form.querySelectorAll('.tier').forEach(function (l) { var r = l.querySelector('input[type="radio"]'); if (r) l.classList.toggle('sel', r.checked); }); }
+  function renderStep2() {
+    var c = cat(), member = !!MEMBER[c];
+    if (c !== shownFor) {
+      shownFor = c;
+      cards($('places'), 'uni_place', c === 'external' ? PLACES.map(function (p) { return [p[0], p[1 + I]]; }) : []);
+      cards($('statuses'), 'status', member ? TIER_STATUS[c].map(function (k) { return [k, statusName(c, k)]; }) : []);
+      switches($('interests'), 'interests', c === 'mailing' ? INTERESTS : []);
+      switches($('areas'), 'areas', c === 'volunteer' ? AREAS : []);
+      ['uniPlace', 'status', 'areas'].forEach(function (n) { setErr(n, false); });
+    }
+    $('status-h').textContent = tx(W.h2[c] || W.h2.student);
+    $('step-2-eyebrow').textContent = tx(member ? W.eyebrow2.status : W.eyebrow2.interest);
+    $('place-wrap').hidden = c !== 'external';
+    $('interests-wrap').hidden = c !== 'mailing';
+    $('areas-wrap').hidden = c !== 'volunteer';
+    var levels = c === 'external'; // a student of another university says where first, then at what level
+    $('status-wrap').hidden = !member || (levels && !radio('uni_place'));
+    $('level-h').hidden = !levels;
+    $('statuses').setAttribute('aria-label', tx(levels ? ['Level of study', 'المرحلة الدراسية'] : ['Status', 'الصفة']));
+    $('places').setAttribute('aria-label', tx(W.h2.external));
+    paintCards();
   }
-  function codeTypo(code) { // true only for a complete generated-format code whose check character is wrong
-    var bare = String(code).replace(/-/g, ''); if (!/^OSSX[0-9]{2}[0-9A-Z]{10}$/.test(bare)) return false;
-    var p = bare.slice(3), factor = 1, sum = 0;
-    for (var i = p.length - 1; i >= 0; i--) { var cp = B32.indexOf(p.charAt(i)); if (cp < 0) return true; var add = factor * cp; factor = factor === 2 ? 1 : 2; sum += Math.floor(add / 32) + (add % 32); }
-    return sum % 32 !== 0;
+
+  /* ── step 3: which details apply, by category and status ───────────────────────────────────────────────── */
+  function plan() {
+    var c = cat(), k = kindOf(), f = {};
+    function add(n, req, words) { f[n] = { req: !!req, words: words || null }; }
+    if (c === 'mailing') { add('name', false); add('email', true); return f; }
+    add('name', true); add('name_ar', false); add('email', true); add('phone', false);
+    if (c === 'volunteer') { add('place', true); return f; }
+    if (c === 'student') { add('college', true); add('sso', false); }
+    else if (c === 'external') { add('org', true, 'orgUni'); add('subject', false); }
+    else if (k === 'student') { add('uniChoice', true, 'uniStudy'); if (val('uniChoice') === 'oxford') { add('college', true); add('sso', false); } else if (val('uniChoice') === 'other') add('org', true, 'orgInst'); }
+    else if (k === 'alumni') { add('uniChoice', true, 'uniGrad'); if (val('uniChoice') === 'other') add('org', true, 'orgGrad'); add('gradYear', false); }
+    else if (k === 'academic' || k === 'employee') { add('uniChoice', true, 'uniInst'); if (val('uniChoice') === 'other') add('org', true, 'orgInst'); add('department', k === 'academic'); if (val('uniChoice') === 'oxford') add('sso', false); }
+    else if (k === 'clinical' || k === 'health') { add('hospital', true); if (val('hospital') === 'other') add('org', true, 'orgHealth'); else if (val('hospital') === 'ouh_other') add('org', false, 'orgHealth'); add('role', true, k === 'clinical' ? 'roleJob' : 'roleProf'); add('specialty', k === 'clinical'); }
+    else if (k === 'work') { add('org', true, 'orgWork'); add('role', true, 'roleWork'); }
+    else if (k === 'other') add('connection', true, c === 'saudi' ? 'connSaudi' : 'connOther');
+    if (MEMBER[c]) add('volExtra', false);
+    return f;
   }
-  function codeState(kind, text) { var p = $('fee-code-state'); if (!p) return; feeOk = kind === 'ok'; p.hidden = !kind; p.className = 'code-state' + (kind ? ' is-' + kind : ''); p.textContent = text || ''; if (kind !== 'bad') setErr('feeCode', false); }
+  function clearIn(box) { box.querySelectorAll('input,select,textarea').forEach(function (el) { if (el.type === 'checkbox' || el.type === 'radio') el.checked = false; else el.value = ''; }); box.classList.remove('err'); }
+  function showRow(name, on) { var f = form.querySelector('[data-f="' + name + '"]'); if (!f) return null; if (!on && !f.hidden) clearIn(f); f.hidden = !on; return f; }
+  function syncFields() {
+    var c = cat(), p = plan(), paid = PRICE[c] > 0;
+    Object.keys(INPUT).concat(['volExtra']).forEach(function (n) {
+      var f = showRow(n, !!p[n]); if (!f || !p[n]) return;
+      var req = f.querySelector('.lbl .req'), opt = f.querySelector('.lbl .opt'), w = p[n].words ? W[p[n].words] : null;
+      if (req) req.hidden = !p[n].req; if (opt) opt.hidden = p[n].req;
+      if (w) { var lt = f.querySelector('.lt'), mt = f.querySelector('.mt'), el = $(INPUT[n]); if (lt) lt.textContent = tx(w[0]); if (mt) mt.textContent = tx(w[1]); if (el && w[2]) el.placeholder = tx(w[2]); }
+    });
+    if (c === 'external' && radio('uni_place') === 'brookes' && !val('org')) $('f-org').value = 'Oxford Brookes University';
+    $('email-hint').hidden = !(c === 'student' || (p.college && c === 'saudi'));
+    $('connection-hint').hidden = !(p.connection && c === 'saudi');
+    showRow('confirmSaudi', c === 'saudi');
+    showRow('whatsapp', c !== 'mailing');
+    $('news-req').hidden = c !== 'mailing'; if (c !== 'mailing') setErr('consentNews', false);
+    showRow('assess', paid); showRow('feeCode', paid); if (!paid) codeState(null);
+    syncAssess();
+    $('submit-label').textContent = tx(W.submit[MEMBER[c] ? 'member' : c] || W.submit.member);
+    review();
+  }
+
+  /* ── free-membership assessment (paid categories only, and only for those who ask) ─────────────────────── */
+  function connEvident() { var c = cat(); return c === 'student' || (c === 'external' && radio('uni_place') === 'brookes'); } // studying at an Oxford university is itself the connection
+  function assessState() {
+    var c = cat(); if (!(PRICE[c] > 0) || !$('f-assess').checked) return '';
+    if (!$('f-assess-saudi').checked) return 'confirm';
+    var conn = connEvident() ? 'yes' : $('f-assess-conn').value;
+    return !conn ? 'conn' : conn === 'yes' ? 'offer' : 'review';
+  }
+  function syncAssess() {
+    var on = $('f-assess').checked, st = assessState();
+    $('assess-more').hidden = !on;
+    $('assess-conn-wrap').hidden = connEvident() || !$('f-assess-saudi').checked;
+    $('assess-offer').hidden = st !== 'offer'; $('assess-review').hidden = st !== 'review';
+    setErr('assess', false); // whatever was missing is being answered; it is checked again on sending
+  }
+  $('assess-switch').addEventListener('click', function () {
+    var from = cat(), st = radio('status'), place = radio('uni_place');
+    var map = { professional: 'oxford_professional' }, keep = map[st] || st;
+    form.querySelector('input[name="tier"][value="saudi"]').checked = true;
+    onCategory(); renderStep2();
+    if (from === 'external' && place !== 'brookes') keep = ''; // studying elsewhere: the Oxford connection is something else, so it is chosen afresh
+    var target = keep && TIER_STATUS.saudi.indexOf(keep) !== -1 ? form.querySelector('input[name="status"][value="' + keep + '"]') : null;
+    if (target) target.checked = true;
+    if (STATUS[keep] && STATUS[keep][2] === 'student') $('f-uni-choice').value = from === 'external' ? 'brookes' : 'oxford';
+    $('switch-note').hidden = false;
+    show(2, true);
+  });
+
+  /* ── discount or exemption code: the server looks the code up in its records; nothing is decided from its shape ── */
+  var codeOk = false, codeAmount = null;
+  function codeState(kind, text) { var p = $('fee-code-state'); if (!p) return; codeOk = kind === 'ok'; if (!codeOk) codeAmount = null; p.hidden = !kind; p.className = 'code-state' + (kind ? ' is-' + kind : ''); p.textContent = text || ''; if (kind !== 'bad') setErr('feeCode', false); }
   (function () {
     var inp = $('f-fee-code'), btn = $('fee-code-btn'); if (!inp || !btn) return;
     async function check() {
-      var tier = selectedTier(), code = codeCanon(inp.value); inp.value = code;
+      var c = cat(), code = inp.value.trim();
       if (!code) { codeState('bad', t('codeEmpty')); inp.focus(); return; }
-      if (codeTypo(code)) { codeState('bad', t('codeBad').typo); return; }
-      var em = $('f-email').value.trim();
+      var em = val('email');
       btn.disabled = true; codeState('wait', t('codeChecking'));
       try {
-        var r = await fetch((SITE.apiBase || '/api') + '/membership/code', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify({ code: code, tier: tier ? tier.id : '', email: /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(em) ? em : '' }) });
+        var r = await fetch((SITE.apiBase || '/api') + '/membership/code', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify({ code: code, tier: c, email: EMAIL_RE.test(em) ? em : '' }) });
         var d = null; try { d = await r.json(); } catch (e) { /* not json */ }
         if (r.status === 429) codeState('bad', t('codeBad').rate);
-        else if (r.ok && d && d.ok) codeState('ok', t(d.personal && !em ? 'codeOkPersonal' : 'codeOk'));
+        else if (r.ok && d && d.ok) { codeState('ok', (d.percent >= 100 ? tx(W.codeOk) : tx(W.codeOff).replace('{pct}', I ? arDigits(d.percent) : d.percent).replace('{fee}', feeText(d.amountGbp))) + (d.personal && !em ? ' ' + tx(W.codePersonal) : '')); codeAmount = d.amountGbp; }
         else if (r.ok && d) codeState('bad', t('codeBad')[d.reason] || t('codeBad').invalid);
         else codeState('wait', t('codeBad').net);
       } catch (e) { codeState('wait', t('codeBad').net); }
-      btn.disabled = false; syncTier();
+      btn.disabled = false; review();
     }
     btn.addEventListener('click', check);
     inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); check(); } });
-    inp.addEventListener('input', function (e) { var del = e && e.inputType && e.inputType.indexOf('delete') === 0; var v = del ? inp.value.toUpperCase().replace(/[^A-Z0-9-]/g, '') : codeCanon(inp.value); if (v !== inp.value) inp.value = v; if (!$('fee-code-state').hidden) { codeState(null); syncTier(); } });
+    inp.addEventListener('input', function () { var v = inp.value.toUpperCase(); if (v !== inp.value) inp.value = v; if (!$('fee-code-state').hidden) { codeState(null); review(); } });
   })();
-  var SSO_RE = /^[A-Za-z]{4}[0-9]{4}$/;
-  function ssoNeeded(tier) { return !!tier && (tier.id === 'saudi' || tier.id === 'student'); }
-  function isExternal(tier) { return !!tier && tier.id === 'external'; }
   (function () {
     var ssoIn = $('f-sso'); if (!ssoIn) return;
     // letters and digits only, lower case, as the username is written by the University
     ssoIn.addEventListener('input', function () { var v = ssoIn.value.replace(/[^A-Za-z0-9]/g, '').toLowerCase().slice(0, 8); if (v !== ssoIn.value) ssoIn.value = v; if (!v || SSO_RE.test(v)) setErr('sso', false); });
     ssoIn.addEventListener('blur', function () { var v = ssoIn.value.trim(); if (v && !SSO_RE.test(v)) setErr('sso', true); });
+    $('f-grad-year').addEventListener('input', function () { var v = this.value.replace(/\D/g, '').slice(0, 4); if (v !== this.value) this.value = v; });
   })();
-  form.addEventListener('change', function (e) { if (e.target.name === 'tier') syncTier(); if (e.target.name === 'status') syncStatus(true); });
-  /* Status cards: one tap selects; "Other" opens its own text box inside the card */
-  function selectedStatus() { var r = form.querySelector('input[name="status"]:checked'); return r ? r.value : ''; }
-  function syncStatus(fromUser) {
-    var st = selectedStatus(), other = $('f-status-other');
-    document.querySelectorAll('#statuses .stat').forEach(function (l) { l.classList.toggle('sel', l.querySelector('input[name="status"]').checked); });
-    other.required = st === 'other';
-    if (st === 'other' && fromUser) setTimeout(function () { other.focus(); }, 30);
-    if (st && (st !== 'other' || other.value.trim())) setErr('status', false);
-    var uni = $('f-university'); if (uni && fromUser) { var BR = 'Oxford Brookes University'; if (st === 'brookes' && !uni.value.trim()) { uni.value = BR; setErr('university', false); } else if (st !== 'brookes' && uni.value === BR) uni.value = ''; }
+
+  /* ── the review shown before sending: category, fee, status, institution and the applicant's own details ── */
+  function feeLine() {
+    var c = cat(), price = PRICE[c] || 0; if (!MEMBER[c]) return '';
+    if (!price) return feeText(0);
+    if (assessState() === 'review') return feeText(price) + ' — ' + tx(W.rev.hold);
+    return feeText(codeOk && codeAmount != null ? codeAmount : price);
   }
-  $('f-status-other').addEventListener('input', function () { if (this.value.trim()) setErr('status', false); });
-  // typing in the Other box selects the Other card (and a click in the box must not be swallowed by the card)
-  $('f-status-other').addEventListener('focus', function () { var r = form.querySelector('input[name="status"][value="other"]'); if (!r.checked) { r.checked = true; syncStatus(false); } });
-  function setErr(name, on) { var f = form.querySelector('[data-f="' + name + '"]'); if (!f) return; f.classList.toggle('err', !!on); var inp = f.querySelector('input,select'); if (inp) inp.setAttribute('aria-invalid', on ? 'true' : 'false'); }
-  function validate() {
-    var bad = [], tier = selectedTier();
-    $('tier-msg').style.display = tier ? 'none' : 'block'; $('tiers').classList.toggle('err', !tier); if (!tier) bad.push('tiers');
-    var name = $('f-name').value.trim(), email = $('f-email').value.trim(), college = $('f-college').value.trim(), status = selectedStatus(), statusOther = $('f-status-other').value.trim(), consent = $('f-consent').checked;
-    setErr('name', !name); if (!name) bad.push('f-name');
-    var okMail = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email); setErr('email', !okMail); if (!okMail) bad.push('f-email');
-    var ext = isExternal(tier);
-    var sso = ext ? '' : $('f-sso').value.trim(), ssoBad = !ext && ((ssoNeeded(tier) && !sso) || (!!sso && !SSO_RE.test(sso)));
-    setErr('sso', ssoBad); if (ssoBad) bad.push('f-sso');
-    var noCollege = !ext && !college; setErr('college', noCollege); if (noCollege) bad.push('f-college');
-    var noUni = ext && $('f-university').value.trim().length < 2; setErr('university', noUni); if (noUni) bad.push('f-university');
-    var noSubj = ext && $('f-subject').value.trim().length < 2; setErr('subject', noSubj); if (noSubj) bad.push('f-subject');
-    var badStatus = !status || (status === 'other' && !statusOther);
-    setErr('status', badStatus); if (badStatus) bad.push(status === 'other' ? 'f-status-other' : 'statuses');
-    setErr('consent', !consent); if (!consent) bad.push('f-consent');
+  function institution() {
+    var p = plan(), parts = [], pickText = function (id) { var s = $(id); return s && s.value ? s.options[s.selectedIndex].text : ''; };
+    if (cat() === 'student') parts.push(tx(['University of Oxford', 'جامعة أكسفورد']));
+    if (p.uniChoice && val('uniChoice') !== 'other') parts.push(pickText('f-uni-choice'));
+    if (p.hospital && val('hospital') !== 'other') parts.push(pickText('f-hospital'));
+    if (p.org && val('org')) parts.push(val('org'));
+    if (p.college && val('college')) parts.push(val('college'));
+    return parts.filter(Boolean).join(I ? '، ' : ', ');
+  }
+  function review() {
+    var host = $('review-list'); if (!host) return;
+    var c = cat(), R = W.rev, rows = [], sep = I ? '، ' : ', ', names = function (list, picked) { return list.filter(function (x) { return picked.indexOf(x[0]) !== -1; }).map(function (x) { return x[1 + I]; }).join(sep); };
+    rows.push([R.cat, tierName(c), true]);
+    if (MEMBER[c]) {
+      rows.push([R.fee, feeLine(), true]);
+      var pl = PLACES.filter(function (x) { return x[0] === radio('uni_place'); })[0];
+      rows.push([R.status, [c === 'external' && pl ? pl[1 + I] : '', statusName(c, radio('status'))].filter(Boolean).join(' · '), true]);
+      var inst = institution(); if (inst || kindOf() !== 'none') rows.push([R.inst, inst, !(kindOf() === 'none' || kindOf() === 'other')]);
+    }
+    if (c === 'mailing') rows.push([R.topics, names(INTERESTS, ticked('interests')) || tx(R.all), true]);
+    if (c === 'volunteer') { rows.push([R.areas, names(AREAS, ticked('areas')), true]); rows.push([R.place, VOL_PLACE[val('place')] ? tx(VOL_PLACE[val('place')]) : '', true]); }
+    if (c !== 'mailing' || val('name')) rows.push([R.name, val('name'), c !== 'mailing']);
+    rows.push([R.email, val('email'), true, true]);
+    host.innerHTML = rows.filter(function (r) { return r[1] || r[2]; }).map(function (r) { return '<dt>' + esc(tx(r[0])) + '</dt><dd' + (r[3] ? ' dir="ltr"' : '') + '>' + (r[1] ? esc(r[1]) : '<span class="rev-miss">' + esc(tx(R.missing)) + '</span>') + '</dd>'; }).join('');
+    $('sum').textContent = MEMBER[c] ? tx(R.fee) + ': ' + feeLine() : '';
+  }
+
+  /* ── moving between the steps ──────────────────────────────────────────────────────────────────────────── */
+  function show(n, focus) {
+    step = n;
+    [1, 2, 3].forEach(function (i) { $('step-' + i).hidden = i !== n; });
+    document.querySelectorAll('#steps li').forEach(function (li) { var k = +li.getAttribute('data-step'); li.classList.toggle('on', k === n); li.classList.toggle('done', k < n); if (k === n) li.setAttribute('aria-current', 'step'); else li.removeAttribute('aria-current'); });
+    $('err-sum').classList.remove('on');
+    if (n === 2) renderStep2();
+    if (n !== 2) $('switch-note').hidden = true;
+    if (n === 3) syncFields();
+    if (focus) { $('join-form-band').scrollIntoView({ behavior: GLIDE, block: 'start' }); var h = $('step-' + n).querySelector('.step-h'); if (h) setTimeout(function () { try { h.focus({ preventScroll: true }); } catch (e) { h.focus(); } }, 60); }
+  }
+  function fail(bad) { // show what is missing in the current step and go to the first of it
     $('err-sum').classList.toggle('on', bad.length > 0);
-    if (bad.length) { var el = $(bad[0]); if (el.focus) el.focus(); el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
-    return bad.length === 0;
+    if (!bad.length) return true;
+    var el = $(bad[0]); if (el) { if (el.focus) el.focus({ preventScroll: true }); el.scrollIntoView({ behavior: GLIDE, block: 'center' }); }
+    return false;
   }
-  ['f-name', 'f-email', 'f-college', 'f-university', 'f-subject', 'f-consent'].forEach(function (id) { var clear = function () { setErr(id.replace('f-', ''), false); }; $(id).addEventListener('input', clear); $(id).addEventListener('change', clear); });
+  function validate1() { var c = cat(); $('tier-msg').style.display = c ? 'none' : 'block'; $('tiers').classList.toggle('err', !c); return fail(c ? [] : ['tiers']); }
+  function validate2() {
+    var c = cat(), bad = [];
+    if (c === 'external') { var noPlace = !radio('uni_place'); setErr('uniPlace', noPlace); if (noPlace) bad.push('places'); }
+    if (MEMBER[c] && !bad.length) { var noStatus = !radio('status'); setErr('status', noStatus); if (noStatus) bad.push('statuses'); }
+    if (c === 'volunteer') { var none = !ticked('areas').length; setErr('areas', none); if (none) bad.push('areas'); }
+    return fail(bad);
+  }
+  function validate3() {
+    var c = cat(), p = plan(), bad = [];
+    function mark(name, id, isBad) { setErr(name, isBad); if (isBad) bad.push(id); }
+    Object.keys(INPUT).forEach(function (n) {
+      if (!p[n]) return;
+      var v = val(n), el = $(INPUT[n]), isBad = false;
+      if (n === 'email') isBad = !EMAIL_RE.test(v);
+      else if (n === 'sso') isBad = !!v && !SSO_RE.test(v);
+      else if (n === 'gradYear') isBad = !!v && !(/^\d{4}$/.test(v) && +v >= 1950 && +v <= new Date().getFullYear() + 1);
+      else if (p[n].req) isBad = v.length < (el.tagName === 'SELECT' ? 1 : n === 'connection' ? 5 : 2);
+      mark(n, INPUT[n], isBad);
+    });
+    var as = assessState();
+    if (as === 'confirm' || as === 'conn' || as === 'offer') { $('assess-msg').textContent = tx(W.assess[as]); mark('assess', as === 'conn' ? 'f-assess-conn' : as === 'offer' ? 'assess-switch' : 'f-assess-saudi', true); } else setErr('assess', false);
+    if (c === 'saudi') mark('confirmSaudi', 'f-confirm-saudi', !$('f-confirm-saudi').checked);
+    mark('consent', 'f-consent', !$('f-consent').checked);
+    if (c === 'mailing') mark('consentNews', 'f-news', !$('f-news').checked);
+    return fail(bad);
+  }
+  /* Choosing another category starts steps 2 and 3 afresh for it: answers that belonged to the old one are cleared. */
+  function onCategory() {
+    paintCards();
+    var c = cat(); if (c) { $('tier-msg').style.display = 'none'; $('tiers').classList.remove('err'); }
+    if (c !== shownFor) { codeState(null); $('f-fee-code').value = ''; clearIn($('assess')); form.querySelectorAll('#vol-extra input').forEach(function (x) { x.checked = false; }); }
+  }
+  form.addEventListener('change', function (e) {
+    var n = e.target.name;
+    if (n === 'tier') onCategory();
+    if (n === 'uni_place') { paintCards(); setErr('uniPlace', false); renderStep2(); }
+    if (n === 'status') { paintCards(); setErr('status', false); }
+    if (n === 'areas') setErr('areas', false);
+    if (step === 3) { if (n === 'uni_choice' || n === 'hospital') syncFields(); else { syncAssess(); review(); } }
+  });
+  form.addEventListener('input', function (e) {
+    var f = e.target.closest ? e.target.closest('[data-f]') : null;
+    if (f && f.classList.contains('err') && e.target.type !== 'checkbox') f.classList.remove('err');
+    if (step === 3) review();
+  });
+  ['f-consent', 'f-news', 'f-confirm-saudi'].forEach(function (id) { $(id).addEventListener('change', function () { if (this.checked) setErr(this.closest('[data-f]').getAttribute('data-f'), false); }); });
+  form.querySelectorAll('[data-go]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      if (b.getAttribute('data-go') === 'prev') return show(Math.max(1, step - 1), true);
+      if (step === 1 ? validate1() : validate2()) show(step + 1, true);
+    });
+  });
+  document.querySelectorAll('#steps li').forEach(function (li) { li.addEventListener('click', function () { var k = +li.getAttribute('data-step'); if (k < step && !form.hidden) show(k, true); }); });
+  switches($('vol-extra'), 'vol_extra', AREAS);
+
   /* Submission goes to the society's own database (/api/membership/apply), which issues a permanent
      membership number and a place in the review queue. Nothing is claimed until the server answers. */
   var M = {
     en: {
       eyebrowNew: 'Application received', eyebrowUpdated: 'Application updated', eyebrowAgain: 'You have already applied', eyebrowMember: 'You are already a member',
-      thanks: 'Thank you, {name}.', welcomeBack: 'Welcome back, {name}.',
+      thanks: 'Thank you, {name}.', welcomeBack: 'Welcome back, {name}.', thanksPlain: 'Thank you.',
       ledeNew: 'Your application is with the committee. Keep your membership number: quote it in anything you send us.',
-      ledeAgain: 'We already have your application, so nothing new was submitted. Here is where it stands.', feeWaived: 'Your membership fee has been waived with your code. There is nothing to pay.',
+      ledeAgain: 'We already have your application, so nothing new was submitted. Here is where it stands.', feeWaived: 'Your membership fee has been waived with your code. There is nothing to pay.', feeDiscounted: 'Your discount code has been applied to the fee shown here.',
       ledeUpdated: 'We already had an application from this email address, so we have updated it with your new answers. It keeps its number and its place in the queue.',
       changeHow: 'To change your answers, sign in on the My account page first (we email you a sign-in link), then send this form again.', changeBtn: 'Sign in to My account',
       ledeMember: 'This email address already belongs to an active membership.',
-      org: 'Oxford Saudi Society', noLabel: 'Membership number', nameL: 'Name', typeL: 'Membership', appliedL: 'Applied', copy: 'Copy number', copied: 'Copied',
-      st: { pending: 'Pending review', info_requested: 'Question from the committee', approved: 'Active member', declined: 'Not approved', revoked: 'Ended', expired: 'Expired' },
+      org: 'Oxford Saudi Society', noLabel: 'Membership number', nameL: 'Name', typeL: 'Membership', appliedL: 'Applied', statusL: 'Status', feeL: 'Fee', copy: 'Copy number', copied: 'Copied',
       qL: 'Your place in the review queue', qP: 'The committee reviews applications in the order they arrive. You will get an email as soon as yours is decided.',
-      t1: 'Application received', t2: 'Committee review', t3pay: 'Payment of {amount}', t3verify: 'Nationality check, if needed', t4: 'Membership active',
-      payH: 'Membership fee: {amount}', payP: 'Use your membership number as the payment reference so the treasurer can match it. Membership is approved once the payment is confirmed.', payLater: 'The treasurer will email you how to pay. Use your membership number as the payment reference; membership is approved once the payment is confirmed.',
-      verifyH: 'Proof of Saudi nationality', verifyP: 'Nothing is needed from you now. The committee\u2019s secretary will email you later to ask for proof of Saudi nationality, if it is needed. Please do not send any identity document until you are asked.',
+      t1: 'Application received', t2: 'Committee review', t2e: 'Eligibility check', t3pay: 'Payment of {amount}', t3verify: 'Eligibility confirmed', t4: 'Membership active',
+      payH: 'Membership fee: {amount}', payP: 'Use your membership number as the payment reference so the treasurer can match it. Membership becomes active once the payment is confirmed.', payLater: 'The treasurer will email you how to pay. Use your membership number as the payment reference; membership becomes active once the payment is confirmed.',
+      verifyH: 'Confirming your eligibility', verifyP: 'Nothing is needed from you now. The committee’s secretary will email you later to ask for proof of Saudi nationality, if it is needed. Please do not send any identity document until you are asked. Free membership becomes active once eligibility is confirmed.',
+      eligH: 'Awaiting eligibility check', eligP: 'The committee will review whether you qualify for the free Saudi Oxford Community Membership and email you its decision. You will not be asked to pay anything while it is under review.', eligSaudiP: 'The committee will review your connection to Oxford and email you its decision.',
       mailNote: 'We have sent a confirmation to <b dir="ltr">{email}</b>. Its link lets you follow your application and answer any question from the committee.',
-      track: 'Track my application', print: 'Save or print', again: 'Submit another application',
-      failH: 'Your application was not submitted', fail: 'We could not reach the membership system just now. Your answers are still in the form: please press Submit again in a minute.', failMail: 'If it keeps failing, email {email}.',
+      track: 'Track my application', print: 'Save or print', again: 'Send another form', account: 'Go to My account',
+      volEyebrow: 'Volunteer registration received', volLede: 'Thank you for offering your time. The committee has your registration and will be in touch when there is something that suits you. This is separate from membership and does not make you a member.', volUpdated: 'Your volunteer registration has been updated.',
+      volLocked: 'A volunteer registration already exists for this email address. To change it, sign in on the My account page first (we email you a sign-in link), then send this form again.', volMail: 'We have sent a confirmation to <b dir="ltr">{email}</b>. Its link opens your account, where you can change or withdraw your registration.',
+      subEyebrow: 'You are on the mailing list', subLede: 'We will email you Society news and events. The mailing list is separate from membership and does not make you a member.', subMail: 'We have sent a confirmation to <b dir="ltr">{email}</b>. Please open its link to confirm the address is yours. You can unsubscribe at any time from My account.',
+      failH: 'Your form was not sent', fail: 'We could not reach the membership system just now. Your answers are still in the form: please press the button again in a minute.', failMail: 'If it keeps failing, email {email}.',
       rate: 'Too many attempts from this connection. Please wait a few minutes and try again.'
     },
     ar: {
       eyebrowNew: 'تم استلام الطلب', eyebrowUpdated: 'تم تحديث الطلب', eyebrowAgain: 'لقد تقدّمت بطلب من قبل', eyebrowMember: 'أنت عضو بالفعل',
-      thanks: 'شكرًا لك يا {name}.', welcomeBack: 'أهلًا بعودتك يا {name}.',
+      thanks: 'شكرًا لك يا {name}.', welcomeBack: 'أهلًا بعودتك يا {name}.', thanksPlain: 'شكرًا لك.',
       ledeNew: 'طلبك الآن لدى اللجنة. احتفظ برقم عضويتك واذكره في أي مراسلة معنا.',
-      ledeAgain: 'طلبك موجود لدينا، فلم يُرسل طلب جديد. هذا وضع طلبك الآن.', feeWaived: 'أُعفيت من رسوم العضوية بموجب الرمز الذي أدخلته، فلا يلزمك دفع شيء.',
+      ledeAgain: 'طلبك موجود لدينا، فلم يُرسل طلب جديد. هذا وضع طلبك الآن.', feeWaived: 'أُعفيت من رسوم العضوية بموجب الرمز الذي أدخلته، فلا يلزمك دفع شيء.', feeDiscounted: 'طُبّق رمز الخصم على الرسوم الظاهرة هنا.',
       ledeUpdated: 'لدينا طلب سابق من هذا البريد الإلكتروني، فحدّثناه بإجاباتك الجديدة. يحتفظ الطلب برقمه وبترتيبه في قائمة المراجعة.',
       changeHow: 'لتعديل إجاباتك، سجّل الدخول أولًا من صفحة «حسابي» (نرسل لك رابط دخول بالبريد)، ثم أرسل هذا النموذج مرة أخرى.', changeBtn: 'سجّل الدخول إلى حسابي',
       ledeMember: 'هذا البريد مرتبط بعضوية فعّالة.',
-      org: 'الجمعية السعودية في أكسفورد', noLabel: 'رقم العضوية', nameL: 'الاسم', typeL: 'العضوية', appliedL: 'تاريخ الطلب', copy: 'نسخ الرقم', copied: 'تم النسخ',
-      st: { pending: 'قيد المراجعة', info_requested: 'سؤال من اللجنة', approved: 'عضو فعّال', declined: 'لم تتم الموافقة', revoked: 'منتهية', expired: 'منتهية الصلاحية' },
+      org: 'الجمعية السعودية في أكسفورد', noLabel: 'رقم العضوية', nameL: 'الاسم', typeL: 'العضوية', appliedL: 'تاريخ الطلب', statusL: 'الصفة', feeL: 'الرسوم', copy: 'نسخ الرقم', copied: 'تم النسخ',
       qL: 'ترتيبك في قائمة المراجعة', qP: 'تراجع اللجنة الطلبات بحسب ترتيب وصولها، وستصلك رسالة بالبريد فور البت في طلبك.',
-      t1: 'تم استلام الطلب', t2: 'مراجعة اللجنة', t3pay: 'دفع {amount}', t3verify: 'التحقق من الجنسية عند الحاجة', t4: 'تفعيل العضوية',
-      payH: 'رسوم العضوية: {amount}', payP: 'اكتب رقم عضويتك مرجعًا للدفع ليتمكن أمين الصندوق من مطابقته. تُعتمد العضوية بعد تأكيد الدفعة.', payLater: 'سيراسلك أمين الصندوق بطريقة الدفع. اكتب رقم عضويتك مرجعًا للدفع، وتُعتمد العضوية بعد تأكيد الدفعة.',
-      verifyH: 'إثبات الجنسية السعودية', verifyP: 'لا يلزمك فعل شيء الآن. سيراسلك أمين سر مجلس إدارة الجمعية لاحقًا لطلب إثبات الجنسية السعودية عند الحاجة. يرجى عدم إرسال أي وثيقة هوية قبل أن يُطلب منك ذلك.',
+      t1: 'تم استلام الطلب', t2: 'مراجعة اللجنة', t2e: 'التحقق من الأهلية', t3pay: 'سداد {amount}', t3verify: 'تأكيد الأهلية', t4: 'العضوية فعّالة',
+      payH: 'رسوم العضوية: {amount}', payP: 'اكتب رقم عضويتك مرجعًا للدفع ليتمكن أمين الصندوق من مطابقته. تُفعَّل العضوية بعد تأكيد السداد.', payLater: 'سيراسلك أمين الصندوق بطريقة الدفع. اكتب رقم عضويتك مرجعًا للدفع، وتُفعَّل العضوية بعد تأكيد السداد.',
+      verifyH: 'تأكيد الأهلية', verifyP: 'لا يلزمك فعل شيء الآن. سيراسلك أمين سر مجلس إدارة الجمعية لاحقًا لطلب إثبات الجنسية السعودية عند الحاجة. يرجى عدم إرسال أي وثيقة هوية قبل أن يُطلب منك ذلك. تُفعَّل العضوية المجانية بعد تأكيد الأهلية.',
+      eligH: 'بانتظار التحقق من الأهلية', eligP: 'ستراجع اللجنة أهليتك لعضوية السعوديين في أكسفورد المجانية وتبلغك بقرارها بالبريد الإلكتروني. لن تُطلب منك أي رسوم ما دام طلبك قيد المراجعة.', eligSaudiP: 'ستراجع اللجنة صلتك بأكسفورد وتبلغك بقرارها بالبريد الإلكتروني.',
       mailNote: 'أرسلنا تأكيدًا إلى <b dir="ltr">{email}</b>، ويتيح لك الرابط فيه متابعة طلبك والإجابة عن أي سؤال من اللجنة.',
-      track: 'تابع طلبي', print: 'حفظ أو طباعة', again: 'تقديم طلب آخر',
-      failH: 'لم يُرسل طلبك', fail: 'تعذّر الوصول إلى نظام العضوية الآن. إجاباتك ما زالت في النموذج؛ اضغط «إرسال الطلب» مرة أخرى بعد دقيقة.', failMail: 'إن تكرر الخطأ فراسلنا على {email}.',
+      track: 'تابع طلبي', print: 'حفظ أو طباعة', again: 'إرسال نموذج آخر', account: 'الانتقال إلى حسابي',
+      volEyebrow: 'تم استلام طلب التطوع', volLede: 'شكرًا لرغبتك في المشاركة بوقتك. وصل طلبك إلى اللجنة وستتواصل معك عند توفر ما يناسبك. التسجيل للتطوع مستقل عن العضوية ولا يجعلك عضوًا.', volUpdated: 'تم تحديث طلب التطوع الخاص بك.',
+      volLocked: 'يوجد طلب تطوع مسجّل بهذا البريد الإلكتروني. لتعديله، سجّل الدخول أولًا من صفحة «حسابي» (نرسل لك رابط دخول بالبريد)، ثم أرسل هذا النموذج مرة أخرى.', volMail: 'أرسلنا تأكيدًا إلى <b dir="ltr">{email}</b>، ويفتح الرابط فيه حسابك حيث يمكنك تعديل طلبك أو سحبه.',
+      subEyebrow: 'تم اشتراكك في القائمة البريدية', subLede: 'سنرسل لك أخبار الجمعية وفعالياتها. القائمة البريدية مستقلة عن العضوية ولا تجعلك عضوًا.', subMail: 'أرسلنا تأكيدًا إلى <b dir="ltr">{email}</b>. يرجى فتح الرابط فيه لتأكيد أن البريد لك. يمكنك إلغاء الاشتراك في أي وقت من «حسابي».',
+      failH: 'لم يُرسل النموذج', fail: 'تعذّر الوصول إلى نظام العضوية الآن. إجاباتك ما زالت في النموذج؛ اضغط الزر مرة أخرى بعد دقيقة.', failMail: 'إن تكرر الخطأ فراسلنا على {email}.',
       rate: 'محاولات كثيرة من هذا الاتصال. انتظر بضع دقائق ثم حاول مجددًا.'
     }
   };
   function m(key, vars) { var v = (M[lang][key] !== undefined ? M[lang][key] : M.en[key]); if (typeof v === 'string' && vars) Object.keys(vars).forEach(function (k) { v = v.split('{' + k + '}').join(vars[k]); }); return v; }
   function fmtDay(d) { try { return new Intl.DateTimeFormat(lang === 'ar' ? 'ar-SA-u-ca-gregory-nu-arab' : 'en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Europe/London' }).format(new Date(d)); } catch (e) { return ''; } }
   function num(n) { return lang === 'ar' ? new Intl.NumberFormat('ar-SA-u-nu-arab').format(n) : String(n); }
+  /* Only what applies to the choices made is sent. */
   function collect() {
-    var tier = selectedTier();
-    return { tier: tier ? tier.id : '', name: $('f-name').value.trim(), nameAr: $('f-name-ar').value.trim(), email: $('f-email').value.trim(), sso: isExternal(tier) ? '' : $('f-sso').value.trim().toLowerCase(), feeCode: (tier && tier.price && $('f-fee-code')) ? $('f-fee-code').value.trim() : '', college: isExternal(tier) ? '' : $('f-college').value.trim(), university: isExternal(tier) ? $('f-university').value.trim() : '', subject: isExternal(tier) ? $('f-subject').value.trim() : '', status: selectedStatus(), statusOther: selectedStatus() === 'other' ? $('f-status-other').value.trim() : '', phone: $('f-phone').value.trim(),
-      volunteer: Array.prototype.slice.call(form.querySelectorAll('input[name="volunteer"]:checked')).map(function (c) { return c.value; }),
-      consent_privacy: $('f-consent').checked, consent_news: form.querySelector('input[name="consent_news"]').checked,
-      privacy_version: SITE.privacyVersion || '', lang: lang, website: form.querySelector('input[name="website"]').value };
+    var c = cat(), p = plan(), o = { tier: c, lang: lang, privacy_version: SITE.privacyVersion || '', website: form.querySelector('input[name="website"]').value, consent_privacy: $('f-consent').checked, consent_news: $('f-news').checked, email: val('email') };
+    Object.keys(SEND_AS).forEach(function (n) { if (p[n]) o[SEND_AS[n]] = n === 'sso' ? val(n).toLowerCase() : val(n); });
+    if (MEMBER[c]) {
+      o.status = radio('status'); if (c === 'external') o.uniPlace = radio('uni_place');
+      o.whatsapp = $('f-whatsapp').checked; o.volunteerAreas = ticked('vol_extra');
+      if (c === 'saudi') o.confirm_saudi = $('f-confirm-saudi').checked;
+      if (PRICE[c] > 0) { o.feeCode = $('f-fee-code').value.trim(); if (assessState() === 'review') { o.freeAssess = true; o.confirm_saudi = true; } }
+    }
+    if (c === 'mailing') o.interests = ticked('interests');
+    if (c === 'volunteer') { o.areas = ticked('areas'); o.whatsapp = $('f-whatsapp').checked; }
+    return o;
   }
   async function send(app) {
     var ctl = typeof AbortController === 'function' ? new AbortController() : null;
@@ -393,73 +599,106 @@
     var box = $('join-fail');
     if (!box) { box = document.createElement('div'); box.id = 'join-fail'; box.className = 'err-sum on'; box.setAttribute('role', 'alert'); $('submit-btn').parentNode.parentNode.insertBefore(box, $('submit-btn').parentNode); }
     if (res.status === 400 && res.data && res.data.fields) {
-      var map = { name: 'name', email: 'email', sso: 'sso', college: 'college', university: 'university', subject: 'subject', status: 'status', statusOther: 'status', consent: 'consent' };
-      if (res.data.fields.feeCode) { codeState('bad', t('codeBad')[res.data.fields.feeCode] || t('codeBad').invalid); setErr('feeCode', true); syncTier(); $('fee-code').scrollIntoView({ behavior: 'smooth', block: 'center' }); }
-      Object.keys(res.data.fields).forEach(function (k) { if (map[k]) setErr(map[k], true); if (k === 'tier') { $('tier-msg').style.display = 'block'; $('tiers').classList.add('err'); } });
-      box.hidden = true; $('err-sum').classList.add('on'); return;
+      var fields = res.data.fields, keys = Object.keys(fields);
+      // the server found something the page did not: open the step it belongs to and highlight it
+      var where = fields.tier ? 1 : (fields.status || fields.uniPlace || fields.areas) ? 2 : 3;
+      if (step !== where) show(where, false);
+      if (fields.tier) { $('tier-msg').style.display = 'block'; $('tiers').classList.add('err'); }
+      if (fields.feeCode) { codeState('bad', t('codeBad')[fields.feeCode] || t('codeBad').invalid); setErr('feeCode', true); review(); }
+      keys.forEach(function (k) { if (k === 'confirmSaudi' && cat() !== 'saudi') { $('assess-msg').textContent = tx(W.assess.confirm); setErr('assess', true); } else if (k !== 'tier' && k !== 'feeCode') setErr(k, true); });
+      box.hidden = true; $('err-sum').classList.add('on');
+      var first = form.querySelector('#step-' + where + ' .err'); if (first) first.scrollIntoView({ behavior: GLIDE, block: 'center' });
+      return;
     }
     box.hidden = false;
     box.innerHTML = '<b>' + esc(m('failH')) + '</b> ' + esc(res.status === 429 ? m('rate') : m('fail')) + (res.status === 429 ? '' : ' ' + m('failMail', { email: SITE.email ? '<a href="mailto:' + esc(SITE.email) + '">' + esc(SITE.email) + '</a>' : '' }));
-    box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    box.scrollIntoView({ behavior: GLIDE, block: 'center' });
   }
   form.addEventListener('submit', async function (e) {
     e.preventDefault(); if (busy) return;
     if (form.querySelector('input[name="website"]').value) return;
-    if (!validate()) return;
+    if (step === 1) { if (validate1()) show(2, true); return; }
+    if (step === 2) { if (validate2()) show(3, true); return; }
+    if (!validate3()) return;
     busy = true; var btn = $('submit-btn'), lbl = $('submit-label'), keep = lbl.innerHTML; btn.disabled = true; lbl.textContent = t('sending');
     var app = null, res;
     // never leave the button stuck on "Sending…": any unexpected error ends in the visible failure message
     try { app = collect(); res = await send(app); } catch (err) { res = { ok: false, status: 0, data: null }; }
     finally { busy = false; btn.disabled = false; lbl.innerHTML = keep; }
-    if (!res.ok || !res.data || !res.data.member) { showFail(res); return; }
+    if (!res.ok || !res.data || !res.data.result || res.data.honeypot) { showFail(res); return; }
     var f = $('join-fail'); if (f) f.hidden = true;
-    last = { app: app, result: res.data.result, member: res.data.member, needsSignIn: !!res.data.needsSignIn }; renderDone();
+    last = { app: app, data: res.data }; renderDone();
   });
-  function setSteps(stage) { document.querySelectorAll('#steps li').forEach(function (li) { li.classList.remove('on', 'done'); li.classList.add(stage === 'form' ? 'on' : 'done'); }); }
+  function finish(h) {
+    h += '<p class="again"><a href="#join-form-band" id="again">' + esc(m('again')) + '</a></p>';
+    done.innerHTML = h; done.hidden = false; form.hidden = true;
+    document.querySelectorAll('#steps li').forEach(function (li) { li.classList.remove('on'); li.classList.add('done'); li.removeAttribute('aria-current'); });
+    $('again').addEventListener('click', function (ev) {
+      ev.preventDefault(); last = null; form.reset(); shownFor = null; codeState(null); paintCards();
+      form.querySelectorAll('.f.err').forEach(function (x) { x.classList.remove('err'); });
+      done.hidden = true; form.hidden = false; show(1, true);
+    });
+    $('join-form-band').scrollIntoView({ behavior: GLIDE });
+  }
+  var accountUrl = (lang === 'ar' ? '/ar' : '') + '/account/';
   function renderDone() {
-    var app = last.app, mem = last.member, kind = last.result, tier = tierOf(mem.tier) || selectedTier() || TIERS[0];
+    var d = last.data, app = last.app;
+    if (d.kind === 'mailing') return finish('<p class="eyebrow">' + esc(m('subEyebrow')) + '</p><h2 class="done-h">' + esc(m('thanksPlain')) + '</h2><p class="lede done-lede">' + esc(m('subLede')) + '</p><p class="muted done-mail">' + m('subMail', { email: esc(app.email) }) + '</p><div class="done-actions"><a class="btn btn-p" href="' + accountUrl + '">' + esc(m('account')) + '</a></div>');
+    if (d.kind === 'volunteer') {
+      var first0 = esc((app.name || '').split(/\s+/)[0]);
+      if (d.needsSignIn) return finish('<p class="eyebrow">' + esc(m('eyebrowAgain')) + '</p><h2 class="done-h">' + esc(m('welcomeBack', { name: first0 })) + '</h2><p class="note">' + esc(m('volLocked')) + '</p><div class="done-actions"><a class="btn btn-p" href="' + accountUrl + '">' + esc(m('changeBtn')) + '</a></div>');
+      var v = d.volunteer || {}, sep = I ? '، ' : ', ';
+      var areaNames = AREAS.filter(function (x) { return (v.areas || []).indexOf(x[0]) !== -1; }).map(function (x) { return x[1 + I]; }).join(sep);
+      return finish('<p class="eyebrow">' + esc(m('volEyebrow')) + '</p><h2 class="done-h">' + esc(m('thanks', { name: first0 })) + '</h2><p class="lede done-lede">' + esc(d.result === 'volunteer_updated' ? m('volUpdated') + ' ' : '') + esc(m('volLede')) + '</p>' +
+        '<dl class="kv done-kv"><dt>' + esc(tx(W.rev.areas)) + '</dt><dd>' + esc(areaNames) + '</dd><dt>' + esc(tx(W.rev.place)) + '</dt><dd>' + esc(VOL_PLACE[v.place] ? tx(VOL_PLACE[v.place]) : '') + '</dd></dl>' +
+        '<p class="muted done-mail">' + m('volMail', { email: esc(app.email) }) + '</p><div class="done-actions"><a class="btn btn-p" href="' + accountUrl + '">' + esc(m('account')) + '</a></div>');
+    }
+    var mem = d.member, kind = d.result;
     var first = esc((app.name || mem.name || '').split(/\s+/)[0]);
-    var amount = '£' + (mem.amountGbp || 0), paid = mem.amountGbp > 0, verify = mem.tier === 'saudi' && (mem.nationalityStatus === 'pending' || mem.nationalityStatus === 'verified');
-    var isMember = mem.status === 'approved';
+    var fee = (mem.fee && mem.fee[lang]) || feeText(mem.amountGbp || 0), paid = mem.amountGbp > 0, isMember = mem.status === 'approved', elig = mem.stage === 'eligibility';
+    var verify = mem.tier === 'saudi' && mem.nationalityStatus !== 'verified';
     var h = '<p class="eyebrow">' + esc(m(kind === 'already_member' ? 'eyebrowMember' : kind === 'already' ? 'eyebrowAgain' : kind === 'updated' ? 'eyebrowUpdated' : 'eyebrowNew')) + '</p>';
     h += '<h2 class="done-h">' + esc(m(kind === 'received' ? 'thanks' : 'welcomeBack', { name: first })) + '</h2>';
     h += '<p class="lede done-lede">' + esc(m(kind === 'already_member' ? 'ledeMember' : kind === 'already' ? 'ledeAgain' : kind === 'updated' ? 'ledeUpdated' : 'ledeNew')) + '</p>';
-    if (last.needsSignIn) h += '<p class="note">' + esc(m('changeHow')) + '</p>';
+    if (d.needsSignIn) h += '<p class="note">' + esc(m('changeHow')) + '</p>';
     // membership card
-    h += '<div class="mcard" id="mcard"><div class="mcard-top"><span class="mcard-org">' + esc(m('org')) + '</span><span class="mstate s-' + esc(mem.status) + '">' + esc(m('st')[mem.status] || mem.status) + '</span></div>';
+    h += '<div class="mcard" id="mcard"><div class="mcard-top"><span class="mcard-org">' + esc(m('org')) + '</span><span class="mstate s-' + esc(mem.status) + ' g-' + esc(mem.stage) + '" id="mstage">' + esc((mem.stageLabel && mem.stageLabel[lang]) || mem.status) + '</span></div>';
     h += '<span class="mk">' + esc(m('noLabel')) + '</span><span class="mno" dir="ltr" id="mno">' + esc(mem.memberNo) + '</span>';
-    h += '<div class="mcard-meta"><div><span class="mk">' + esc(m('nameL')) + '</span><b>' + esc(mem.name || app.name) + '</b></div><div><span class="mk">' + esc(m('typeL')) + '</span><b>' + esc((mem.tierLabel && mem.tierLabel[lang]) || tier[lang]) + '</b></div><div><span class="mk">' + esc(m('appliedL')) + '</span><b>' + esc(fmtDay(mem.appliedAt)) + '</b></div></div>';
+    h += '<div class="mcard-meta"><div><span class="mk">' + esc(m('nameL')) + '</span><b>' + esc(mem.name || app.name) + '</b></div><div><span class="mk">' + esc(m('typeL')) + '</span><b>' + esc((mem.tierLabel && mem.tierLabel[lang]) || tierName(mem.tier)) + '</b></div>' +
+      (mem.statusLabel && mem.statusLabel[lang] ? '<div><span class="mk">' + esc(m('statusL')) + '</span><b>' + esc(mem.statusLabel[lang]) + '</b></div>' : '') +
+      '<div><span class="mk">' + esc(m('feeL')) + '</span><b>' + esc(fee) + '</b></div><div><span class="mk">' + esc(m('appliedL')) + '</span><b>' + esc(fmtDay(mem.appliedAt)) + '</b></div></div>';
     h += '<button type="button" class="mcopy" id="mcopy">' + esc(m('copy')) + '</button></div>';
     if (!isMember && mem.position) h += '<div class="qtile"><span class="mk">' + esc(m('qL')) + '</span><b class="qno">' + esc(num(mem.position)) + '</b><p>' + esc(m('qP')) + '</p></div>';
     if (!isMember) {
-      var third = paid ? m('t3pay', { amount: amount }) : verify ? m('t3verify') : null;
-      var steps = [[m('t1'), 'done', fmtDay(mem.appliedAt)], [m('t2'), 'now', '']];
-      if (third) steps.push([third, paid && mem.paymentStatus === 'received' ? 'done' : '', '']);
+      var steps = [[m('t1'), 'done', fmtDay(mem.appliedAt)], [m(elig ? 't2e' : 't2'), 'now', '']];
+      if (paid && !elig) steps.push([m('t3pay', { amount: fee }), mem.paymentStatus === 'received' ? 'done' : '', '']); else if (verify) steps.push([m('t3verify'), '', '']);
       steps.push([m('t4'), '', '']);
-      h += '<ol class="track">' + steps.map(function (s, i) { return '<li class="' + s[1] + '"><span class="tk" aria-hidden="true">' + (s[1] === 'done' ? '✓' : '') + '</span><span class="tt">' + esc(s[0]) + (s[2] ? '<small>' + esc(s[2]) + '</small>' : '') + '</span></li>'; }).join('') + '</ol>';
+      h += '<ol class="track">' + steps.map(function (s) { return '<li class="' + s[1] + '"><span class="tk" aria-hidden="true">' + (s[1] === 'done' ? '✓' : '') + '</span><span class="tt">' + esc(s[0]) + (s[2] ? '<small>' + esc(s[2]) + '</small>' : '') + '</span></li>'; }).join('') + '</ol>';
     }
-    if (!isMember && paid) {
-      var link = (SITE.payLinks || {})[tier.id] || '', bank = SITE.bank || {}, hasBank = !!(bank.sortCode && bank.accountNumber);
-      h += '<div class="nextpanel"><h3 class="disp">' + esc(m('payH', { amount: amount })) + '</h3><p>' + esc(m(link || hasBank ? 'payP' : 'payLater')) + '</p>';
+    if (!isMember && elig) {
+      h += '<div class="nextpanel"><h3 class="disp">' + esc(m('eligH')) + '</h3><p>' + esc(m(mem.tier === 'saudi' ? 'eligSaudiP' : 'eligP')) + '</p></div>'; // no fee is asked while this is open
+    } else if (!isMember && paid && mem.paymentStatus !== 'received') {
+      var link = (SITE.payLinks || {})[mem.tier] || '', bank = SITE.bank || {}, hasBank = !!(bank.sortCode && bank.accountNumber), amount = '£' + mem.amountGbp;
+      h += '<div class="nextpanel"><h3 class="disp">' + esc(m('payH', { amount: fee })) + '</h3><p>' + esc(m(link || hasBank ? 'payP' : 'payLater')) + '</p>';
       if (link || hasBank) {
         h += '<div class="paygrid">';
-        if (link) h += '<div class="card tinted"><h3>' + esc(t('cardTitle')) + '</h3><p class="big">' + amountHtml(tier) + '</p><a class="btn btn-p" href="' + esc(link) + '" target="_blank" rel="noopener">' + t('cardBtn', { amount: esc(amount) }) + '</a><p style="margin-top:14px;font-size:13.5px">' + esc(t('cardNote')) + '</p></div>';
+        if (link) h += '<div class="card tinted"><h3>' + esc(t('cardTitle')) + '</h3><p class="big"><bdi>' + esc(amount) + '</bdi></p><a class="btn btn-p" href="' + esc(link) + '" target="_blank" rel="noopener">' + t('cardBtn', { amount: esc(amount) }) + '</a><p style="margin-top:14px;font-size:13.5px">' + esc(t('cardNote')) + '</p></div>';
         if (hasBank) h += '<div class="card"><h3>' + esc(t('bankTitle')) + '</h3><dl class="kv"><dt>' + esc(t('acctName')) + '</dt><dd>' + esc(bank.accountName || 'Oxford Saudi Society') + '</dd><dt>' + esc(t('sortCode')) + '</dt><dd dir="ltr">' + esc(bank.sortCode) + '</dd><dt>' + esc(t('acctNo')) + '</dt><dd dir="ltr">' + esc(bank.accountNumber) + '</dd><dt>' + esc(t('refK')) + '</dt><dd><b dir="ltr">' + esc(mem.memberNo) + '</b></dd></dl></div>';
         h += '</div>';
       }
       h += '</div>';
-    } else if (!isMember && verify && mem.nationalityStatus !== 'verified') {
+    } else if (!isMember && verify) {
       h += '<div class="nextpanel"><h3 class="disp">' + esc(m('verifyH')) + '</h3><p>' + esc(m('verifyP')) + '</p></div>';
     }
     if (mem.feeWaived && !isMember) h += '<p class="alert ok">' + esc(m('feeWaived')) + '</p>';
+    else if (mem.feeDiscounted && !isMember && !elig) h += '<p class="alert ok">' + esc(m('feeDiscounted')) + '</p>';
     h += '<p class="muted done-mail">' + m('mailNote', { email: esc(app.email) }) + '</p>';
-    h += '<div class="done-actions"><a class="btn btn-p" href="' + (lang === 'ar' ? '/ar' : '') + '/account/">' + esc(m('track')) + '</a><button type="button" class="btn btn-s" id="done-print">' + esc(m('print')) + '</button></div>';
-    h += '<p class="again"><a href="#join-form-band" id="again">' + esc(m('again')) + '</a></p>';
-    done.innerHTML = h; done.hidden = false; form.hidden = true; setSteps('all');
+    h += '<div class="done-actions"><a class="btn btn-p" href="' + accountUrl + '">' + esc(m('track')) + '</a><button type="button" class="btn btn-s" id="done-print">' + esc(m('print')) + '</button></div>';
+    finish(h);
     $('mcopy').addEventListener('click', function () { var b = this; var p = (navigator.clipboard && navigator.clipboard.writeText) ? navigator.clipboard.writeText(mem.memberNo) : Promise.reject(); p.then(function () { b.textContent = m('copied'); setTimeout(function () { b.textContent = m('copy'); }, 2000); }, function () { var r = document.createRange(); r.selectNodeContents($('mno')); var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r); }); });
     $('done-print').addEventListener('click', function () { window.print(); });
-    $('again').addEventListener('click', function (ev) { ev.preventDefault(); last = null; form.reset(); syncStatus(false); done.hidden = true; form.hidden = false; $('err-sum').classList.remove('on'); form.querySelectorAll('.f.err').forEach(function (f) { f.classList.remove('err'); }); syncTier(); setSteps('form'); $('join-form-band').scrollIntoView({ behavior: 'smooth' }); });
-    $('join-form-band').scrollIntoView({ behavior: 'smooth' });
   }
-  syncTier(); setSteps('form');
+  /* A link can open the form on a category: /join/?type=volunteer */
+  (function () { try { var want = new URLSearchParams(location.search).get('type'), r = want ? form.querySelector('input[name="tier"][value="' + want.replace(/[^a-z]/g, '') + '"]') : null; if (r) r.checked = true; } catch (e) { /* no preselection */ } })();
+  onCategory(); show(1, false);
 })();

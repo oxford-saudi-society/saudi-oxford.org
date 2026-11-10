@@ -263,4 +263,57 @@ ALTER TABLE oss_members ADD COLUMN IF NOT EXISTS subject text;
 ALTER TABLE oss_fee_codes ADD COLUMN IF NOT EXISTS email text;
 `,
   },
+  {
+    /* Six registration categories. Four are memberships (Saudi Oxford community, Oxford students, students of other
+       universities, associates); the mailing list and volunteer registration are separate registers that carry no
+       membership rights. Each status asks only for the details that apply to it; a code can be a discount or a full
+       exemption; an application can wait for an eligibility check without any fee being asked. Anyone who had
+       offered to help on the old form, whatever they applied as, is carried into the volunteer register. */
+    id: '0008_six_categories',
+    sql: `
+ALTER TABLE oss_members ADD COLUMN IF NOT EXISTS department text;
+ALTER TABLE oss_members ADD COLUMN IF NOT EXISTS job_role text;
+ALTER TABLE oss_members ADD COLUMN IF NOT EXISTS specialty text;
+ALTER TABLE oss_members ADD COLUMN IF NOT EXISTS hospital text;
+ALTER TABLE oss_members ADD COLUMN IF NOT EXISTS uni_place text;
+ALTER TABLE oss_members ADD COLUMN IF NOT EXISTS uni_choice text;
+ALTER TABLE oss_members ADD COLUMN IF NOT EXISTS grad_year integer;
+ALTER TABLE oss_members ADD COLUMN IF NOT EXISTS connection text;
+ALTER TABLE oss_members ADD COLUMN IF NOT EXISTS whatsapp boolean NOT NULL DEFAULT false;
+ALTER TABLE oss_members ADD COLUMN IF NOT EXISTS declared_saudi boolean NOT NULL DEFAULT false;
+ALTER TABLE oss_members ADD COLUMN IF NOT EXISTS eligibility text NOT NULL DEFAULT 'not_required';
+ALTER TABLE oss_fee_codes ADD COLUMN IF NOT EXISTS percent_off integer NOT NULL DEFAULT 100;
+ALTER TABLE oss_subscribers ADD COLUMN IF NOT EXISTS interests text[] NOT NULL DEFAULT '{}';
+ALTER TABLE oss_subscribers ADD COLUMN IF NOT EXISTS verified_at timestamptz;
+CREATE TABLE IF NOT EXISTS oss_volunteers (
+  email text PRIMARY KEY,
+  name text NOT NULL,
+  name_ar text,
+  phone text,
+  areas text[] NOT NULL DEFAULT '{}',
+  place text NOT NULL DEFAULT 'both',
+  whatsapp boolean NOT NULL DEFAULT false,
+  lang text NOT NULL DEFAULT 'en',
+  consent_privacy_version text,
+  verified_at timestamptz,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
+UPDATE oss_members SET uni_status = 'doctoral' WHERE uni_status = 'dphil';
+UPDATE oss_members SET uni_status = 'visiting_researcher' WHERE uni_status = 'visiting' AND tier = 'associate';
+UPDATE oss_members SET uni_status = 'visiting_student' WHERE uni_status = 'visiting';
+UPDATE oss_members SET uni_status = 'university_employee' WHERE uni_status = 'staff';
+UPDATE oss_members SET uni_place = uni_status, uni_status = NULL WHERE tier = 'external' AND uni_status IN ('brookes','uk_university','global_university');
+UPDATE oss_members SET connection = COALESCE(connection, uni_status_other) WHERE uni_status = 'other' AND uni_status_other IS NOT NULL;
+UPDATE oss_members SET uni_status = 'other_connection' WHERE tier = 'saudi' AND uni_status = 'other';
+UPDATE oss_members SET uni_choice = 'oxford', university = COALESCE(university, 'University of Oxford') WHERE tier IN ('saudi','student') AND uni_choice IS NULL AND college IS NOT NULL;
+INSERT INTO oss_subscribers (email, name, lang, consent_at, source, verified_at)
+  SELECT email, name, lang, COALESCE(applied_at, created_at), 'mailing_list', email_verified_at FROM oss_members
+  WHERE tier = 'friend' AND status IN ('pending','info_requested','approved') ON CONFLICT (email) DO NOTHING;
+INSERT INTO oss_volunteers (email, name, name_ar, phone, areas, lang, consent_privacy_version, verified_at)
+  SELECT email, COALESCE(NULLIF(name, ''), email), name_ar, phone, array_replace(volunteer, 'welfare', 'welcome'), lang, consent_privacy_version, email_verified_at FROM oss_members
+  WHERE status IN ('pending','info_requested','approved') AND volunteer IS NOT NULL AND cardinality(volunteer) > 0 ON CONFLICT (email) DO NOTHING;
+DELETE FROM oss_members WHERE tier = 'friend';
+`,
+  },
 ];

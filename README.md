@@ -83,9 +83,7 @@ Event pages are built from the content files and then kept live by the events AP
 
 ## The join form
 
-The form on `/join/` is a Netlify Form named `join`. Submissions appear under *Forms* in Netlify (export CSV) and are emailed to the address set in step 2. Each application carries a reference like `OSS-8MGVA0O`; the applicant quotes it when paying by bank transfer, and the treasurer matches payments against it. Saudi students pay nothing; the committee emails them for proof of nationality, checks it, and deletes the image.
-
-If Netlify cannot accept a submission (outage, blocked network), the page falls back to a pre-filled email to the society address, so no application is lost.
+The form on `/join/` sends to the Society's own membership system (`/api/membership/apply`), not to Netlify Forms. It has three steps and six categories: four memberships (Saudi Oxford Community — free; Oxford Student — £10; Other University Student — £10; Associate — £15) plus the Mailing List and Volunteer Registration, which are separate from membership. Each membership application gets a number like `OSS-2026-0001`, which the applicant quotes when paying; the committee reviews applications in the desk at `/admin/events/`. The details are in `docs/EVENTS_OPERATIONS.md`.
 
 ## Running the build on a computer (developers)
 

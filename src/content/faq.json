@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-09",
+  "updated": "2026-11-10",
   "intro": {
     "en": "Practical guidance for studying and living in Oxford, kept by the committee for Saudi students, researchers and their families.",
     "ar": "دليل عملي للدراسة والحياة في أكسفورد، تحدّثه اللجنة للطلبة والباحثين السعوديين وأسرهم."
@@ -18,11 +18,23 @@
             "ar": "هل يجب أن أكون سعودياً لأنضم؟"
           },
           "a": {
-            "en": "No. Membership is open to members of the University of Oxford and to students of other universities, including Oxford Brookes, and our cultural events are open to the Oxford community. Membership is free for Saudi students, alumni, researchers and staff of Oxford University; other members pay a small annual fee that funds the programme.",
-            "ar": "لا. العضوية مفتوحة لمنتسبي جامعة أكسفورد ولطلبة الجامعات الأخرى، ومنها أكسفورد بروكس، وفعالياتنا الثقافية مفتوحة لمجتمع أكسفورد. العضوية مجانية للسعوديين من طلبة جامعة أكسفورد وخريجيها وباحثيها وموظفيها، ويدفع الأعضاء الآخرون رسماً سنوياً بسيطاً يموّل البرنامج."
+            "en": "No. The Oxford Student, Other University Student and Associate memberships are open to every nationality, and our cultural events are open to the Oxford community. The Saudi Oxford Community Membership is free for Saudi nationals with an educational, clinical, research or professional connection to Oxford; other members pay a small annual fee that funds the programme: £10 for students and £15 for associates.",
+            "ar": "لا. عضوية طلبة جامعة أكسفورد وعضوية طلبة الجامعات الأخرى والعضوية المنتسبة مفتوحة لجميع الجنسيات، وفعالياتنا الثقافية مفتوحة لمجتمع أكسفورد. عضوية السعوديين في أكسفورد مجانية للسعوديين الذين تربطهم بأكسفورد صلة دراسية أو سريرية أو بحثية أو مهنية، ويدفع الأعضاء الآخرون رسماً سنوياً بسيطاً يموّل البرنامج: ١٠ جنيهات إسترلينية للطلبة و١٥ جنيهًا إسترلينيًا للعضوية المنتسبة."
           },
           "refs": [],
           "id": "join-non-saudi"
+        },
+        {
+          "q": {
+            "en": "Which membership is right for me?",
+            "ar": "أي عضوية تناسبني؟"
+          },
+          "a": {
+            "en": "There are four memberships. Saudi Oxford Community Membership (free): Saudi nationals who study, work, research or train in Oxford, or who graduated from the University of Oxford or Oxford Brookes — wherever they live now. Living in Oxford alone is not enough. Oxford Student Membership (£10 a year): current University of Oxford students of any nationality. Other University Student Membership (£10 a year): students at Oxford Brookes or any other university. Associate Membership (£15 a year): staff, researchers, alumni, clinicians, professionals and supporters who do not qualify for the free membership. If you are Saudi and unsure whether you qualify for the free one, choose the membership that fits you and switch on “assess me for the free membership”: you will not be asked to pay while the committee reviews it.",
+            "ar": "هناك أربع عضويات. عضوية السعوديين في أكسفورد (مجانية): للسعوديين الذين يدرسون أو يعملون أو يبحثون أو يتدربون في أكسفورد، أو تخرجوا في جامعة أكسفورد أو جامعة أكسفورد بروكس أينما كانوا يقيمون الآن. الإقامة في أكسفورد وحدها لا تكفي. عضوية طلبة جامعة أكسفورد (١٠ جنيهات إسترلينية سنويًا): لطلبة جامعة أكسفورد الحاليين من جميع الجنسيات. عضوية طلبة الجامعات الأخرى (١٠ جنيهات إسترلينية سنويًا): لطلبة جامعة أكسفورد بروكس أو أي جامعة أخرى. العضوية المنتسبة (١٥ جنيهًا إسترلينيًا سنويًا): لمنسوبي الجامعات والباحثين والخريجين والأطباء والمهنيين وداعمي الجمعية ممن لا تنطبق عليهم شروط العضوية المجانية. إن كنت سعوديًا ولست متأكدًا من أهليتك للعضوية المجانية فاختر العضوية المناسبة لك وفعّل خيار «تقييم أهليتي للعضوية المجانية»، ولن تُطلب منك أي رسوم ما دامت اللجنة تراجع طلبك."
+          },
+          "refs": [],
+          "id": "which-membership"
         },
         {
           "q": {
@@ -30,8 +42,8 @@
             "ar": "كيف أثبت أنني سعودي؟"
           },
           "a": {
-            "en": "You do not need to send anything when you apply. If proof is needed, the committee’s secretary will email you later and ask for one document: the photo page of your Saudi passport, your national ID or your Cultural Bureau scholarship confirmation. Send it only in reply to that email. It is deleted as soon as it has been checked — we keep the result, never the document.",
-            "ar": "لا يلزمك إرسال أي شيء عند التقديم. إن لزم الإثبات فسيراسلك أمين سر مجلس إدارة الجمعية لاحقًا ليطلب مستندًا واحدًا: صفحة الصورة في جواز سفرك السعودي، أو هويتك الوطنية، أو تأكيد الابتعاث من الملحقية الثقافية. أرسله بالرد على تلك الرسالة فقط. يُحذف المستند فور التحقق منه — نحتفظ بالنتيجة فقط لا بالمستند."
+            "en": "On the form you only confirm that you are a Saudi national and say what your connection to Oxford is. You do not need to send anything when you apply. If proof is needed, the committee’s secretary will email you later and ask for one document: the photo page of your Saudi passport, your national ID or your Cultural Bureau scholarship confirmation. Send it only in reply to that email. It is deleted as soon as it has been checked — we keep the result, never the document.",
+            "ar": "في النموذج تؤكد فقط أنك سعودي الجنسية وتذكر صلتك بأكسفورد. لا يلزمك إرسال أي شيء عند التقديم. إن لزم الإثبات فسيراسلك أمين سر مجلس إدارة الجمعية لاحقًا ليطلب مستندًا واحدًا: صفحة الصورة في جواز سفرك السعودي، أو هويتك الوطنية، أو تأكيد الابتعاث من الملحقية الثقافية. أرسله بالرد على تلك الرسالة فقط. يُحذف المستند فور التحقق منه — نحتفظ بالنتيجة فقط لا بالمستند."
           },
           "refs": [],
           "id": "prove-saudi"
@@ -42,8 +54,8 @@
             "ar": "كيف أدفع رسوم العضوية؟"
           },
           "a": {
-            "en": "Once you've applied you get a membership number. The treasurer will then email you how to pay; quote your membership number as the payment reference. Membership starts once the committee has confirmed the payment.",
-            "ar": "بعد تقديم الطلب تحصل على رقم عضوية، ثم يراسلك أمين الصندوق بطريقة الدفع؛ اكتب رقم عضويتك مرجعًا للدفع. تبدأ العضوية بعد تأكيد اللجنة استلام الدفعة."
+            "en": "Once you've applied you get a membership number. The treasurer will then email you how to pay; quote your membership number as the payment reference. Membership becomes active once the payment has been confirmed. If the committee gave you a discount or exemption code, enter it on the form before you send it. If you asked to be assessed for the free membership, no fee is requested while that is being reviewed.",
+            "ar": "بعد تقديم الطلب تحصل على رقم عضوية، ثم يراسلك أمين الصندوق بطريقة الدفع؛ اكتب رقم عضويتك مرجعًا للدفع. تُفعَّل العضوية بعد تأكيد السداد. إن زوّدتك اللجنة برمز خصم أو إعفاء فأدخله في النموذج قبل الإرسال. وإن طلبت تقييم أهليتك للعضوية المجانية فلن تُطلب منك أي رسوم ما دام طلبك قيد المراجعة."
           },
           "refs": [],
           "id": "pay-fee"
@@ -66,8 +78,8 @@
             "ar": "هل الخريجون والموظفون مرحّب بهم؟"
           },
           "a": {
-            "en": "Alumni and staff are welcome at social events and the annual dinner. Full membership may be restricted by the Society's constitution.",
-            "ar": "الخريجون والموظفون مرحّب بهم في الفعاليات الاجتماعية والعشاء السنوي. قد تنطبق قيود على العضوية الكاملة بحسب اللائحة الأساسية للجمعية."
+            "en": "Yes. Saudi alumni, academic staff, researchers, clinicians and employees with an Oxford connection can join free through the Saudi Oxford Community Membership. Alumni, staff, researchers, clinicians and professionals of any nationality can join as Associate Members (£15 a year). What each membership can vote on or stand for is set by the Society's constitution.",
+            "ar": "نعم. يمكن للسعوديين من الخريجين وأعضاء هيئة التدريس والباحثين والأطباء والموظفين الذين تربطهم صلة بأكسفورد الانضمام مجانًا عبر عضوية السعوديين في أكسفورد. ويمكن للخريجين ومنسوبي الجامعات والباحثين والأطباء والمهنيين من جميع الجنسيات الانضمام بالعضوية المنتسبة (١٥ جنيهًا إسترلينيًا سنويًا). وتحدد اللائحة الأساسية للجمعية ما يحق لكل عضوية التصويت عليه أو الترشح له."
           },
           "refs": [],
           "id": "alumni-staff"
@@ -78,11 +90,23 @@
             "ar": "كيف أعرف بالفعاليات؟"
           },
           "a": {
-            "en": "The programme is published at the start of each term, emailed to members and posted on our social channels.",
-            "ar": "يُنشر البرنامج في بداية كل فصل دراسي، ويُرسل بالبريد الإلكتروني للأعضاء ويُعلن على حساباتنا في وسائل التواصل."
+            "en": "The programme is published at the start of each term, emailed to members and posted on our social channels. Anyone can also subscribe to the mailing list on the Join page; you do not need to be a member.",
+            "ar": "يُنشر البرنامج في بداية كل فصل دراسي، ويُرسل بالبريد الإلكتروني للأعضاء ويُعلن على حساباتنا في وسائل التواصل. ويمكن لأي شخص الاشتراك في القائمة البريدية من صفحة الانضمام دون حاجة إلى العضوية."
           },
           "refs": [],
           "id": "hear-about-events"
+        },
+        {
+          "q": {
+            "en": "Can I volunteer or get the news without becoming a member?",
+            "ar": "هل يمكنني التطوع أو متابعة الأخبار دون أن أصبح عضوًا؟"
+          },
+          "a": {
+            "en": "Yes. On the Join page, Mailing List needs only your email address, and Volunteer Registration asks for your name, email and the areas you would like to help with. Both are free and separate from membership: they do not make you a member, and you can unsubscribe or withdraw at any time from My account.",
+            "ar": "نعم. في صفحة الانضمام يكفي بريدك الإلكتروني للاشتراك في القائمة البريدية، ويطلب التسجيل للتطوع اسمك وبريدك الإلكتروني والمجالات التي تود المساعدة فيها. كلاهما مجاني ومستقل عن العضوية ولا يجعلك عضوًا، ويمكنك إلغاء الاشتراك أو سحب طلب التطوع في أي وقت من صفحة «حسابي»."
+          },
+          "refs": [],
+          "id": "volunteer-mailing"
         },
         {
           "q": {

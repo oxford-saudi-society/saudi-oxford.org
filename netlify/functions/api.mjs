@@ -137,6 +137,18 @@ async function route(req, context, db) {
     return json({ member: await db.tx((q) => M.respond(q, session.email, body, site)) });
   }
 
+  /* the signed-in person leaves the mailing list, or withdraws their volunteer registration, themselves */
+  if (a === 'mailing-list' && b === 'unsubscribe' && m === 'POST') {
+    assertSameOrigin(req);
+    if (!session) fail(401, 'sign_in_required');
+    return json(await db.tx((q) => M.unsubscribe(q, session.email)));
+  }
+  if (a === 'volunteer' && b === 'withdraw' && m === 'POST') {
+    assertSameOrigin(req);
+    if (!session) fail(401, 'sign_in_required');
+    return json(await db.tx((q) => M.volunteerWithdraw(q, session.email)));
+  }
+
   /* proof of nationality: uploaded by the signed-in applicant; never emailed */
   if (a === 'membership' && b === 'evidence' && (m === 'POST' || m === 'DELETE')) {
     assertSameOrigin(req);
@@ -161,7 +173,7 @@ async function route(req, context, db) {
       }
       const p = pending.payload || {};
       if (pending.kind === 'login') {
-        await q.query('UPDATE oss_members SET email_verified_at = COALESCE(email_verified_at, now()) WHERE email = $1', [pending.email]);
+        await M.markVerified(q, pending.email); // membership, mailing list and volunteer registration alike
         const to = safePath(p.redirect || '/account/');
         return { to: site + to + (to.indexOf('?') === -1 ? '?' : '&') + 'verified=signed_in', cookie: sessionCookie(pending.email, req) };
       }
@@ -213,7 +225,8 @@ async function route(req, context, db) {
     const rows = (await db.query(`SELECT r.id, r.status, r.kind, r.lang, r.created_at, r.confirmed_at, r.checked_in_at, r.offered_at, r.claim_expires_at, e.id AS event_id, e.slug, e.content, e.start_utc, e.end_utc, e.event_status, e.venue_key, e.version
       FROM oss_registrations r JOIN oss_events e ON e.id = r.event_id WHERE r.email = $1 ORDER BY e.start_utc`, [session.email])).rows;
     const staff = await staffFor(db, session.email);
-    return json({ email: session.email, member: await isMember(db, session.email), membership: await M.mine(db, session.email), staff: staff ? { role: staff.role } : null, registrations: rows.map((r) => ({ id: r.id, status: r.status, kind: r.kind, createdAt: r.created_at, confirmedAt: r.confirmed_at, checkedInAt: r.checked_in_at, claimExpiresAt: r.claim_expires_at,
+    const held = await M.registers(db, session.email);
+    return json({ email: session.email, member: await isMember(db, session.email), membership: await M.mine(db, session.email), mailingList: held.mailingList, volunteer: held.volunteer, staff: staff ? { role: staff.role } : null, registrations: rows.map((r) => ({ id: r.id, status: r.status, kind: r.kind, createdAt: r.created_at, confirmedAt: r.confirmed_at, checkedInAt: r.checked_in_at, claimExpiresAt: r.claim_expires_at,
       event: { id: r.event_id, slug: r.slug, title: r.content.title, image: r.content.image ? r.content.image.thumb : null, startUtc: r.start_utc, endUtc: r.end_utc, eventStatus: r.event_status, venue: { en: E.venueName({ venue_key: r.venue_key }, 'en'), ar: E.venueName({ venue_key: r.venue_key }, 'ar') }, version: r.version } })) });
   }
   if (a === 'registrations' && b && c === 'cancel' && m === 'POST') {
@@ -306,6 +319,8 @@ async function route(req, context, db) {
     if (b === 'membership' && c && !d && m === 'GET') return json(await M.detail(db, staff, decodeURIComponent(c)));
     if (b === 'membership' && c && ['approve', 'request-info', 'decline', 'revoke'].includes(d) && m === 'POST') return json(await db.tx((q) => M.decide(q, staff, decodeURIComponent(c), d, body, site)));
     if (b === 'membership' && c && d === 'update' && m === 'POST') return json(await db.tx((q) => M.update(q, staff, decodeURIComponent(c), body, site)));
+    if (b === 'volunteers' && !c && m === 'GET') return json(await M.volunteersList(db, staff));
+    if (b === 'volunteers.csv' && m === 'GET') { const r = await db.tx((q) => A.volunteersCsv(q, staff)); return new Response(r.csv, { status: 200, headers: { 'Content-Type': 'text/csv; charset=utf-8', 'Content-Disposition': `attachment; filename="${r.filename}"`, 'Cache-Control': 'no-store' } }); }
     if (b === 'fee-codes' && !c && m === 'GET') return json(await M.codesList(db, staff));
     if (b === 'fee-codes' && !c && m === 'POST') return json(await db.tx((q) => M.codeCreate(q, staff, body)));
     if (b === 'fee-codes' && c && (d === 'disable' || d === 'enable') && m === 'POST') return json(await db.tx((q) => M.codeSwitch(q, staff, decodeURIComponent(c), d === 'disable')));

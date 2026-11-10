@@ -8,7 +8,7 @@ let db, C, root, runJobs;
 const ADMIN = 'president@oxsss.org';
 const JPEG = Buffer.concat([Buffer.from([0xff, 0xd8, 0xff, 0xe0]), Buffer.alloc(2000, 7)]);
 const PDF = Buffer.concat([Buffer.from('%PDF-1.4\n'), Buffer.alloc(2000, 32)]);
-const apply = (over) => C.call('POST', '/api/membership/apply', { body: Object.assign({ tier: 'saudi', sso: 'hert1234', name: 'Sara Example', email: 'sara@example.org', college: 'Hertford College', status: 'dphil', consent_privacy: true, lang: 'en' }, over || {}) });
+const apply = (over) => C.call('POST', '/api/membership/apply', { body: Object.assign({ tier: 'saudi', confirm_saudi: true, sso: 'hert1234', name: 'Sara Example', email: 'sara@example.org', uniChoice: 'oxford', college: 'Hertford College', status: 'doctoral', consent_privacy: true, lang: 'en' }, over || {}) });
 const upload = (cookie, buf, mime) => C.call('POST', '/api/membership/evidence', { cookie, body: { mime: mime || 'image/jpeg', data: buf.toString('base64') } });
 
 before(async () => { process.env.NATIONALITY_UPLOAD = 'true'; /* the upload is off on the site for now; these tests keep the dormant feature honest */ db = await setupDb(); C = await makeClient(); root = await C.signIn(ADMIN, '/admin/events/'); ({ runJobs } = await import('../netlify/functions/jobs.mjs')); });
@@ -62,7 +62,8 @@ test('proof not accepted → deleted, applicant emailed to upload again; applica
   assert.equal(rm.status, 200); assert.equal(rm.body.member.nationalityStatus, 'pending'); assert.equal(rm.body.member.evidence, null);
   // upload once more; approving the application ends the need for the document
   await upload(omar, JPEG);
-  const ap = await C.call('POST', `/api/admin/membership/${no}/approve`, { cookie: root, body: {} });
+  assert.equal((await C.call('POST', `/api/admin/membership/${no}/approve`, { cookie: root, body: {} })).body.error, 'eligibility_required', 'free membership is not activated until the committee confirms eligibility');
+  const ap = await C.call('POST', `/api/admin/membership/${no}/approve`, { cookie: root, body: { eligibilityConfirmed: true } });
   assert.equal(ap.body.member.status, 'approved'); assert.equal(ap.body.member.nationality_status, 'verified');
   assert.equal((await q(db, 'SELECT count(*)::int AS n FROM oss_member_evidence'))[0].n, 0);
 });
@@ -80,7 +81,7 @@ test('an unchecked document is not kept beyond 30 days', async () => {
 });
 
 test('membership records: kept during membership, deleted 12 months after it ends', async () => {
-  const mk = async (email, sql) => { await apply({ email, name: 'Member ' + email.split('@')[0], tier: 'friend' }); await db.query(`UPDATE oss_members SET ${sql} WHERE email = $1`, [email]); };
+  const mk = async (email, sql) => { await apply({ email, name: 'Member ' + email.split('@')[0], tier: 'associate', status: 'supporter' }); await db.query(`UPDATE oss_members SET ${sql} WHERE email = $1`, [email]); };
   await mk('active@example.org', "status = 'approved', valid_until = NULL, approved_at = now() - interval '5 years', applied_at = now() - interval '5 years'");
   await mk('current@example.org', "status = 'approved', valid_until = CURRENT_DATE + 30");
   await mk('lapsed-recent@example.org', "status = 'approved', valid_until = CURRENT_DATE - 200");
@@ -123,7 +124,7 @@ test('dietary / access notes: stored with a booking, shown to organisers, cleare
 });
 
 test('news subscribers export: members who ticked the box and carried-over event opt-ins; staff only', async () => {
-  await apply({ email: 'news@example.org', name: 'News Reader', tier: 'friend', consent_news: true });
+  await apply({ email: 'news@example.org', name: 'News Reader', tier: 'associate', status: 'supporter', consent_news: true });
   await db.query("INSERT INTO oss_subscribers (email, name, lang, source) VALUES ('kept@example.org', 'Kept Person', 'ar', 'event')");
   assert.equal((await C.call('GET', '/api/admin/subscribers.csv')).status, 401);
   const r = await C.call('GET', '/api/admin/subscribers.csv', { cookie: root });

@@ -810,3 +810,46 @@ html[dir="rtl"] #f-sso:placeholder-shown{direction:rtl;text-align:right}
 .code-state.is-wait{color:var(--ink-2);background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14);font-weight:400}
 html[dir="rtl"] #f-fee-code:placeholder-shown{direction:rtl;text-align:right;letter-spacing:0}
 @media (max-width:420px){.code-row{flex-wrap:wrap}.code-row .btn{flex:1 1 100%}}
+
+/* ── join: one step at a time ───────────────────────────────────── */
+.step-h{font-size:28px;margin:10px 0 22px}
+.step-h:focus{outline:0}
+.step-nav{display:flex;flex-wrap:wrap;align-items:center;gap:12px 16px;margin-top:30px;padding-top:24px;border-top:1px solid var(--hair)}
+ol.steps li.done{cursor:pointer}
+.stat.compact{min-height:0;padding:17px 18px 16px}
+.stat.compact .tn{font-size:16.5px;line-height:1.3}
+.stat-wrap + .stat-wrap{margin-top:26px}
+.sub-h{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);margin:0 0 12px}
+html[dir="rtl"] .sub-h{letter-spacing:0;font-size:13.5px}
+.who{margin-top:22px;font-size:14px;color:var(--ink-2);max-width:86ch}
+.who summary{cursor:pointer;color:var(--gold-lt);font-weight:600;font-size:14.5px}
+.who p{margin-top:10px;line-height:1.65}
+.alert{padding:14px 18px;border-radius:var(--r-sm);font-size:14.5px;margin:0 0 18px;background:rgba(255,255,255,.08);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14)}
+.alert.ok{background:rgba(92,191,138,.16);color:#d8f3e2}
+.alert p{margin:0 0 12px}
+#switch-note{margin-top:14px}
+.form .review{padding:20px 22px 22px;border-radius:var(--r-md);background:rgba(255,255,255,.05);box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}
+.form .review .kv{margin-top:6px;grid-template-columns:minmax(120px,auto) 1fr}
+.rev-miss{color:#F2A9A9;font-weight:400;font-style:italic}
+.form .assess{padding:16px;border-radius:var(--r-md);background:rgba(227,182,92,.07);box-shadow:inset 0 0 0 1px rgba(227,182,92,.28)}
+#assess-more{display:flex;flex-direction:column;gap:12px;margin-top:8px}
+#assess-more .alert{margin:0}
+.form .fee-code{margin-top:0}
+.form .f textarea{min-height:92px}
+.form-foot .btn-s{order:0}
+.done-kv{max-width:560px;margin-top:22px}
+.mstate.g-active{background:rgba(20,83,45,.14);color:#14532D}
+.mstate.g-needs_info,.mstate.g-awaiting_payment{background:rgba(201,154,46,.24);color:#6a4c0c}
+@media (max-width:860px){
+  .step-h{font-size:24px}
+  .step-nav .btn,.form-foot .btn{flex:1 1 auto}
+}
+/* lists of answers (review, confirmation, account): the values follow the page's direction; only an address stays left-to-right */
+.review .kv dd,.done-kv dd,.mem-pane .kv dd{direction:inherit;unicode-bidi:normal}
+html[dir="rtl"] .review .kv dd[dir="ltr"]{direction:ltr;text-align:right}
+@media (max-width:560px){
+  .form .review{padding:16px 16px 18px}
+  .form .review .kv{grid-template-columns:auto 1fr;gap:8px 14px}
+}
+/* people who ask their device for less motion get no gliding scroll */
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}

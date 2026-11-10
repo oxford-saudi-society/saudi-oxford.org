@@ -46,7 +46,7 @@ const USER = `user-${uniq}@example.org`, ADMIN = 'admin@example.org', MEMBER = `
   await shot(pp, 'e2e-phone-account');
   // Arabic account page
   await pp.goto(BASE + '/ar/account/'); await pp.waitForTimeout(900);
-  ok(await pp.evaluate(() => document.documentElement.dir === 'rtl' && /تسجيلاتي/.test(document.body.textContent)), 'Arabic account page is RTL');
+  ok(await pp.evaluate(() => document.documentElement.dir === 'rtl' && /السجل/.test(document.body.textContent) && !/تسجيلاتي/.test(document.body.textContent)), 'Arabic account page is RTL and is called السجل');
   await shot(pp, 'e2e-phone-account-ar');
 
   // 3. committee desk: sign in with the bootstrap address, confirm + open an event

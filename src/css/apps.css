@@ -105,3 +105,8 @@ dialog.confirm p{color:var(--ink-2);font-size:14.5px}
 .mact-d summary::before{display:none}
 .mact-d p.muted{font-size:13.5px;margin:8px 0}
 .mact-d[open]{background:rgba(255,255,255,.08)}
+.hold-grid{margin-top:14px;max-width:960px;align-items:start}
+.hold-grid .mem-pane{max-width:none;margin:0}
+.hold-grid h2 .ln{font-family:var(--sans);font-weight:400;margin-inline-start:6px}
+.mstate.g-active{background:rgba(20,83,45,.14);color:#14532D}
+.mstate.g-needs_info,.mstate.g-awaiting_payment{background:rgba(201,154,46,.24);color:#6a4c0c}

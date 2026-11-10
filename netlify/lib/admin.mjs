@@ -109,14 +109,23 @@ const csvCell = (v) => { let s = v == null ? '' : String(v); if (/^[=+\-@\t\r]/.
 export async function subscribersCsv(q, staff) {
   requireRole(staff, 'events_admin');
   await rateLimit(q, 'export', staff.email, 20, 3600);
-  const rows = (await q.query(`SELECT email, name, lang, consent_at, source FROM oss_subscribers
-    UNION SELECT email, name, lang, COALESCE(applied_at, created_at), 'membership' FROM oss_members WHERE consent_news AND status IN ('pending','info_requested','approved')
-    UNION SELECT DISTINCT ON (email) email, name, lang, COALESCE(marketing_opt_in_at, consent_at), 'event' FROM oss_registrations WHERE marketing_opt_in AND status IN ('interested','confirmed','checked_in','waitlisted','offered')
-    ORDER BY 1`)).rows;
+  const rows = (await q.query(`SELECT email, name, lang, consent_at, source, array_to_string(interests, ' ') AS interests, (verified_at IS NOT NULL) AS confirmed, 0 AS ord FROM oss_subscribers
+    UNION ALL SELECT email, name, lang, COALESCE(applied_at, created_at), 'membership', '', (email_verified_at IS NOT NULL), 1 FROM oss_members WHERE consent_news AND status IN ('pending','info_requested','approved')
+    UNION ALL SELECT DISTINCT ON (email) email, name, lang, COALESCE(marketing_opt_in_at, consent_at), 'event', '', true, 2 FROM oss_registrations WHERE marketing_opt_in AND status IN ('interested','confirmed','checked_in','waitlisted','offered')
+    ORDER BY 1, 8`)).rows;
   const seen = new Set(); const uniq = rows.filter((r) => (seen.has(r.email) ? false : (seen.add(r.email), true)));
   await audit(q, staff.email, 'subscribers.exported', null, { rows: uniq.length });
-  const lines = ['email,name,language,consented_at,source'].concat(uniq.map((r) => [r.email, r.name, r.lang, r.consent_at, r.source].map((v) => csvCell(v instanceof Date ? v.toISOString() : v)).join(',')));
-  return { filename: 'news-subscribers.csv', csv: '\ufeff' + lines.join('\r\n') + '\r\n' };
+  const lines = ['email,name,language,consented_at,source,interests,email_confirmed'].concat(uniq.map((r) => [r.email, r.name, r.lang, r.consent_at, r.source, r.interests, r.confirmed ? 'yes' : 'no'].map((v) => csvCell(v instanceof Date ? v.toISOString() : v)).join(',')));
+  return { filename: 'news-subscribers.csv', csv: '﻿' + lines.join('\r\n') + '\r\n' };
+}
+/* People who registered to volunteer (a register of its own: it gives no membership rights). */
+export async function volunteersCsv(q, staff) {
+  requireRole(staff, 'events_admin');
+  await rateLimit(q, 'export', staff.email, 20, 3600);
+  const rows = (await q.query(`SELECT email, name, name_ar, phone, array_to_string(areas, ' ') AS areas, place, whatsapp, lang, created_at, (verified_at IS NOT NULL) AS confirmed FROM oss_volunteers ORDER BY created_at`)).rows;
+  await audit(q, staff.email, 'volunteers.exported', null, { rows: rows.length });
+  const lines = ['email,name,name_arabic,mobile,areas,preferred_place,whatsapp_group,language,registered_at,email_confirmed'].concat(rows.map((r) => [r.email, r.name, r.name_ar, r.phone, r.areas, r.place, r.whatsapp ? 'yes' : 'no', r.lang, r.created_at, r.confirmed ? 'yes' : 'no'].map((v) => csvCell(v instanceof Date ? v.toISOString() : v)).join(',')));
+  return { filename: 'volunteers.csv', csv: '﻿' + lines.join('\r\n') + '\r\n' };
 }
 export async function rosterCsv(q, staff, id) {
   requireRole(staff, 'events_admin', id);

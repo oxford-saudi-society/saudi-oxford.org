@@ -1,10 +1,11 @@
 // Membership pages in a real browser with the proof-of-nationality upload switched OFF (as on the site now):
 // Saudi applicants are told the secretary will email later and are offered no upload; other membership types see
-// nothing about nationality; sending the form again with another type updates the application. Also: the 3-step
-// join page, the styled college list, the language switch on every page type, and the single ideas-board button.
+// nothing about nationality; sending the form again with another type updates the application. Also: the SSO
+// field and the styled college list (the join form itself is covered by membership-e2e.js), the language switch on every page type, and the single ideas-board button.
 // Prereq: qa/dev-reset.sh
 const { chromium } = require('playwright');
 const fs = require('fs'); const path = require('path');
+const { join, toStep3, tick, centre } = require('./join-helpers');
 const BASE = 'http://127.0.0.1:8788', MAIL = '/tmp/oss-mail.jsonl';
 let n = 0, fails = 0; const ok = (c, m) => { n++; if (!c) { fails++; console.log('  FAIL', m); } };
 const shot = (p, name, full) => p.screenshot({ path: path.join(__dirname, 'shots', name + '.png'), fullPage: !!full });
@@ -23,18 +24,12 @@ const link = (to, kind) => { const m = lastMail(to, kind); const r = m && /https
   ok(j.steps.length === 3 && j.steps.every((s) => !/^\d|^[٠-٩]/.test(s)), 'three steps, no number in the text itself ' + JSON.stringify(j.steps));
   ok(j.nums.length === 3 && j.nums.every((c) => /counter\(step, arabic-indic\)/.test(c)), 'step numbers drawn once by CSS, in Arabic numerals ' + JSON.stringify(j.nums));
   ok(!/صندوق للمساعدة|بالبطاقة|شهادة تقدير|حق التصويت|إنستغرام/.test(j.text), 'no hardship fund, card payment, certificate, voting or Instagram claims');
-  await phone.check('input[name=tier][value=saudi]', { force: true });
-  await phone.fill('#f-name', 'نورة العتيبي'); await phone.fill('#f-email', 'noura@example.org');
-  // Oxford SSO username: Arabic label and placeholder, needed for the student types only, 4 letters + 4 digits
-  let so = await phone.evaluate(() => { const i = document.getElementById('f-sso'), f = i.closest('.f'); return { label: f.querySelector('.lbl span').textContent, ph: i.placeholder, phColor: getComputedStyle(i, '::placeholder').color, inkColor: getComputedStyle(i).color, emptyDir: getComputedStyle(i).direction, star: !document.getElementById('sso-req').hidden, opt: !document.getElementById('sso-opt').hidden, required: i.required }; });
-  ok(so.label === 'معرّف الدخول الموحّد (SSO)' && so.ph === 'مثال: abcd1234' && so.emptyDir === 'rtl', 'Arabic label and placeholder, shown right-to-left ' + JSON.stringify(so));
+  await toStep3(phone, { tier: 'saudi', status: 'doctoral', selects: { 'f-uni-choice': 'oxford' }, fields: { 'f-name': 'نورة العتيبي', 'f-email': 'noura@example.org' } });
+  // Oxford SSO username: Arabic label and placeholder, always optional, 4 letters + 4 digits when given
+  let so = await phone.evaluate(() => { const i = document.getElementById('f-sso'), f = i.closest('.f'); return { label: f.querySelector('.lbl span').textContent, ph: i.placeholder, phColor: getComputedStyle(i, '::placeholder').color, inkColor: getComputedStyle(i).color, emptyDir: getComputedStyle(i).direction, required: i.required }; });
+  ok(so.label === 'اسم المستخدم الجامعي في أكسفورد (SSO) — اختياري' && so.ph === 'مثال: abcd1234' && so.emptyDir === 'rtl' && !so.required, 'Arabic label and placeholder, shown right-to-left, optional ' + JSON.stringify(so));
   ok(so.phColor !== so.inkColor && /0\.3\d*\)$/.test(so.phColor), 'placeholder is a subtle grey, lighter than typed text: ' + so.phColor + ' vs ' + so.inkColor);
-  ok(so.star && !so.opt && so.required, 'Saudi student type: the username is required (star shown)');
-  await phone.check('input[name=tier][value=associate]', { force: true });
-  ok(await phone.evaluate(() => document.getElementById('sso-req').hidden && !document.getElementById('sso-opt').hidden && !document.getElementById('f-sso').required), 'non-student type: optional');
-  await phone.check('input[name=tier][value=student]', { force: true });
-  ok(await phone.evaluate(() => !document.getElementById('sso-req').hidden && document.getElementById('f-sso').required), 'student type: required again');
-  await phone.check('input[name=tier][value=saudi]', { force: true });
+  await centre(phone, '#f-sso');
   await phone.tap('#f-sso'); await phone.keyboard.type('HE rt-12'); await phone.waitForTimeout(100);
   so = await phone.evaluate(() => { const i = document.getElementById('f-sso'); return { v: i.value, dir: getComputedStyle(i).direction, phGone: !i.matches(':placeholder-shown') }; });
   ok(so.v === 'hert12' && so.dir === 'ltr' && so.phGone, 'typing clears the placeholder; letters and digits only, lower case, left-to-right ' + JSON.stringify(so));
@@ -43,12 +38,12 @@ const link = (to, kind) => { const m = lastMail(to, kind); const r = m && /https
   await phone.fill('#f-sso', 'hert1234');
   ok(await phone.evaluate(() => !document.querySelector('[data-f=sso]').classList.contains('err')), 'a correct username clears the message');
   // college field: the suggestions are the page's own list, styled like the field (not the browser's built-in one)
-  await phone.tap('#f-college'); await phone.waitForTimeout(200); await phone.keyboard.type('hert'); await phone.waitForTimeout(200);
+  await centre(phone, '#f-college'); await phone.tap('#f-college'); await phone.waitForTimeout(200); await phone.keyboard.type('hert'); await phone.waitForTimeout(200);
   const cb = await phone.evaluate(() => { const l = document.getElementById('college-list'), i = document.getElementById('f-college'), ls = getComputedStyle(l), is = getComputedStyle(i); return { native: i.hasAttribute('list'), open: !l.hidden, items: Array.from(l.children).map((x) => x.textContent), sameRadius: ls.borderRadius === is.borderRadius, sameFont: ls.fontSize === is.fontSize && ls.fontFamily === is.fontFamily, dark: ls.backgroundColor, sameWidth: Math.abs(l.getBoundingClientRect().width - i.getBoundingClientRect().width) < 1 }; });
   ok(!cb.native && cb.open && cb.items.length === 1 && cb.items[0] === 'Hertford College' && cb.sameRadius && cb.sameFont && cb.sameWidth && /rgba?\(6, 22, 46/.test(cb.dark), 'college suggestions use the field\'s own style ' + JSON.stringify(cb));
   await phone.keyboard.press('ArrowDown'); await phone.keyboard.press('Enter'); await phone.waitForTimeout(150);
-  ok(await phone.evaluate(() => document.getElementById('f-college').value === 'Hertford College' && document.getElementById('college-list').hidden && !document.getElementById('join-form').hidden), 'a suggestion can be chosen from the keyboard without sending the form'); await phone.locator('#statuses label', { has: phone.locator('input[value=masters]') }).click(); await phone.check('#f-consent', { force: true });
-  await phone.click('#submit-btn'); await phone.waitForTimeout(1500);
+  ok(await phone.evaluate(() => document.getElementById('f-college').value === 'Hertford College' && document.getElementById('college-list').hidden && !document.getElementById('join-form').hidden), 'a suggestion can be chosen from the keyboard without sending the form');
+  await tick(phone, '#f-confirm-saudi'); await tick(phone, '#f-consent'); await centre(phone, '#submit-btn'); await phone.click('#submit-btn'); await phone.waitForTimeout(1500);
   j = await phone.evaluate(() => ({ no: (document.getElementById('mno') || {}).textContent, text: document.getElementById('join-done').innerText, links: Array.from(document.querySelectorAll('#join-done a')).map((x) => x.textContent.trim()) }));
   ok(/^OSS-\d{4}-0001$/.test(j.no), 'application received with a number ' + j.no);
   ok(/سيراسلك أمين سر مجلس إدارة الجمعية لاحقًا لطلب إثبات الجنسية السعودية عند الحاجة/.test(j.text) && !/ارفع|رفع/.test(j.text) && !j.links.some((t) => /ارفع/.test(t)), 'Saudi applicant: told the secretary will email later; nothing to upload');
@@ -68,12 +63,12 @@ const link = (to, kind) => { const m = lastMail(to, kind); const r = m && /https
 
   // ── a non-Saudi applicant never sees anything about nationality
   const other = await (await b.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, reducedMotion: 'reduce' })).newPage(); other.on('pageerror', (e) => errors.push('other: ' + e.message));
-  const applyOn = async (p, tier, name, email) => { await p.goto(BASE + '/join/'); await p.waitForTimeout(400); await p.check('input[name=tier][value=' + tier + ']', { force: true }); await p.fill('#f-name', name); await p.fill('#f-email', email); if (tier === 'saudi' || tier === 'student') await p.fill('#f-sso', 'hert1234'); await p.fill('#f-college', 'Hertford College'); await p.locator('#statuses label', { has: p.locator('input[value=masters]') }).click(); await p.check('#f-consent', { force: true }); await p.click('#submit-btn'); await p.waitForTimeout(1500); return p.evaluate(() => document.getElementById('join-done').innerText); };
+  const applyOn = async (p, tier, name, email) => (await join(p, BASE, 'en', tier === 'saudi' ? { tier, status: 'masters', selects: { 'f-uni-choice': 'oxford' }, fields: { 'f-name': name, 'f-email': email, 'f-college': 'Hertford College' }, checks: ['f-confirm-saudi', 'f-consent'] } : tier === 'associate' ? { tier, status: 'supporter', fields: { 'f-name': name, 'f-email': email }, checks: ['f-consent'] } : { tier, status: 'masters', fields: { 'f-name': name, 'f-email': email, 'f-college': 'Hertford College' }, checks: ['f-consent'] })).text;
   let t = await applyOn(other, 'student', 'Maria Rossi', 'maria@example.org');
   ok(/Application received/i.test(t) && !/nationality|secretary|upload/i.test(t), 'non-Saudi confirmation says nothing about nationality');
   await other.goto(link('maria@example.org', 'membership_received')); await other.waitForTimeout(1500);
   a = await other.evaluate(() => ({ text: document.getElementById('app').innerText, upload: !!document.getElementById('mem-ev') || !!document.querySelector('input[type=file]') }));
-  ok(!a.upload && !/nationality|secretary|upload/i.test(a.text) && /Oxford University students membership/i.test(a.text), 'non-Saudi member page: no nationality note and no upload');
+  ok(!a.upload && !/nationality|secretary|upload/i.test(a.text) && /Oxford Student Membership/i.test(a.text), 'non-Saudi member page: no nationality note and no upload');
   await shot(other, 'p-account-nonsaudi-en', true);
   ok(!/nationality|upload/i.test((lastMail('maria@example.org', 'membership_received') || {}).text || 'nationality'), 'non-Saudi confirmation email says nothing about nationality');
 
@@ -82,10 +77,10 @@ const link = (to, kind) => { const m = lastMail(to, kind); const r = m && /https
   t = await applyOn(third, 'saudi', 'John Smith', 'john@example.org');
   ok(/secretary will email you later/i.test(t), 'first as Saudi: secretary note');
   t = await applyOn(third, 'associate', 'John Smith', 'john@example.org');
-  ok(/Application updated/i.test(t) && /Associate membership/.test(t) && !/nationality|secretary/i.test(t), 'sent again as Associate: application updated, nationality note gone');
+  ok(/Application updated/i.test(t) && /Associate Membership/.test(t) && !/nationality|secretary/i.test(t), 'sent again as Associate: application updated, nationality note gone');
   await third.goto(link('john@example.org', 'membership_changed')); await third.waitForTimeout(1500);
   a = await third.evaluate(() => document.getElementById('app').innerText);
-  ok(/Associate membership/.test(a) && !/nationality|secretary|upload/i.test(a), 'their page now shows the Associate application only');
+  ok(/Associate Membership/.test(a) && !/nationality|secretary|upload/i.test(a), 'their page now shows the Associate application only');
 
   // ── committee desk: no document panel while the upload is off; the request template asks by email
   await desk.goto(BASE + '/admin/events/'); await desk.waitForTimeout(600);
@@ -94,78 +89,6 @@ const link = (to, kind) => { const m = lastMail(to, kind); const r = m && /https
   await desk.goto(BASE + '/admin/events/#membership/' + no); await desk.waitForTimeout(1200);
   let d = await desk.evaluate(() => ({ pane: !!document.getElementById('mev'), text: document.body.innerText }));
   ok(!d.pane && /Saudi nationality/i.test(d.text), 'desk: no document panel; the nationality check box is still there');
-
-  // ── the five membership types; a non-Oxford student gets different choices and fields
-  const ext = await (await b.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, reducedMotion: 'reduce' })).newPage(); ext.on('pageerror', (e) => errors.push('ext: ' + e.message));
-  await ext.goto(BASE + '/join/'); await ext.waitForTimeout(400);
-  let ty = await ext.evaluate(() => Array.from(document.querySelectorAll('#tiers .tier')).map((l) => l.querySelector('.tn').textContent + ' | ' + l.querySelector('.tp').innerText.replace(/\s+/g, ' ').trim()));
-  ok(ty.length === 5 && /^Oxford University Saudi students \| Free/.test(ty[0]) && /^Oxford University students membership \| \[?£10/.test(ty[1]) && /^Non-Oxford University students \| \[?£10/.test(ty[2]) && /^Associate membership \| \[?£15/.test(ty[3]) && /^Mailing list & volunteering \| Free/.test(ty[4]), 'five types in order with their fees ' + JSON.stringify(ty));
-  ok(await ext.evaluate(() => { const d = document.querySelector('#tiers .tier .td').textContent; return d === 'For Saudi nationals studying at Oxford, or alumni, researchers or staff at Oxford University only.' && !/secretary/i.test(document.getElementById('tiers').innerText); }), 'Saudi type description as specified, with no secretary sentence in the card');
-  const vis = () => ext.evaluate(() => ({ h: document.getElementById('status-h').textContent, stats: Array.from(document.querySelectorAll('#statuses .stat')).filter((l) => !l.hidden).map((l) => l.querySelector('input').value), sso: !document.querySelector('[data-f=sso]').hidden, college: !document.querySelector('[data-f=college]').hidden, uni: !document.querySelector('[data-f=university]').hidden, subj: !document.querySelector('[data-f=subject]').hidden, ssoReq: document.getElementById('f-sso').required, sum: document.getElementById('sum').innerText }));
-  await ext.check('input[name=tier][value=saudi]', { force: true }); let v = await vis();
-  ok(v.stats.length === 7 && v.sso && v.college && !v.uni && !v.subj && v.ssoReq && /secretary will email you later/.test(v.sum), 'Oxford Saudi type: Oxford statuses, SSO + college, secretary note below ' + JSON.stringify(v));
-  await ext.check('input[name=tier][value=student]', { force: true }); v = await vis();
-  ok(v.stats.length === 7 && v.sso && v.college && v.ssoReq && !v.uni, 'Oxford student type: SSO + college required');
-  await ext.check('input[name=tier][value=external]', { force: true }); v = await vis();
-  ok(v.h === 'Where do you study?' && JSON.stringify(v.stats) === JSON.stringify(['brookes', 'uk_university', 'global_university']) && !v.sso && !v.college && v.uni && v.subj && /£10/.test(v.sum), 'non-Oxford type: three places of study, university + subject instead of SSO + college ' + JSON.stringify(v));
-  await ext.fill('#f-name', 'Brookes Student'); await ext.fill('#f-email', 'brookes@example.org'); await ext.check('#f-consent', { force: true });
-  await ext.click('#submit-btn'); await ext.waitForTimeout(500);
-  ok(await ext.evaluate(() => ['status', 'university', 'subject'].every((k) => document.querySelector('[data-f=' + k + ']').classList.contains('err')) && document.getElementById('join-done').hidden), 'place of study, university and subject are required');
-  await ext.locator('#statuses label', { has: ext.locator('input[value=brookes]') }).click(); await ext.waitForTimeout(150);
-  ok(await ext.evaluate(() => document.getElementById('f-university').value === 'Oxford Brookes University'), 'choosing Oxford Brookes fills in the university name');
-  await ext.fill('#f-subject', 'Computer Science'); await shot(ext, 'p-join-external-en', true);
-  await ext.click('#submit-btn'); await ext.waitForTimeout(1500);
-  t = await ext.evaluate(() => document.getElementById('join-done').innerText);
-  ok(/Application received/i.test(t) && /Non-Oxford University students/.test(t) && /£10/.test(t) && !/nationality|secretary/i.test(t), 'non-Oxford student application received with its £10 fee');
-  await ext.goto(BASE + '/ar/join/'); await ext.waitForTimeout(400); await ext.check('input[name=tier][value=external]', { force: true });
-  ok(await ext.evaluate(() => document.getElementById('status-h').textContent === 'أين تدرس؟' && document.querySelector('#tiers input[value=external]').closest('.tier').querySelector('.tn').textContent === 'طلبة الجامعات الأخرى' && document.querySelector('[data-f=university] .lbl span').textContent === 'اسم الجامعة' && document.querySelector('[data-f=subject] .lbl span').textContent === 'التخصص'), 'Arabic: type, question and the two new fields');
-  await desk.goto(BASE + '/admin/events/#membership'); await desk.waitForTimeout(1200);
-  ok(await desk.evaluate(() => /Oxford Brookes University — Computer Science/.test(document.querySelector('.mtbl').innerText) && /Non-Oxford student/.test(document.querySelector('.mtbl').innerText)), 'desk queue shows the university and subject');
-
-  // ── fee codes: the committee creates one in the desk; on the join form it is accepted or declined at once
-  await desk.goto(BASE + '/admin/events/#membership-codes'); await desk.waitForTimeout(1000);
-  await desk.fill('#fc-label', 'Partner scholars'); await desk.fill('#fc-max', '1'); await desk.click('#fc-f button[type=submit]'); await desk.waitForTimeout(1200);
-  const code = await desk.evaluate(() => (document.querySelector('.tbl tbody tr td b') || {}).textContent || '');
-  ok(/^OSS-X\d{2}-[0-9A-Z]{5}-[0-9A-Z]{5}$/.test(code) && await desk.evaluate(() => /Code created/.test(document.getElementById('flash').innerText) && /0 \/ 1/.test(document.querySelector('.tbl tbody tr').innerText)), 'desk: code created and listed, unused — ' + code);
-  await shot(desk, 'p-desk-codes', true);
-  const fee = await (await b.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, reducedMotion: 'reduce' })).newPage(); fee.on('pageerror', (e) => errors.push('fee: ' + e.message));
-  await fee.goto(BASE + '/ar/join/'); await fee.waitForTimeout(400);
-  ok(await fee.evaluate(() => document.getElementById('fee-code').hidden), 'no code field before a type is chosen');
-  await fee.check('input[name=tier][value=saudi]', { force: true });
-  ok(await fee.evaluate(() => document.getElementById('fee-code').hidden), 'no code field for a free type');
-  await fee.check('input[name=tier][value=student]', { force: true });
-  let fc = await fee.evaluate(() => { const f = document.getElementById('fee-code'), i = document.getElementById('f-fee-code'); return { shown: !f.hidden, label: f.querySelector('.lbl span').textContent, ph: i.placeholder, btn: document.getElementById('fee-code-btn').textContent, sum: document.getElementById('sum').innerText }; });
-  ok(fc.shown && fc.label === 'رمز الإعفاء من الرسوم' && /^OSS-X26-/.test(fc.ph) && fc.btn === 'تحقّق من الرمز' && /£10/.test(fc.sum), 'fee-paying type: Arabic code field appears ' + JSON.stringify(fc));
-  await fee.fill('#f-fee-code', 'oss-nope-nope'); await fee.tap('#fee-code-btn'); await fee.waitForTimeout(900);
-  fc = await fee.evaluate(() => ({ cls: document.getElementById('fee-code-state').className, text: document.getElementById('fee-code-state').innerText, sum: document.getElementById('sum').innerText, val: document.getElementById('f-fee-code').value }));
-  ok(/is-bad/.test(fc.cls) && /رُفض الرمز/.test(fc.text) && /£10/.test(fc.sum) && fc.val === 'OSS-NOPE-NOPE', 'a wrong code is declined at once ' + JSON.stringify(fc));
-  await shot(fee, 'p-code-declined-ar');
-  // a single mistyped character is caught on the spot by the check character, with no server call
-  const B32 = '0123456789ABCDEFGHJKMNPQRSTVWXYZ', wrongCh = B32[(B32.indexOf(code[10]) + 5) % 32], typo = code.slice(0, 10) + wrongCh + code.slice(11);
-  let calls = 0; await fee.route('**/api/membership/code', (r) => { calls++; r.continue(); });
-  await fee.fill('#f-fee-code', typo); await fee.tap('#fee-code-btn'); await fee.waitForTimeout(400);
-  ok(await fee.evaluate(() => /خطأ كتابي/.test(document.getElementById('fee-code-state').innerText)) && calls === 0, 'a typing mistake is caught at once (no server call: ' + calls + ')');
-  // typed the lazy way — lower case, no dashes — the page formats it
-  await fee.fill('#f-fee-code', ''); await fee.tap('#f-fee-code'); await fee.keyboard.type(code.toLowerCase().replace(/-/g, ''), { delay: 15 }); await fee.waitForTimeout(150);
-  ok(await fee.evaluate((c) => document.getElementById('f-fee-code').value === c, code), 'the code is formatted as it is typed: ' + await fee.evaluate(() => document.getElementById('f-fee-code').value));
-  await fee.tap('#fee-code-btn'); await fee.waitForTimeout(900);
-  fc = await fee.evaluate(() => ({ cls: document.getElementById('fee-code-state').className, text: document.getElementById('fee-code-state').innerText, sum: document.getElementById('sum').innerText }));
-  ok(/is-ok/.test(fc.cls) && /تم قبول رمز الإعفاء/.test(fc.text) && /لا توجد رسوم/.test(fc.sum) && !/£10/.test(fc.sum), 'the right code is accepted and the fee disappears ' + JSON.stringify(fc));
-  await shot(fee, 'p-code-accepted-ar');
-  await fee.fill('#f-name', 'ليلى حسن'); await fee.fill('#f-email', 'layla.code@example.org'); await fee.fill('#f-sso', 'hert1234'); await fee.fill('#f-college', 'Hertford College'); await fee.locator('#statuses label', { has: fee.locator('input[value=masters]') }).click(); await fee.check('#f-consent', { force: true });
-  await fee.click('#submit-btn'); await fee.waitForTimeout(1500);
-  t = await fee.evaluate(() => document.getElementById('join-done').innerText);
-  ok(/أُعفيت من رسوم العضوية/.test(t) && !/£10|رسوم العضوية: /.test(t), 'confirmation: fee waived, nothing to pay');
-  ok(/أُعفيت|إعفاؤك من رسوم العضوية/.test((lastMail('layla.code@example.org', 'membership_received') || {}).text || ''), 'confirmation email says the fee is waived');
-  // the single use is spent: the next person is declined when sending the form, and nothing is saved
-  const fee2 = await (await b.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, reducedMotion: 'reduce' })).newPage();
-  await fee2.goto(BASE + '/join/'); await fee2.waitForTimeout(400); await fee2.check('input[name=tier][value=associate]', { force: true });
-  await fee2.fill('#f-fee-code', code); await fee2.fill('#f-name', 'Second Person'); await fee2.fill('#f-email', 'second.code@example.org'); await fee2.fill('#f-college', 'Hertford College'); await fee2.locator('#statuses label', { has: fee2.locator('input[value=staff]') }).click(); await fee2.check('#f-consent', { force: true });
-  await fee2.click('#submit-btn'); await fee2.waitForTimeout(1500);
-  fc = await fee2.evaluate(() => ({ state: document.getElementById('fee-code-state').innerText, done: !document.getElementById('join-done').hidden, form: !document.getElementById('join-form').hidden }));
-  ok(/Code declined — this code has already been used/.test(fc.state) && !fc.done && fc.form, 'a used-up code is declined on sending and the form stays open ' + JSON.stringify(fc));
-  await desk.goto(BASE + '/admin/events/#membership'); await desk.waitForTimeout(600); await desk.goto(BASE + '/admin/events/#membership-codes'); await desk.waitForTimeout(1000);
-  ok(await desk.evaluate(() => /1 \/ 1/.test(document.querySelector('.tbl tbody tr').innerText) && /Used up/i.test(document.querySelector('.tbl tbody tr').innerText)), 'desk shows the code as used up');
 
   // ── language switch: every page type, both directions, from a phone and a narrow phone
   const narrow = await (await b.newContext({ viewport: { width: 320, height: 640 }, isMobile: true, hasTouch: true })).newPage();
